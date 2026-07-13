@@ -9,6 +9,7 @@ obj/
 
 # Test
 TestResults/
+ReleasePackages/
 
 # ClickOnce / VSTO Publish
 veröffentlichen/
