@@ -1,28 +1,40 @@
 # Excel-VSTO-Toolbox
-Excel VSTO Addin mit Demobeispielen für RegEx, Power Query, VBA und Formeln.
+
+Excel VSTO Add-in mit Demobeispielen für RegEx, Power Query, VBA und Formeln.
+
 ![Startbildschirm](Images/Startbildschirm.png)
+
 ## Download
+
 Die aktuelle installierbare Version befindet sich unter:
-[Releases](https://github.com/user-attachments/files/29978054/Excel-VSTO-Toolbox-1.0.0.6.zip)
+
+[Releases](https://github.com/rstsu/Excel-VSTO-Toolbox/releases)
+
 ## Funktionen
 
-✔ Power Query Beispiele
+✔ 6 RegEx-Beispiele
 
-✔ RegEx Beispiele
+✔ 4 Power Query-Beispiele
 
-✔ VBA Beispiele
+✔ 3 Formel-Beispiele
 
-✔ Formeln
+✔ 3 VBA-Beispiele
+
 ## Voraussetzungen
-Excel 365 für Windows
 
-.NET Framework 4.8.1
+- Excel 365 für Windows
+- .NET Framework 4.8.1
+
+Nicht unterstützt: Excel für Mac
 
 ## Installation
-1. ZIP-Datei herunterladen
+
+1. ZIP-Datei aus dem Release herunterladen
 
 2. Inhalt in einen Ordner entpacken
 
 3. setup.exe starten
 
 4. Excel neu starten
+
+5. Das Add-in erscheint im Excel-Menüband (Ribbon)
