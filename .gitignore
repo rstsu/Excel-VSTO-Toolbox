@@ -26,3 +26,7 @@ Application Files/
 # Windows
 Thumbs.db
 Desktop.ini
+
+# Signing keys
+*.pfx
+*.snk
