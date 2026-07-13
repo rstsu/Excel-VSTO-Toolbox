@@ -1,0 +1,28 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build
+bin/
+obj/
+My Project/
+
+# Test
+TestResults/
+
+# ClickOnce / VSTO Publish
+veröffentlichen/
+publish/
+Application Files/
+
+# Deployment Dateien
+*.vsto
+*.deploy
+
+# Logs
+*.log
+
+# Windows
+Thumbs.db
+Desktop.ini
