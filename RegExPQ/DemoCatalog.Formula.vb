@@ -48,7 +48,6 @@ Die zweite Formel (G1) ist mit Überschriften.
 
 =VSTAPELN(A1:B1;SORTIERENNACH(A2:.B999;--TEXTVOR(A2:.A999;".");1;--TEIL(TEXTNACH(A2:.A999;".");1;2);1))
 
-Oder mit LET:
 =LET(w;A2:.A999;x;A2:.B999;y;--TEXTVOR(w;".");z;--TEIL(TEXTNACH(w;".");1;2);SORTIERENNACH(x;y;1;z;1))
 
 =LET(w;A2:.A999;x;A2:.B999;y;--TEXTVOR(w;".");z;--TEIL(TEXTNACH(w;".");1;2);VSTAPELN(A1:B1;SORTIERENNACH(x;y;1;z;1)))
@@ -88,6 +87,34 @@ Adressen anpassen und anwenden auf den jeweiligen Kalenderbereich.
 =LET(Jahr;$B$1;Monat;$B$2;Erster;DATUM(Jahr;Monat;1);Start;Erster-WOCHENTAG(Erster;2)+1;VSTAPELN(HSTAPELN(TEXT(Erster;"MMMM JJJJ");"";"";"";"";"";"");TEXT(SEQUENZ(1;7;2;1);"TTT");SEQUENZ(6;7;Start;1)))
 
 =LET(Jahr;$B$1;Ostersonntag;RUNDEN((TAG(MINUTE(Jahr/38)/2+55)&".4."&Jahr)/7;0)*7-6;Daten;VSTAPELN(DATUM(Jahr;{1;5;10;12;12};{1;1;3;25;26});Ostersonntag+{-2;1;39;50});Namen;{"Neujahr";"Tag der Arbeit";"Tag der Deutschen Einheit";"1. Weihnachtstag";"2. Weihnachtstag";"Karfreitag";"Ostermontag";"Christi Himmelfahrt";"Pfingstmontag"};SORTIERENNACH(HSTAPELN(Daten;Namen);Daten))
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "formula_004",
+                .Category = DemoCategory.Formula,
+                .Title = "Kreuztabelle aus Liste erste 3 Buchstaben",
+                .Tags = {"formel", "text", "kreuztabelle", "intelligente tabelle", "liste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A15) wird eine Kreuztabelle erstellt.
+Grundlage sind die ersten 3 gleichen Buchstaben.
+Einmal bezogen auf einfache Werte (Spalte C).
+Und dann auf eine "intelligente Tabelle" (Spalte A).
+Formeln in E1, M1 und U1.
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(t;Demo_Formel_4[Wert];u;LINKS(t;3);v;EINDEUTIG(u);w;MAX(MAP(v;LAMBDA(x;SUMME(--(u=x)))));VSTAPELN("Pos"&SEQUENZ(;w);MATRIXERSTELLEN(ZEILEN(v);w;LAMBDA(y;z;WENNFEHLER(INDEX(FILTER(t;u=INDEX(v;y));z);"")))))
+
+=LET(m;Demo_Formel_4[Wert];k;EINDEUTIG(LINKS(m;3));n;MAX(MAP(k;LAMBDA(x;SUMME(--(LINKS(m;3)=x)))));VSTAPELN("Pos"&SEQUENZ(;n);MATRIXERSTELLEN(ZEILEN(k);n;LAMBDA(z;p;WENNFEHLER(INDEX(FILTER(m;LINKS(m;3)=INDEX(k;z));p);"")))))
+
+=LET(t;$A$2:.$A$999;u;LINKS(t;3);v;EINDEUTIG(u);w;MAX(MAP(v;LAMBDA(x;SUMME(--(u=x)))));VSTAPELN("Pos"&SEQUENZ(;w);MATRIXERSTELLEN(ZEILEN(v);w;LAMBDA(y;z;WENNFEHLER(INDEX(FILTER(t;u=INDEX(v;y));z);"")))))
         ]]>
     </code>
         )

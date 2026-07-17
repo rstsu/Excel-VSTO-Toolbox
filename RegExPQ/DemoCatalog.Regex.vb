@@ -153,6 +153,168 @@ Exoten wie "Strasse des 17. Juni" bleiben komplett bestehen - es sei denn, es gi
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_007",
+                .Category = DemoCategory.Regex,
+                .Title = "Datumbereich aus String auslesen",
+                .Tags = {"regex", "datum", "bereich", "zahlen", "mehrere"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Strings mit Datumbereich in A2:A7 (z. B. Text und 12345 dann12.02.-14.07.2026 Text).
+Der Datumbereich soll ausgelesen werden.
+Einmal in eine Zelle - und dann noch getrennt in zwei Zellen.
+Ausgegeben werden auch die Arbeits- und Kalendertage zwischen den Daten.
+Formeln in B1, C1, D1, E1 und H1.
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Datum auslesen";WENNFEHLER(REGEXEXTRAHIEREN(A2:.A999;"\d{2}\.\d{2}\.?-?\s*-\s*\d{2}\.\d{2}\.\d{4}");"???"))
+
+=VSTAPELN(A1&" - Richtig";WENNFEHLER(REGEXEXTRAHIEREN(A2:.A999;"\d{2}\.\d{2}(?:\.\d{4})?\.?\s*-\s*(?:\d{2}\.\d{2}|\d{2})\.\d{4}|\d{2}\.\d{2}\.\d{4}|\d{2}\.\d{4}");""))
+
+=VSTAPELN(A1&" - Oder";WENNFEHLER(REGEXEXTRAHIEREN(A2:.A999;"\d{2}\.\d{2}(?:\.\d{4})?\.?\s*-\s*\d{2}\.\d{2}\.\d{4}");""))
+
+=LET(a;A2:.A999;
+    b;WENNFEHLER(
+        REGEXEXTRAHIEREN(
+            a;
+            "\d{2}\.\d{2}(?:\.\d{4})?\.?\s*-\s*(?:\d{2}\.\d{2}|\d{2})\.\d{4}|\d{2}\.\d{2}\.\d{4}|\d{2}\.\d{4}|\d{2}\.\d{2}";
+            1
+        );
+        ""
+    );
+    c;ISTZAHL(SUCHEN("-";b));
+    d;WENN(
+        c;
+        REGEXEXTRAHIEREN(b;"^\d{2}\.\d{2}(?:\.\d{4})?");
+        b
+    );
+    e;WENN(
+        c;
+        GLÄTTEN(TEXTNACH(b;"-"));
+        ""
+    );
+    f;LAMBDA(s;g;
+        WENN(s="";
+            "";
+            WENN(
+                UND(LÄNGE(s)=5;ISTZAHL(WERT(TEIL(s;1;2))));
+                DATUM(g;TEIL(s;4;2);TEIL(s;1;2));
+                WENN(
+                    LÄNGE(s)=7;
+                    DATUM(TEIL(s;4;4);TEIL(s;1;2);1);
+                    WENN(
+                        LÄNGE(s)=10;
+                        DATUM(TEIL(s;7;4);TEIL(s;4;2);TEIL(s;1;2));
+                        WENN(
+                            LÄNGE(s)=6;
+                            DATUM(g;TEIL(s;4;2);TEIL(s;1;2));
+                            s
+                        )
+                    )
+                )
+            )
+        )
+    );
+    h;f(d;JAHR(HEUTE()));
+    i;WENN(
+        e<>"";
+        LAMBDA(t;
+            WENN(
+                ODER(LÄNGE(e)=5;LÄNGE(e)=6);
+                LET(
+                    j;f(e;JAHR(h));
+                    WENN(j<h;DATUM(JAHR(j)+1;MONAT(j);TAG(j));j)
+                );
+                f(e;JAHR(HEUTE()))
+            )
+        )(e);
+        ""
+    );
+    k;HSTAPELN(h;i);
+    WENN(ANZAHL2(k)=0;"";
+    VSTAPELN({"Startdatum"."Enddatum"};k)))
+
+=LET(
+    a;A2:.A999;
+    b;WENNFEHLER(
+        REGEXEXTRAHIEREN(
+            a;
+            "\d{2}\.\d{2}(?:\.\d{4})?\.?\s*-\s*(?:\d{2}\.\d{2}|\d{2})\.\d{4}|\d{2}\.\d{2}\.\d{4}|\d{2}\.\d{4}|\d{2}\.\d{2}";
+            1
+        );
+        ""
+    );
+    c;ISTZAHL(SUCHEN("-";b));
+    d;WENN(
+        c;
+        REGEXEXTRAHIEREN(b;"^\d{2}\.\d{2}(?:\.\d{4})?");
+        b
+    );
+    e;WENN(
+        c;
+        GLÄTTEN(TEXTNACH(b;"-"));
+        ""
+    );
+    f; LAMBDA(s;g;
+        WENN(s="";
+            "";
+            WENNFEHLER(
+                WENN(
+                    LÄNGE(s)=5;
+                    DATUM(g;TEIL(s;4;2);TEIL(s;1;2));
+                    WENN(
+                        LÄNGE(s)=7;
+                        DATUM(TEIL(s;4;4);TEIL(s;1;2);1);
+                        WENN(
+                            LÄNGE(s)=10;
+                            DATUM(TEIL(s;7;4);TEIL(s;4;2);TEIL(s;1;2));
+                            WENN(
+                                LÄNGE(s)=6;
+                                DATUM(g;TEIL(s;4;2);TEIL(s;1;2));
+                                ""
+                            )
+                        )
+                    )
+                );
+                ""
+            )
+        )
+    );
+    h; f(d;JAHR(HEUTE()));
+    i; WENN(
+        e<>"";
+        LAMBDA(t;
+            WENN(
+                ODER(LÄNGE(e)=5;LÄNGE(e)=6);
+                LET(
+                    j;f(e;JAHR(h));
+                    WENN(j<h;DATUM(JAHR(j)+1;MONAT(j);TAG(j));j)
+                );
+                f(e;JAHR(HEUTE()))
+            )
+        )(e);
+        ""
+    );
+    k; WENN(
+        UND(ISTZAHL(h);ISTZAHL(i));
+        NETTOARBEITSTAGE(h;i);
+        ""
+    );
+    l; WENN(
+        UND(ISTZAHL(h);ISTZAHL(i));
+        i-h;
+        ""
+    );
+    m;HSTAPELN(h;i;k;l);VSTAPELN({"Startdatum"."Enddatum"."Arbeitstage"."Tage"};m))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

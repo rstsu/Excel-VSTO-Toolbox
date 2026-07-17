@@ -41,6 +41,8 @@ in
 In den Zellen A2:Ax sind Texte mit mehreren Zollangaben (z. B. 1/2" oder dann auch 1 3/4").
 Die Zollangaben sollen ausgelesen werden. Auch mehrere.
 Überschriften (Z1, Z2...) automatisch generieren.
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
         ]]>
     </text>
         ),
@@ -96,6 +98,8 @@ Die Datei, in der das probiert wird MUSS gespeichert sein.
 In einer neuen UNGESPEICHERTEN Datei geht das NICHT!
 Da erscheint dann der Fehler #WERT! in Zelle G1.
 !!!!!!!!WICHTIG!!!!!!!!
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
         ]]>
     </text>
         ),
@@ -141,6 +145,8 @@ fncCleanText([Text])
 
 Oder mit eigenen Zeichen:
 fncCleanText([Text], {":","?","*","/","\",".",",",";"})
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
         ]]>
     </text>
         ),
@@ -164,6 +170,39 @@ let
                 }
             }
         )
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_005",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Kreuztabelle aus Liste erste 3 Buchstaben",
+                .Tags = {"power query", "text", "m-code", "tabelle", "liste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A15) wird eine Kreuztabelle erstellt.
+Grundlage sind die ersten 3 gleichen Buchstaben.
+Es ist auch in Formeln gelöst. Mit der gleichen Bezeichnung.
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_5"]}[Content],
+    Kuerzel = Table.AddColumn(Quelle, "Kürzel", each Text.Start([Wert], 3), type text),
+    Gruppe = Table.Group(Kuerzel, {"Kürzel"}, {{"Daten", each Table.AddIndexColumn(_, "Pos", 1, 1, Int64.Type)}}),
+    Expand = Table.ExpandTableColumn(Gruppe, "Daten", {"Wert", "Pos"}),
+    Pos = Table.TransformColumns(Expand, {{"Pos", each "Pos" & Text.From(_), type text}}),
+    Pivot = Table.Pivot(Pos, List.Distinct(Pos[Pos]), "Pos", "Wert"),
+    Erg = Table.RemoveColumns(Pivot, {"Kürzel"})
 in
     Erg
         ]]>

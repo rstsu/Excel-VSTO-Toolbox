@@ -1,28 +1,41 @@
-﻿'Imports Excel = Microsoft.Office.Interop.Excel
-'Imports System.Windows.Forms
-
-Partial Public Class DemoRunner
-
+﻿Partial Public Class DemoRunner
     Private Sub CreateFormulaDemo_1()
         Dim ws = CreateFreshSheet("Demo_Formel_1")
-
-        ws.Range("A1").Value = "Werte"
-        ws.Range("A2").Value = "Excel"
-        ws.Range("A3").Value = "Power Query"
-        ws.Range("A4").Value = "Excel"
-        ws.Range("A5").Value = "VBA"
-        ws.Range("A6").Value = "Formeln"
-        ws.Range("A7").Value = "Power Query"
-
-        ws.Range("C1").Value = "Eindeutig sortiert"
-        ws.Range("C2").Formula2 = "=SORT(UNIQUE(A2:.A999))"
-        ws.Range("D1").Formula2 = "=VSTACK(A1,SORT(UNIQUE(A2:.A999)))"
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Werte"
+            ws.Range("A2").Value = "Excel"
+            ws.Range("A3").Value = "Power Query"
+            ws.Range("A4").Value = "Excel"
+            ws.Range("A5").Value = "VBA"
+            ws.Range("A6").Value = "Formeln"
+            ws.Range("A7").Value = "Power Query"
+            ws.Range("C1").Value = "Eindeutig sortiert"
+            ws.Range("C2").Formula2 = "=SORT(UNIQUE(A2:.A999))"
+            ws.Range("D1").Formula2 = "=VSTACK(A1,SORT(UNIQUE(A2:.A999)))"
+            ws.Range("F1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("F2").Value = "Formel-Demo"
+            ws.Range("F3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("F1:F3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
         FormatSheet(ws)
     End Sub
     Private Sub CreateFormulaDemo_2()
         Dim ws = CreateFreshSheet("Demo_Formel_2")
-
-        Dim data(,) As Object = {
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            Dim data(,) As Object = {
             {"Code", "Text"},
             {"3.40.20", "Text 1"},
             {"3.10.20", "Text 2"},
@@ -35,17 +48,27 @@ Partial Public Class DemoRunner
             {"2.11.74", "Text 4"},
             {"2.10.11", "Text 10"}
         }
-
-        ws.Range("A1:B11").Value = data
-
-        ws.Range("D1").Value = "Code"
-        ws.Range("E1").Value = "Text"
-        ws.Range("D2").Formula2 = "=SORTBY(A2:.B999,--TEXTBEFORE(A2:.A999,"".""),1,--MID(TEXTAFTER(A2:.A999,"".""),1,2),1)"
-        ws.Range("G1").Formula2 = "=VSTACK(A1:B1,SORTBY(A2:.B999,--TEXTBEFORE(A2:.A999,"".""),1,--MID(TEXTAFTER(A2:.A999,"".""),1,2),1))"
-        ws.Range("J1").Value = "Code"
-        ws.Range("K1").Value = "Text"
-        ws.Range("J2").Formula2 = "=LET(w,A2:.A999,x,A2:.B999,y,--TEXTBEFORE(w,"".""),z,--MID(TEXTAFTER(w,"".""),1,2),SORTBY(x,y,1,z,1))"
-        ws.Range("M1").Formula2 = "=LET(w,A2:.A999,x,A2:.B999,y,--TEXTBEFORE(w,"".""),z,--MID(TEXTAFTER(w,"".""),1,2),VSTACK(A1:B1,SORTBY(x,y,1,z,1)))"
+            ws.Range("A1:B11").Value = data
+            ws.Range("D1").Value = "Code"
+            ws.Range("E1").Value = "Text"
+            ws.Range("D2").Formula2 = "=SORTBY(A2:.B999,--TEXTBEFORE(A2:.A999,"".""),1,--MID(TEXTAFTER(A2:.A999,"".""),1,2),1)"
+            ws.Range("G1").Formula2 = "=VSTACK(A1:B1,SORTBY(A2:.B999,--TEXTBEFORE(A2:.A999,"".""),1,--MID(TEXTAFTER(A2:.A999,"".""),1,2),1))"
+            ws.Range("J1").Value = "Code"
+            ws.Range("K1").Value = "Text"
+            ws.Range("J2").Formula2 = "=LET(w,A2:.A999,x,A2:.B999,y,--TEXTBEFORE(w,"".""),z,--MID(TEXTAFTER(w,"".""),1,2),SORTBY(x,y,1,z,1))"
+            ws.Range("M1").Formula2 = "=LET(w,A2:.A999,x,A2:.B999,y,--TEXTBEFORE(w,"".""),z,--MID(TEXTAFTER(w,"".""),1,2),VSTACK(A1:B1,SORTBY(x,y,1,z,1)))"
+            ws.Range("P1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("P2").Value = "Formel-Demo"
+            ws.Range("P3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("P1:P3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
         FormatSheet(ws)
     End Sub
     Private Sub CreateFormulaDemo_3()
@@ -69,6 +92,14 @@ Partial Public Class DemoRunner
             ws.Range("I12").Formula2 = "=Today()+4"
             ws.Range("J11").Value = "Sehr wichtiger Tag"
             ws.Range("J12").Value = "Internationaler Schwarzbier-Tag"
+            ws.Range("L1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("L2").Value = "Formel-Demo"
+            ws.Range("L3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("L1:L3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
             SetupYearMonthValidation(ws)
             FormatDemoSheet(ws)
             Globals.ThisAddIn.AttachDemoChangeHandler(ws)
@@ -76,5 +107,61 @@ Partial Public Class DemoRunner
             app.ScreenUpdating = True
             app.EnableEvents = True
         End Try
+    End Sub
+    Private Sub CreateFormulaDemo_4()
+        Dim ws = CreateFreshSheet("Demo_Formel_4")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Wert"
+            ws.Range("A2").Value = "FRD001"
+            ws.Range("A3").Value = "FRD003"
+            ws.Range("A4").Value = "FRD005"
+            ws.Range("A5").Value = "FRD007"
+            ws.Range("A6").Value = "FRD008"
+            ws.Range("A7").Value = "FRD009"
+            ws.Range("A8").Value = "FRD010"
+            ws.Range("A9").Value = "JUG003"
+            ws.Range("A10").Value = "JUG005"
+            ws.Range("A11").Value = "JUG006"
+            ws.Range("A12").Value = "KIM001"
+            ws.Range("A13").Value = "STD005"
+            ws.Range("A14").Value = "STD006"
+            ws.Range("A15").Value = "STD007"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:A15"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "Demo_Formel_4"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("C1").Value = "Wert"
+            ws.Range("C2").Value = "FRD001"
+            ws.Range("C3").Value = "FRD003"
+            ws.Range("C4").Value = "FRD005"
+            ws.Range("C5").Value = "FRD007"
+            ws.Range("C6").Value = "FRD008"
+            ws.Range("C7").Value = "FRD009"
+            ws.Range("C8").Value = "FRD010"
+            ws.Range("C9").Value = "JUG003"
+            ws.Range("C10").Value = "JUG005"
+            ws.Range("C11").Value = "JUG006"
+            ws.Range("C12").Value = "KIM001"
+            ws.Range("C13").Value = "STD005"
+            ws.Range("C14").Value = "STD006"
+            ws.Range("C15").Value = "STD007"
+            ws.Range("E1").Formula2 = "=LET(t,Demo_Formel_4[Wert],u,LEFT(t,3),v,UNIQUE(u),w,MAX(MAP(v,LAMBDA(x,SUM(--(u=x))))),VSTACK(""Pos""&SEQUENCE(,w),MAKEARRAY(ROWS(v),w,LAMBDA(y,z,IFERROR(INDEX(FILTER(t,u=INDEX(v,y)),z),"""")))))"
+            ws.Range("M1").Formula2 = "=LET(m,Demo_Formel_4[Wert],k,UNIQUE(LEFT(m,3)),n,MAX(MAP(k,LAMBDA(x,SUM(--(LEFT(m,3)=x))))),VSTACK(""Pos""&SEQUENCE(,n),MAKEARRAY(ROWS(k),n,LAMBDA(z,p,IFERROR(INDEX(FILTER(m,LEFT(m,3)=INDEX(k,z)),p),"""")))))"
+            ws.Range("U1").Formula2 = "=LET(t,$A$2:.$A$999,u,LEFT(t,3),v,UNIQUE(u),w,MAX(MAP(v,LAMBDA(x,SUM(--(u=x))))),VSTACK(""Pos""&SEQUENCE(,w),MAKEARRAY(ROWS(v),w,LAMBDA(y,z,IFERROR(INDEX(FILTER(t,u=INDEX(v,y)),z),"""")))))"
+            ws.Range("B18").Value = "Excel-VSTO-Toolbox"
+            ws.Range("B19").Value = "Formel-Demo"
+            ws.Range("B20").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("B18:B20").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
     End Sub
 End Class

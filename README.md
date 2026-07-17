@@ -12,13 +12,13 @@ Die aktuelle installierbare Version befindet sich unter:
 
 ## Funktionen
 
-✔ 6 RegEx-Beispiele
+✔ 7 RegEx-Beispiele
 
-✔ 4 Power Query-Beispiele
+✔ 5 Power Query-Beispiele
 
-✔ 3 Formel-Beispiele
+✔ 4 Formel-Beispiele
 
-✔ 3 VBA-Beispiele
+✔ 4 VBA-Beispiele
 
 ## Voraussetzungen
 
@@ -38,3 +38,17 @@ Nicht unterstützt: Excel für Mac
 4. Excel neu starten
 
 5. Das Add-in erscheint im Excel-Menüband (Ribbon)
+
+## TaskPane
+
+Wenn der Katalog geöffnet ist, wird bei einem Klick auf "Power Query", "Regex", "VBA" oder "Formeln" der entsprechende Inhalt rechts im TaskPane angezeigt. Im TaskPane sind unter Buttons (je nachdem in welchem Bereich man ist). Bei "Power Query" sind es drei Buttons.
+
+"Demo erzeugen" - Ein Tabellenblatt mit den Grunddaten wird erstellt.
+
+"Code kopieren" - Der M-Code wird in die Zwischenablage kopiert.
+
+"PQ M-Code Info" - Nun wird eine Info angezeigt, die erklärt, wo der M-Code eingefügt werden muss.
+
+Bei Klick auf die Beschreibung oben erscheint diese wieder.
+
+![Startbildschirm](Images/TaskPane.png)

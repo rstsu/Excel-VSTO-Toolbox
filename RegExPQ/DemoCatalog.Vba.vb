@@ -1,5 +1,4 @@
 ﻿Imports System.Xml.Linq
-
 Partial Public Module DemoCatalog
     Private Function GetVbaExamples() As List(Of DemoDefinition)
         Return New List(Of DemoDefinition) From {
@@ -13,6 +12,10 @@ Partial Public Module DemoCatalog
         <![CDATA[
 Alle ENVIRON Variablen mit Inhalt werden in einer neuen Datei aufgelistet.
 Wie z. B. USERNAME, USERPROFILE, TEMP...
+
+!!!!!!!!WICHTIG!!!!!!!!
+Den Code über den Button "Code kopieren" in die Zwischenablage übernehmen und dann im VBA-Editor ein Modul einfügen und dort den Code hineinkopieren.
+!!!!!!!!WICHTIG!!!!!!!!
         ]]>
     </text>
         ),
@@ -90,7 +93,7 @@ End Sub
             }, New DemoDefinition With {
                 .Id = "vba_003",
                 .Category = DemoCategory.Vba,
-                .Title = "UserForm zur Lauzeit erstellen",
+                .Title = "UserForm zur Laufzeit erstellen",
                 .Tags = {"vba", "userform", "laufzeit", "erstellen", "ausführen"},
                 .Description = TextBlock(
     <text>
@@ -185,6 +188,141 @@ End Sub
 Public Sub Speichern()
 'Code zum speichern
   MsgBox "Speichern"
+End Sub
+        ]]>
+    </code>
+        )
+            }, New DemoDefinition With {
+                .Id = "vba_004",
+                .Category = DemoCategory.Vba,
+                .Title = "Kreuztabelle aus Liste erste 3 Buchstaben",
+                .Tags = {"vba", "text", "kreuztabelle", "intelligente tabelle", "liste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A15) wird eine Kreuztabelle erstellt.
+Grundlage sind die ersten 3 gleichen Buchstaben.
+Es ist auch in Formeln und Power Query gelöst. Mit der gleichen Bezeichnung.
+Die Aufgabe wurde mit einfachen Werten und einer "intelligenten Tabelle" gelöst.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Den Code über den Button "Code kopieren" in die Zwischenablage übernehmen und dann im VBA-Editor ein Modul einfügen und dort den Code hineinkopieren.
+Erst dann funktionieren die beiden Buttons im Tabellenblatt.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Main_1()
+    Dim strPrefix As String
+    Dim vaArrZ() As Variant
+    Dim varArrQ As Variant
+    Dim lngMaxCol As Long
+    Dim lngCount As Long
+    Dim lngGroup As Long
+    Dim strTMP As String
+    Dim lngRow As Long
+    Dim lngCol As Long
+    With ThisWorkbook.Worksheets("Demo_VBA_4")
+        .Range("G1:M" & .Rows.Count).Clear
+        varArrQ = Range("C2", Cells(Rows.Count, "C").End(xlUp)).Value2
+        lngGroup = 1
+        lngCol = 1
+        strTMP = Left$(varArrQ(1, 1), 3)
+        For lngCount = 2 To UBound(varArrQ, 1)
+            strPrefix = Left$(varArrQ(lngCount, 1), 3)
+            If strPrefix = strTMP Then
+                lngCol = lngCol + 1
+            Else
+                If lngCol > lngMaxCol Then lngMaxCol = lngCol
+                lngGroup = lngGroup + 1
+                lngCol = 1
+                strTMP = strPrefix
+            End If
+        Next lngCount
+        If lngCol > lngMaxCol Then lngMaxCol = lngCol
+        ReDim vaArrZ(1 To lngGroup + 1, 1 To lngMaxCol)
+        For lngCount = 1 To lngMaxCol
+            vaArrZ(1, lngCount) = "Pos" & lngCount
+        Next
+        lngRow = 2
+        lngCol = 1
+        strTMP = Left$(varArrQ(1, 1), 3)
+        vaArrZ(lngRow, lngCol) = varArrQ(1, 1)
+        For lngCount = 2 To UBound(varArrQ, 1)
+            strPrefix = Left$(varArrQ(lngCount, 1), 3)
+            If strPrefix = strTMP Then
+                lngCol = lngCol + 1
+            Else
+                lngRow = lngRow + 1
+                lngCol = 1
+                strTMP = strPrefix
+            End If
+            vaArrZ(lngRow, lngCol) = varArrQ(lngCount, 1)
+        Next lngCount
+        .Range("G1").Resize(UBound(vaArrZ, 1), UBound(vaArrZ, 2)).Value = vaArrZ
+    End With
+End Sub
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Main_2()
+    Dim objList As ListObject
+    Dim strPrefix As String
+    Dim vaArrZ() As Variant
+    Dim varArrQ As Variant
+    Dim lngMaxCol As Long
+    Dim lngCount As Long
+    Dim lngGroup As Long
+    Dim strTMP As String
+    Dim lngRow As Long
+    Dim lngCol As Long
+    With ThisWorkbook.Worksheets("Demo_VBA_4")
+        Set objList = .ListObjects("Demo_VBA_4")
+        .Range("G1:M" & .Rows.Count).Clear
+        varArrQ = objList.ListColumns(1).DataBodyRange.Value2
+        lngGroup = 1
+        lngCol = 1
+        strTMP = Left$(varArrQ(1, 1), 3)
+        For lngCount = 2 To UBound(varArrQ, 1)
+            strPrefix = Left$(varArrQ(lngCount, 1), 3)
+            If strPrefix = strTMP Then
+                lngCol = lngCol + 1
+            Else
+                If lngCol > lngMaxCol Then lngMaxCol = lngCol
+                lngGroup = lngGroup + 1
+                lngCol = 1
+                strTMP = strPrefix
+            End If
+        Next lngCount
+        If lngCol > lngMaxCol Then lngMaxCol = lngCol
+        ReDim vaArrZ(1 To lngGroup + 1, 1 To lngMaxCol)
+        For lngCount = 1 To lngMaxCol
+            vaArrZ(1, lngCount) = "Pos" & lngCount
+        Next
+        lngRow = 2
+        lngCol = 1
+        strTMP = Left$(varArrQ(1, 1), 3)
+        vaArrZ(lngRow, lngCol) = varArrQ(1, 1)
+        For lngCount = 2 To UBound(varArrQ, 1)
+            strPrefix = Left$(varArrQ(lngCount, 1), 3)
+            If strPrefix = strTMP Then
+                lngCol = lngCol + 1
+            Else
+                lngRow = lngRow + 1
+                lngCol = 1
+                strTMP = strPrefix
+            End If
+            vaArrZ(lngRow, lngCol) = varArrQ(lngCount, 1)
+        Next
+        .Range("G1").Resize(UBound(vaArrZ, 1), UBound(vaArrZ, 2)).Value = vaArrZ
+    End With
 End Sub
         ]]>
     </code>
