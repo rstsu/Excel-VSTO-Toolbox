@@ -41,14 +41,14 @@ Nicht unterstützt: Excel für Mac
 
 ## TaskPane
 
-Wenn der Katalog geöffnet ist, wird bei einem Klick auf "Power Query", "Regex", "VBA" oder "Formeln" der entsprechende Inhalt rechts im TaskPane angezeigt. Im TaskPane sind unter Buttons (je nachdem in welchem Bereich man ist). Bei "Power Query" sind es drei Buttons.
+Wenn der Katalog geöffnet ist, wird bei einem Klick auf "Power Query", "Regex", "VBA" oder "Formeln" der entsprechende Inhalt rechts im TaskPane angezeigt. Im TaskPane sind unten Buttons (je nachdem in welchem Bereich man ist). Bei "Power Query" sind es drei Buttons.
 
 "Demo erzeugen" - Ein Tabellenblatt mit den Grunddaten wird erstellt.
 
 "Code kopieren" - Der M-Code wird in die Zwischenablage kopiert.
 
-"PQ M-Code Info" - Nun wird eine Info angezeigt, die erklärt, wo der M-Code eingefügt werden muss.
+"PQ M-Code Info" - Es wird eine Info angezeigt, die erklärt, wo der M-Code eingefügt werden muss.
 
-Bei Klick auf die Beschreibung oben erscheint diese wieder.
+Bei Klick auf die Beschreibung oben erscheint diese wieder (statt der Info).
 
 ![Startbildschirm](Images/TaskPane.png)
