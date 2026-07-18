@@ -208,9 +208,43 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_006",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "String zwischen 2 Zahlen auslesen",
+                .Tags = {"power query", "text", "m-code", "tabelle", "liste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A12) wird ein Text zwischen 2 Zahlem ausgelesen.
+Z. B. "1. Vom Bodensee in den Schwarzwald 21 May 2001".
+Es wird nur der "Titel" in der Mitte ausgelesen bzw. der Rest ersetzt.
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_6"]}[Content],
+    Ausgabe = Table.AddColumn(Quelle, "Ausgabe", each
+        let
+            ON = Text.AfterDelimiter([Daten], ". "),
+            TE = Text.Split(Text.Trim(ON), " "),
+            TI = Text.Combine(List.RemoveLastN(TE, 3), " ")
+        in
+            TI,
+        type text
+    ),
+    Erg = Table.SelectColumns(Ausgabe, {"Ausgabe"})
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function
-
 End Module
 

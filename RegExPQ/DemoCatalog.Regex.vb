@@ -315,9 +315,38 @@ Formeln in B1, C1, D1, E1 und H1.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_008",
+                .Category = DemoCategory.Regex,
+                .Title = "String zwischen 2 Zahlen auslesen",
+                .Tags = {"regex", "string", "bereich", "zahlen", "mehrere"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A12) wird ein Text zwischen 2 Zahlem ausgelesen.
+Z. B. "1. Vom Bodensee in den Schwarzwald 21 May 2001".
+Es wird nur der "Titel" in der Mitte ausgelesen bzw. der Rest ersetzt.
+
+Formel in C1:
+Der Titel bleibt übrig, da Anfang (Nummer mit Punkt) und Ende (Datum am Schluss) entfernt werden.
+
+Formel in E1:
+Hier wird der Titel gezielt als "Gruppe" herausgenommen und der gesamte Text am Ende damit ersetzt ("$1").
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN(A1;REGEXERSETZEN(A2:.A999;"^\s*\d+\.\s*|\s+\d{1,2}\s+\S+\s+\d{4}\s*$";""))
+
+=VSTAPELN("Ausgabe";REGEXERSETZEN(A2:.A999;"^\s*\d+\.\s*(.*?)\s+\d{1,2}\s+\S+\s+\d{4}\s*$";"$1"))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
-
 End Module
 

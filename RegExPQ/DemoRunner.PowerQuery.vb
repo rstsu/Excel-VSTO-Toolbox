@@ -167,4 +167,39 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreatePowerQueryDemo_6()
+        Dim ws = CreateFreshSheet("Demo_PQ_6")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Daten"
+            ws.Range("A2").Value = "1. Vom Bodensee in den Schwarzwald 21 May 2001"
+            ws.Range("A3").Value = "2. Von Baden-Baden nach Ludwigsburg 28 May 2003"
+            ws.Range("A4").Value = "3. Von Schwäbisch Hall nach Stuttgart 4 Jun. 2004"
+            ws.Range("A5").Value = "4. Von Heidelberg ins Neckartal 11 Jun. 2005"
+            ws.Range("A6").Value = "5. Neckartal und Odenwald 18 Jun. 2001"
+            ws.Range("A7").Value = "6. Von Speyer in die Weinpfalz 25 Jun. 2007"
+            ws.Range("A8").Value = "7. Von Koblenz zu Mosel und Ahr 2 Jul. 2009"
+            ws.Range("A9").Value = "8. Vom Waldecker Land nach Wiesbaden 9 Jul. 2008"
+            ws.Range("A10").Value = "9. Von Fulda in den Rheingau 16 Jul. 2002"
+            ws.Range("A11").Value = "10. Vom Thüringer Wald nach Erfurt 23 Jul. 2001"
+            ws.Range("A12").Value = "11. Rund um München 30 Jul. 2006"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:A12"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "Demo_PQ_6"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("B15").Value = "Excel-VSTO-Toolbox"
+            ws.Range("B16").Value = "Power Query-Demo"
+            ws.Range("B17").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("B15:B17").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class
