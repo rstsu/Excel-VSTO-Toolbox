@@ -1,9 +1,6 @@
 ﻿Imports System.Linq
-
 Partial Public Module DemoCatalog
-
     Private ReadOnly _all As List(Of DemoDefinition) = CreateAll()
-
     Public Function GetAll() As List(Of DemoDefinition)
         Return _all
     End Function
@@ -15,13 +12,10 @@ Partial Public Module DemoCatalog
     End Function
     Private Function CreateAll() As List(Of DemoDefinition)
         Dim result As New List(Of DemoDefinition)
-
         result.AddRange(GetRegexExamples())
         result.AddRange(GetPowerQueryExamples())
         result.AddRange(GetVbaExamples())
         result.AddRange(GetFormulaExamples())
-
         Return result
     End Function
-
 End Module
