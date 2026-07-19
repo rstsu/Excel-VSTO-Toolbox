@@ -36,6 +36,8 @@ Partial Public Class DemoRunner
                 CreatePowerQueryDemo_5()
             Case "pq_006"
                 CreatePowerQueryDemo_6()
+            Case "pq_007"
+                CreatePowerQueryDemo_7()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
@@ -44,6 +46,8 @@ Partial Public Class DemoRunner
                 CreateFormulaDemo_3()
             Case "formula_004"
                 CreateFormulaDemo_4()
+            Case "formula_005"
+                CreateFormulaDemo_5()
             Case "vba_001"
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_002"

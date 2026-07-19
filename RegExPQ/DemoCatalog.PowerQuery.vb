@@ -14,6 +14,8 @@ Partial Public Module DemoCatalog
         <![CDATA[
 Text/Wörter werden je gleicher Nummer in einer Spalte gruppiert bzw. mit Leerzeichen zusammengefasst.
 Also Spalte A sind Nummern und Spalte B Wörter. Sind die Nummern in Spalte A gleich, werden die Wörter gruppiert.
+
+Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
         ]]>
     </text>
         ),
@@ -189,6 +191,8 @@ Grundlage sind die ersten 3 gleichen Buchstaben.
 Es ist auch in Formeln gelöst. Mit der gleichen Bezeichnung.
 Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
 Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+
+Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
         ]]>
     </text>
         ),
@@ -220,6 +224,8 @@ in
 Aus einer Liste (A2:A12) wird ein Text zwischen 2 Zahlem ausgelesen.
 Z. B. "1. Vom Bodensee in den Schwarzwald 21 May 2001".
 Es wird nur der "Titel" in der Mitte ausgelesen bzw. der Rest ersetzt.
+
+Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
         ]]>
     </text>
         ),
@@ -238,6 +244,70 @@ let
         type text
     ),
     Erg = Table.SelectColumns(Ausgabe, {"Ausgabe"})
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_007",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Datumbrereich in Liste auflösen",
+                .Tags = {"power query", "datum", "m-code", "tabelle", "ferien"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A6 - Ferientermine 2027 in Baden Württemberg) wird eine laufende Liste erstellt.
+
+Der auskommentierte Code ist eine andere Herangehensweise ( also alles zwischen /* ...M-Code... */).
+
+Wenn Daten in Tabelle ausgegeben - dann Spalte Datum als "Datum" formatieren!!!
+
+Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_7"]}[Content],
+    Typen = Table.TransformColumnTypes(
+        Quelle,
+        {{"Ferien BW", type text}, {"Von", type date}, {"Bis", type date}}
+    ),
+    Erg = Table.Sort(
+        Table.SelectColumns(
+            Table.AddColumn(
+                Table.ExpandListColumn(
+                    Table.AddColumn(
+                        Typen,
+                        "Datum",
+                        each List.Dates([Von], Duration.Days([Bis] - [Von]) + 1, #duration(1,0,0,0)),
+                        type list
+                    ),
+                    "Datum"
+                ),
+                "Tag",
+                each Date.DayOfWeekName([Datum]),
+                type text
+            ),
+            {"Datum", "Tag"}
+        ),
+        {{"Datum", Order.Ascending}}
+    )
+in
+    Erg
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_7"]}[Content],
+    TypeG = Table.TransformColumnTypes(Quelle,{{"Ferien BW", type text}, {"Von", type date}, {"Bis", type date}}),
+    ErwS = Table.AddColumn(TypeG, "Datum", each List.Dates([Von], Duration.Days([Bis] - [Von]) + 1, #duration(1,0,0,0))),
+    ExpandT = Table.ExpandListColumn(ErwS, "Datum"),
+    TagN = Table.AddColumn(ExpandT, "Tag", each Date.DayOfWeekName([Datum]), type text),
+    Erg = Table.Sort(Table.SelectColumns(TagN,{"Datum", "Tag"}), {{"Datum", Order.Ascending}})
 in
     Erg
         ]]>

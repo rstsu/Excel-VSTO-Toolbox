@@ -118,6 +118,30 @@ Formeln in E1, M1 und U1.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_005",
+                .Category = DemoCategory.Formula,
+                .Title = "Datumbrereich in Liste auflösen",
+                .Tags = {"formel", "ferien", "Datum", "intelligente tabelle", "liste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A6 - Ferientermine 2027 in Baden Württemberg) wird eine laufende Liste erstellt.
+
+Formeln in E2 und H1 (diese ist mit Überschrift).
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(v;FBW[Von];b;FBW[Bis];n;b-v+1;m;MAX(n);d;ZUSPALTE(WENN(SEQUENZ(m;;0)<=MTRANS(n-1);MTRANS(v)+SEQUENZ(m;;0);NV());3;WAHR);HSTAPELN(d;TEXT(d;"TTTT")))
+
+=VSTAPELN({"Datum"."Tag"};LET(v;FBW[Von];b;FBW[Bis];n;b-v+1;m;MAX(n);d;ZUSPALTE(WENN(SEQUENZ(m;;0)<=MTRANS(n-1);MTRANS(v)+SEQUENZ(m;;0);NV());3;WAHR);HSTAPELN(d;TEXT(d;"TTTT"))))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

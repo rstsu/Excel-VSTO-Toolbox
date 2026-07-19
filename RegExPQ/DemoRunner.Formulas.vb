@@ -164,4 +164,51 @@
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreateFormulaDemo_5()
+        Dim ws = CreateFreshSheet("Demo_Formel_5")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Ferien BW"
+            ws.Range("B1").Value = "Von"
+            ws.Range("C1").Value = "Bis"
+            ws.Range("A2").Value = "Ostern"
+            ws.Range("B2").Value = "25.03.2027"
+            ws.Range("C2").Value = "03.04.2027"
+            ws.Range("A3").Value = "Pfingsten"
+            ws.Range("B3").Value = "18.05.2027"
+            ws.Range("C3").Value = "29.05.2027"
+            ws.Range("A4").Value = "Sommer"
+            ws.Range("B4").Value = "29.07.2027"
+            ws.Range("C4").Value = "11.09.2027"
+            ws.Range("A5").Value = "Herbst"
+            ws.Range("B5").Value = "02.11.2027"
+            ws.Range("C5").Value = "06.11.2027"
+            ws.Range("A6").Value = "Weihnachten"
+            ws.Range("B6").Value = "23.12.2027"
+            ws.Range("C6").Value = "08.01.2028"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:C6"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "FBW"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("E1").Value = "Datum"
+            ws.Range("F1").Value = "Tag"
+            ws.Range("E2").Formula2 = "=LET(v,FBW[Von],b,FBW[Bis],n,b-v+1,m,MAX(n),d,TOCOL(IF(SEQUENCE(m,,0)<=TRANSPOSE(n-1),TRANSPOSE(v)+SEQUENCE(m,,0),NA()),3,TRUE),HSTACK(d,TEXT(d,""TTTT"")))"
+            ws.Range("H1").Formula2 = "=VSTACK({""Datum"",""Tag""},LET(v,FBW[Von],b,FBW[Bis],n,b-v+1,m,MAX(n),d,TOCOL(IF(SEQUENCE(m,,0)<=TRANSPOSE(n-1),TRANSPOSE(v)+SEQUENCE(m,,0),NA()),3,TRUE),HSTACK(d,TEXT(d,""TTTT""))))"
+            ws.Range("E2:E90").NumberFormat = "m/d/yyyy"
+            ws.Range("H2:H90").NumberFormat = "m/d/yyyy"
+            ws.Range("K1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("K2").Value = "Formel-Demo"
+            ws.Range("K3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("K1:K3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class
