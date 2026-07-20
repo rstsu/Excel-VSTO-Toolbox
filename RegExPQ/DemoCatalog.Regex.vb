@@ -345,6 +345,35 @@ Hier wird der Titel gezielt als "Gruppe" herausgenommen und der gesamte Text am 
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_009",
+                .Category = DemoCategory.Regex,
+                .Title = "String mit Text, Zahl und Datum/Zeit bearbeiten",
+                .Tags = {"regex", "string", "datum", "zahlen", "text"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A10) wird ein Text mit Zahlen und Datum/Zeit ausgelesen.
+
+Z. B. "Dateiname Beschreibung Kuerzel 31_05_02_2025_12_13_09.pdf".
+Wird zu "Dateiname Beschreibung Kuerzel 31.pdf".
+
+Die Zahl nach "Kuerzel" soll erhalten bleiben - nur Datum und Zeit entfernen.
+
+Formel in C1 und E2 (der Formeltext).
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Name";REGEXERSETZEN(A2:.A999;"_\d{2}_\d{2}_\d{4}_\d{2}_\d{2}_\d{2}";""))
+
+=FORMELTEXT(C1)
+        ]]>
+    </code>
+        )
             }
         }
     End Function

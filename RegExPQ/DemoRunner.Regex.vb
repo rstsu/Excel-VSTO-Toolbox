@@ -248,13 +248,46 @@ Partial Public Class DemoRunner
             ws.Range("A9").Value = "8. Vom Waldecker Land nach Wiesbaden 9 Jul. 2008"
             ws.Range("A10").Value = "9. Von Fulda in den Rheingau 16 Jul. 2002"
             ws.Range("A11").Value = "10. Vom Thüringer Wald nach Erfurt 23 Jul. 2001"
-            ws.Range("C1").Value = "11. Rund um München 30 Jul. 2006"
+            ws.Range("A12").Value = "11. Rund um München 30 Jul. 2006"
             ws.Range("C1").Formula2 = "=VSTACK(A1,REGEXREPLACE(A2:.A999,""^\s*\d+\.\s*|\s+\d{1,2}\s+\S+\s+\d{4}\s*$"",""""))"
             ws.Range("E1").Formula2 = "=VSTACK(""Ausgabe"",REGEXREPLACE(A2:.A999,""^\s*\d+\.\s*(.*?)\s+\d{1,2}\s+\S+\s+\d{4}\s*$"",""$1""))"
             ws.Range("B15").Value = "Excel-VSTO-Toolbox"
             ws.Range("B16").Value = "Power Query-Demo"
             ws.Range("B17").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
             With ws.Range("B15:B17").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
+    Private Sub CreateRegexDemo_9()
+        Dim ws = CreateFreshSheet("Demo_Regex_9")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Daten"
+            ws.Range("A2").Value = "Dateiname Beschreibung Kuerzel 31_05_02_2025_12_13_09.pdf"
+            ws.Range("A3").Value = "Dateiname Beschreibung Kuerzel 14_05_02_2025_12_13_09.pdf"
+            ws.Range("A4").Value = "Dateiname Beschreibung Kuerzel 52_05_02_2025_12_13_09.pdf"
+            ws.Range("A5").Value = "Dateiname Beschreibung Kuerzel 7_05_02_2025_12_13_09.pdf"
+            ws.Range("A6").Value = "Dateiname Beschreibung Kuerzel 47_05_02_2025_12_13_09.pdf"
+            ws.Range("A7").Value = "Dateiname Beschreibung Kuerzel 29_05_02_2025_12_13_09.pdf"
+            ws.Range("A8").Value = "Dateiname Beschreibung Kuerzel 2_05_02_2025_12_13_09.pdf"
+            ws.Range("A9").Value = "Dateiname Beschreibung Kuerzel 86_05_02_2025_12_13_09.pdf"
+            ws.Range("A10").Value = "Dateiname Beschreibung Kuerzel 17_05_02_2025_12_13_09.pdf"
+            ws.Range("C1").Formula2 = "=VSTACK(""Name"",REGEXREPLACE(A2:.A999,""_\d{2}_\d{2}_\d{4}_\d{2}_\d{2}_\d{2}"",""""))"
+            ws.Range("E1").Value = "Formel"
+            ws.Range("E2").Formula2 = "=FORMULATEXT(C1)"
+            ws.Range("B13").Value = "Excel-VSTO-Toolbox"
+            ws.Range("B14").Value = "Power Query-Demo"
+            ws.Range("B15").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("B13:B15").Font
                 .ColorIndex = 16
                 .Size = 8
                 .Italic = True
