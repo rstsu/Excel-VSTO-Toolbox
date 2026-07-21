@@ -327,6 +327,56 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_005",
+                .Category = DemoCategory.Vba,
+                .Title = "Links in klickbare Hyperlinks umwandeln",
+                .Tags = {"vba", "link", "hyperlink", "umwandeln", "liste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Eine Liste (A2:A7) mit Links wird in klickbare Hyperlinks umgewandelt (Main_1).
+Die Texte werden in Spalte C als klickbare Hyperlinks ausgegeben (Main_2).
+Die Hyperlinks (nicht der Text) in Spalte A werden entfernt. Und die Links in Spalte C komplett (Main_3).
+
+!!!!!!!!WICHTIG!!!!!!!!
+Den Code über den Button "Code kopieren" in die Zwischenablage übernehmen und dann im VBA-Editor ein Modul einfügen und dort den Code hineinkopieren.
+Erst dann funktionieren die drei Buttons im Tabellenblatt.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+
+' Die Links in Spalte A werden in klickbare Hyperlinks umgewandelt
+' Es wird das aktive Tabellenblatt genommen
+Public Sub Main_1_1()
+    Dim rngCell As Range
+    For Each rngCell In Range(Range("A2"), Cells(Rows.Count, 1).End(xlUp))
+        rngCell.Parent.Hyperlinks.Add Anchor:=rngCell, Address:=rngCell.Value, TextToDisplay:=rngCell.Value
+    Next rngCell
+End Sub
+' Oder trage die Formmel per VBA ein - hier in Spalte C, Links stehen in Spalte A
+' Es wird das aktive Tabellenblatt genutzt
+Public Sub Main_2_1()
+    Range("C2:C" & Cells(Rows.Count, 1).End(xlUp).Row).Formula2 = "=HYPERLINK(A2,A2)"
+    Columns("C").Autofit
+End Sub
+' Hyperlinks in Spalte A werden entfernt
+' Auch hier das aktive Tabellenblatt
+Public Sub Main_3_1()
+    Range("A2:A" & Cells(Rows.Count, 1).End(xlUp).Row).Hyperlinks.Delete
+    Range("C2:C" & Cells(Rows.Count, 1).End(xlUp).Row).ClearContents
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function

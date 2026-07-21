@@ -18,7 +18,7 @@ Die aktuelle installierbare Version befindet sich unter:
 
 ✔ 5 Formel-Beispiele
 
-✔ 4 VBA-Beispiele
+✔ 5 VBA-Beispiele
 
 ## Voraussetzungen
 

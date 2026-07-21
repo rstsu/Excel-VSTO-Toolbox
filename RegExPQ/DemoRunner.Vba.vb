@@ -63,4 +63,47 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreateVBADemo_5()
+        Dim ws = CreateFreshSheet("Demo_VBA_5")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "URLs"
+            ws.Range("A2").Value = "https://www.wikipedia.de"
+            ws.Range("A3").Value = "https://www.herber.de/forum"
+            ws.Range("A4").Value = "https://github.com"
+            ws.Range("A5").Value = "https://albknoblauch.de"
+            ws.Range("A6").Value = "https://learn.microsoft.com/de-de/office/dev/scripts/overview/excel"
+            ws.Range("A7").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Range("C1").Value = "Link"
+            ws.Range("E1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("E2").Value = "VBA-Demo"
+            ws.Range("E3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("E1:E3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+            With ws.Range("B9:B11")
+                Dim fbu = ws.Buttons.Add(.Left, .Top, .Width, .Height)
+                fbu.Caption = "Main_1_1..."
+                fbu.OnAction = "Main_1_1"
+            End With
+            With ws.Range("B13:B15")
+                Dim fbu = ws.Buttons.Add(.Left, .Top, .Width, .Height)
+                fbu.Caption = "Main_2_1..."
+                fbu.OnAction = "Main_2_1"
+            End With
+            With ws.Range("B17:B19")
+                Dim fbu = ws.Buttons.Add(.Left, .Top, .Width, .Height)
+                fbu.Caption = "Main_3_1..."
+                fbu.OnAction = "Main_3_1"
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class

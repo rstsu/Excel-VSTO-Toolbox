@@ -58,6 +58,8 @@ Partial Public Class DemoRunner
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_004"
                 CreateVBADemo_4()
+            Case "vba_005"
+                CreateVBADemo_5()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
