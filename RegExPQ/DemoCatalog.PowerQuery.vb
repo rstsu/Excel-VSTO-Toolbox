@@ -313,6 +313,40 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_008",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Kreuztabelle aus Liste Materialnummern",
+                .Tags = {"power query", "material", "m-code", "tabelle", "kreuztabelle"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:E11) wird eine Kreuztabelle erstellt.
+Grundlage sind die Materialnummern in der ersten Spalte.
+Spalten (Text) werden so viel wie nötig erstellt.
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+
+Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_8"]}[Content],
+    Gruppe = Table.Group(Quelle, {"Materialnummer"}, {"Rows", each Table.AddIndexColumn(_, "Zeile", 1)}),
+    Expand = Table.ExpandTableColumn(Gruppe, "Rows", {"Werk","Materialart","TextID","Text","Zeile"}),
+    TypG = Table.TransformColumnTypes(Expand, {{"Zeile", type text}}),
+    Pivot = Table.Pivot(TypG, List.Distinct(TypG[Zeile]), "Zeile", "Text"),
+    Erg = Table.RenameColumns(Pivot, List.Transform(List.Distinct(TypG[Zeile]), each {_, "Text" & _}))
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function

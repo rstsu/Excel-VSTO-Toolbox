@@ -243,4 +243,82 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreatePowerQueryDemo_8()
+        Dim ws = CreateFreshSheet("Demo_PQ_8")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Materialnummer"
+            ws.Range("B1").Value = "Werk"
+            ws.Range("C1").Value = "Materialart"
+            ws.Range("D1").Value = "TextID"
+            ws.Range("E1").Value = "Text"
+            ws.Range("A2").Value = "4711"
+            ws.Range("B2").Value = "Werk1"
+            ws.Range("C2").Value = "Cu"
+            ws.Range("D2").Value = "ID5"
+            ws.Range("E2").Value = "Text 1"
+            ws.Range("A3").Value = "4711"
+            ws.Range("B3").Value = "Werk1"
+            ws.Range("C3").Value = "Cu"
+            ws.Range("D3").Value = "ID5"
+            ws.Range("E3").Value = "Text 2"
+            ws.Range("A4").Value = "4711"
+            ws.Range("B4").Value = "Werk1"
+            ws.Range("C4").Value = "Cu"
+            ws.Range("D4").Value = "ID5"
+            ws.Range("E4").Value = "Text 3"
+            ws.Range("A5").Value = "4711"
+            ws.Range("B5").Value = "Werk1"
+            ws.Range("C5").Value = "Cu"
+            ws.Range("D5").Value = "ID5"
+            ws.Range("E5").Value = "Text 4"
+            ws.Range("A6").Value = "4711"
+            ws.Range("B6").Value = "Werk1"
+            ws.Range("C6").Value = "Cu"
+            ws.Range("D6").Value = "ID5"
+            ws.Range("E6").Value = "Text 5"
+            ws.Range("A7").Value = "4712"
+            ws.Range("B7").Value = "Werk1"
+            ws.Range("C7").Value = "Cu"
+            ws.Range("D7").Value = "ID5"
+            ws.Range("E7").Value = "Text 1"
+            ws.Range("A8").Value = "4712"
+            ws.Range("B8").Value = "Werk1"
+            ws.Range("C8").Value = "Cu"
+            ws.Range("D8").Value = "ID5"
+            ws.Range("E8").Value = "Text 2"
+            ws.Range("A9").Value = "4713"
+            ws.Range("B9").Value = "Werk1"
+            ws.Range("C9").Value = "Cu"
+            ws.Range("D9").Value = "ID5"
+            ws.Range("E9").Value = "Text 1"
+            ws.Range("A10").Value = "4713"
+            ws.Range("B10").Value = "Werk1"
+            ws.Range("C10").Value = "Cu"
+            ws.Range("D10").Value = "ID5"
+            ws.Range("E10").Value = "Text 2"
+            ws.Range("A11").Value = "4713"
+            ws.Range("B11").Value = "Werk1"
+            ws.Range("C11").Value = "Cu"
+            ws.Range("D11").Value = "ID5"
+            ws.Range("E11").Value = "Text 3"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:E11"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "Demo_PQ_8"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("B14").Value = "Excel-VSTO-Toolbox"
+            ws.Range("B15").Value = "Power Query-Demo"
+            ws.Range("B16").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("B14:B16").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class
