@@ -192,7 +192,7 @@ Es ist auch in Formeln gelöst. Mit der gleichen Bezeichnung.
 Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
 Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
 
-Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
         ]]>
     </text>
         ),
@@ -225,7 +225,7 @@ Aus einer Liste (A2:A12) wird ein Text zwischen 2 Zahlem ausgelesen.
 Z. B. "1. Vom Bodensee in den Schwarzwald 21 May 2001".
 Es wird nur der "Titel" in der Mitte ausgelesen bzw. der Rest ersetzt.
 
-Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
         ]]>
     </text>
         ),
@@ -264,7 +264,7 @@ Der auskommentierte Code ist eine andere Herangehensweise ( also alles zwischen 
 
 Wenn Daten in Tabelle ausgegeben - dann Spalte Datum als "Datum" formatieren!!!
 
-Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
         ]]>
     </text>
         ),
@@ -328,7 +328,7 @@ Spalten (Text) werden so viel wie nötig erstellt.
 Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
 Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
 
-Nach Änderungen in der Grundtabelle wird die Abfrage mit STRG+ALT+F5 aktualisiert!
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
         ]]>
     </text>
         ),
@@ -342,6 +342,91 @@ let
     TypG = Table.TransformColumnTypes(Expand, {{"Zeile", type text}}),
     Pivot = Table.Pivot(TypG, List.Distinct(TypG[Zeile]), "Zeile", "Text"),
     Erg = Table.RenameColumns(Pivot, List.Transform(List.Distinct(TypG[Zeile]), each {_, "Text" & _}))
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_009",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Auflistung aus Gruppe - Von Bis erstellen",
+                .Tags = {"power query", "auflistung", "m-code", "von", "bis"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:C12) wird eine Auflistung erstellt.
+Grundlage ist die Gruppe in Spalte A. Dann kommt Von und Bis.
+Berücksichtigt wird, ob Text statt Zahl eingegeben ist und ob es eine leere Eingabe ist.
+Auch wird darauf geachtet, ob Von größer Bis ist.
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
+
+Man kann auch eine eigene Funktion erstellen (Name der Funktion: fncGetWert):
+let
+    Quelle = (g as any, von as any, bis as any) as nullable list =>
+let
+    VonZahl = try Int64.From(von) otherwise null,
+    BisZahl = try Int64.From(bis) otherwise null,
+    VonIstText = von <> null and VonZahl = null,
+    BisIstText = bis <> null and BisZahl = null
+in
+    if g = null then
+        null
+    else if VonIstText and BisZahl <> null then {BisZahl}
+    else if BisIstText and VonZahl <> null then {VonZahl}
+    else if VonZahl <> null and BisZahl = null then {1..VonZahl}
+    else if VonZahl <> null and BisZahl <> null then
+        if VonZahl <= BisZahl
+        then {VonZahl..BisZahl}
+        else {BisZahl..VonZahl}
+    else
+        null
+in
+    Quelle
+
+Dann eine Abfrage (Name: tblErgfnc):
+let
+    Quelle = Table.Sort(Excel.CurrentWorkbook(){[Name="Demo_PQ_9"]}[Content],{{"Gruppe", Order.Ascending}}),
+    OhneDuplikate = Table.Distinct(Quelle, {"Gruppe","Von","Bis"}),
+    MitListe = Table.AddColumn(OhneDuplikate, "Wert", each fncGetWert([Gruppe],[Von],[Bis]), type list),
+    Gefiltert = Table.SelectRows(MitListe, each [Gruppe] <> null and [Wert] <> null),
+    Erg = Table.SelectColumns(Table.ExpandListColumn(Gefiltert, "Wert"), {"Gruppe","Wert"})
+in
+    Erg
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    // Mit der Funktion ermittle ich die Werteliste
+    GetWert = (g as any, von as any, bis as any) as nullable list =>
+        let
+            VonZahl = try Int64.From(von) otherwise null,
+            BisZahl = try Int64.From(bis) otherwise null,
+            VonIstText = von <> null and VonZahl = null,
+            BisIstText = bis <> null and BisZahl = null
+        in
+            if g = null then
+                null
+            else if VonIstText and BisZahl <> null then {BisZahl}
+            else if BisIstText and VonZahl <> null then {VonZahl}
+            else if VonZahl <> null and BisZahl = null then {1..VonZahl}
+            else if VonZahl <> null and BisZahl <> null then
+                if VonZahl <= BisZahl
+                then {VonZahl..BisZahl}
+                else {BisZahl..VonZahl}
+            else null,
+    Quelle = Table.Sort(Excel.CurrentWorkbook(){[Name="Demo_PQ_9"]}[Content],{{"Gruppe", Order.Ascending}}),
+    OhneDuplikate = Table.Distinct(Quelle, {"Gruppe","Von","Bis"}),
+    MitListe = Table.AddColumn(OhneDuplikate, "Wert", each GetWert([Gruppe],[Von],[Bis]), type list),
+    Gefiltert = Table.SelectRows(MitListe, each [Gruppe] <> null and [Wert] <> null),
+    Erg = Table.SelectColumns(Table.ExpandListColumn(Gefiltert, "Wert"), {"Gruppe","Wert"})
 in
     Erg
         ]]>

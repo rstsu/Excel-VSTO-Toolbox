@@ -321,4 +321,61 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreatePowerQueryDemo_9()
+        Dim ws = CreateFreshSheet("Demo_PQ_9")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Gruppe"
+            ws.Range("B1").Value = "Von"
+            ws.Range("C1").Value = "Bis"
+            ws.Range("A2").Value = "33"
+            ws.Range("B2").Value = "Txt"
+            ws.Range("C2").Value = "5"
+            ws.Range("A3").Value = "121"
+            ws.Range("B3").Value = "7"
+            ws.Range("C3").Value = "xt"
+            ws.Range("A4").Value = "44"
+            ws.Range("B4").Value = "99876"
+            ws.Range("C4").Value = "99999"
+            ws.Range("A5").Value = "N_11"
+            ws.Range("B5").Value = "8"
+            ws.Range("C5").Value = "6"
+            ws.Range("A6").Value = "99"
+            ws.Range("B6").Value = "yz"
+            ws.Range("C6").Value = "3"
+            ws.Range("A7").Value = "66"
+            ws.Range("B7").Value = "4"
+            ws.Range("B8").Value = "2"
+            ws.Range("C8").Value = "6"
+            ws.Range("A9").Value = "9"
+            ws.Range("B9").Value = "18"
+            ws.Range("C9").Value = "23"
+            ws.Range("A10").Value = "55"
+            ws.Range("B10").Value = "4"
+            ws.Range("C10").Value = "abc"
+            ws.Range("A11").Value = "9"
+            ws.Range("B11").Value = "18"
+            ws.Range("C11").Value = "23"
+            ws.Range("A12").Value = "9"
+            ws.Range("B12").Value = "19"
+            ws.Range("C12").Value = "23"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:C12"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "Demo_PQ_9"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("D15").Value = "Excel-VSTO-Toolbox"
+            ws.Range("D16").Value = "Power Query-Demo"
+            ws.Range("D17").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("D15:D17").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class
