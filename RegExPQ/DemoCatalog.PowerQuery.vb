@@ -432,6 +432,72 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0010",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Blockbildung mit Zwischensummen und Gesamtsumme",
+                .Tags = {"power query", "zwischensumme", "m-code", "gesamtsumme", "blockbildung"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:C16) werden Blöcke je Code mit Zwischensummen gebildet.
+Die Gesamtsumme kann auch über "Tabellenentwurf - Tabellenformatoptionen - Haken bei Ergebniszeile setzen" angzeigt werden.
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
+
+Mit folgendem M-Code wird die Gesamtsumme direkt am Ende ausgegeben:
+
+let
+    Quelle = Table.TransformColumnTypes(Excel.CurrentWorkbook(){[Name="Demo_PQ_10"]}[Content], {{"Datum", type date}, {"Code", Int64.Type}, {"Betrag", type number}}),
+    // Falls "Erhebniszeile" in der Grundtabelle eingeblendet ist
+    EntfF = Table.RemoveRowsWithErrors(Quelle, {"Datum"}),
+    Gruppe = Table.Sort(Table.Group(EntfF, {"Code"}, {{"x", each _, type table}}),{{"Code", Order.Ascending}}),
+    Block = List.Transform(Gruppe[x], (x) =>
+        let
+            y = List.Sum(x[Betrag]),
+            z = #table({"Datum", "Code", "Betrag"}, {{null, null, y}})
+        in
+            Table.Combine({x, z})
+        ),
+    // Nach Ausgebe im Tabellenblatt Spalte Datum formatieren!
+    Erg = Table.InsertRows(Table.Combine(Block), Table.RowCount(EntfF)+Table.RowCount(Gruppe), {[Datum = null, Code = null, Betrag = List.Sum(EntfF[Betrag])]})
+in
+    Erg
+
+Man kann die Gesamtsumme auch per Formel (Teilergebnis und Bereich.Verschieben) ausgeben. Hier zwei Möglichkeiten (Tabelle ist über Beispiel Demo schon im Tabellenblatt ausgegeben und Abfrage1 wurde NICHT umbenannt):
+
+=SUMMENPRODUKT((ISTZAHL(Abfrage1[Datum]))*TEILERGEBNIS(109;BEREICH.VERSCHIEBEN(Abfrage1[Betrag];ZEILE(Abfrage1[Betrag])-MIN(ZEILE(Abfrage1[Betrag]));0;1)))
+
+Und mit LET:
+=LET(x;Abfrage1[Datum];y;Abfrage1[Betrag];z;TEILERGEBNIS(109;BEREICH.VERSCHIEBEN(y;ZEILE(y)-MIN(ZEILE(y));0;1));SUMMENPRODUKT((x<>"")*z))
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    Quelle = Table.TransformColumnTypes(Excel.CurrentWorkbook(){[Name="Demo_PQ_10"]}[Content], {{"Datum", type date}, {"Code", Int64.Type}, {"Betrag", type number}}),
+    // Falls "Erhebniszeile" in der Grundtabelle eingeblendet ist
+    EntfF = Table.RemoveRowsWithErrors(Quelle, {"Datum"}),
+    Gruppe = Table.Sort(Table.Group(EntfF, {"Code"}, {{"x", each _, type table}}),{{"Code", Order.Ascending}}),
+    Block = List.Transform(Gruppe[x], (x) =>
+        let
+            y = List.Sum(x[Betrag]),
+            z = #table({"Datum", "Code", "Betrag"}, {{null, null, y}})
+        in
+            Table.Combine({x, z})
+        ),
+    // Nach Ausgebe im Tabellenblatt Spalte Datum formatieren!
+    Erg = Table.Combine(Block)
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function

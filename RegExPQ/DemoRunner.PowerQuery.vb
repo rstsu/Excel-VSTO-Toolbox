@@ -378,4 +378,75 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreatePowerQueryDemo_10()
+        Dim ws = CreateFreshSheet("Demo_PQ_10")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Datum"
+            ws.Range("B1").Value = "Code"
+            ws.Range("C1").Value = "Betrag"
+            ws.Range("A2").Value = "22.05.2028"
+            ws.Range("B2").Value = "4030"
+            ws.Range("C2").Value = "100"
+            ws.Range("A3").Value = "23.05.2028"
+            ws.Range("B3").Value = "4030"
+            ws.Range("C3").Value = "50"
+            ws.Range("A4").Value = "24.05.2028"
+            ws.Range("B4").Value = "4030"
+            ws.Range("C4").Value = "200"
+            ws.Range("A5").Value = "25.05.2028"
+            ws.Range("B5").Value = "4031"
+            ws.Range("C5").Value = "250"
+            ws.Range("A6").Value = "26.05.2028"
+            ws.Range("B6").Value = "4031"
+            ws.Range("C6").Value = "100"
+            ws.Range("A7").Value = "27.05.2028"
+            ws.Range("B7").Value = "4030"
+            ws.Range("C7").Value = "25"
+            ws.Range("A8").Value = "28.05.2028"
+            ws.Range("B8").Value = "4040"
+            ws.Range("C8").Value = "60"
+            ws.Range("A9").Value = "29.05.2028"
+            ws.Range("B9").Value = "4040"
+            ws.Range("C9").Value = "150"
+            ws.Range("A10").Value = "30.05.2028"
+            ws.Range("B10").Value = "4030"
+            ws.Range("C10").Value = "40"
+            ws.Range("A11").Value = "31.05.2028"
+            ws.Range("B11").Value = "4050"
+            ws.Range("C11").Value = "30"
+            ws.Range("A12").Value = "01.06.2028"
+            ws.Range("B12").Value = "4050"
+            ws.Range("C12").Value = "80"
+            ws.Range("A13").Value = "02.06.2028"
+            ws.Range("B13").Value = "4050"
+            ws.Range("C13").Value = "100"
+            ws.Range("A14").Value = "03.06.2028"
+            ws.Range("B14").Value = "4030"
+            ws.Range("C14").Value = "200"
+            ws.Range("A15").Value = "04.06.2028"
+            ws.Range("B15").Value = "4020"
+            ws.Range("C15").Value = "300"
+            ws.Range("A16").Value = "05.06.2028"
+            ws.Range("B16").Value = "4020"
+            ws.Range("C16").Value = "400"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:C16"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "Demo_PQ_10"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("D20").Value = "Excel-VSTO-Toolbox"
+            ws.Range("D21").Value = "Power Query-Demo"
+            ws.Range("D22").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("D20:D22").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class

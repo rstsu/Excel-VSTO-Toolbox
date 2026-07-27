@@ -44,6 +44,8 @@ Partial Public Class DemoRunner
                 CreatePowerQueryDemo_8()
             Case "pq_009"
                 CreatePowerQueryDemo_9()
+            Case "pq_0010"
+                CreatePowerQueryDemo_10()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
