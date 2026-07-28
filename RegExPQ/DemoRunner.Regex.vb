@@ -252,7 +252,7 @@ Partial Public Class DemoRunner
             ws.Range("C1").Formula2 = "=VSTACK(A1,REGEXREPLACE(A2:.A999,""^\s*\d+\.\s*|\s+\d{1,2}\s+\S+\s+\d{4}\s*$"",""""))"
             ws.Range("E1").Formula2 = "=VSTACK(""Ausgabe"",REGEXREPLACE(A2:.A999,""^\s*\d+\.\s*(.*?)\s+\d{1,2}\s+\S+\s+\d{4}\s*$"",""$1""))"
             ws.Range("B15").Value = "Excel-VSTO-Toolbox"
-            ws.Range("B16").Value = "Power Query-Demo"
+            ws.Range("B16").Value = "RegEx-Demo"
             ws.Range("B17").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
             With ws.Range("B15:B17").Font
                 .ColorIndex = 16
@@ -285,9 +285,60 @@ Partial Public Class DemoRunner
             ws.Range("E1").Value = "Formel"
             ws.Range("E2").Formula2 = "=FORMULATEXT(C1)"
             ws.Range("B13").Value = "Excel-VSTO-Toolbox"
-            ws.Range("B14").Value = "Power Query-Demo"
+            ws.Range("B14").Value = "RegEx-Demo"
             ws.Range("B15").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
             With ws.Range("B13:B15").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
+    Private Sub CreateRegexDemo_10()
+        Dim ws = CreateFreshSheet("Demo_Regex_10")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Pfade"
+            ws.Range("A2").Value = "https://d.docs.live.net/t56bk74834x63rgu/05 - Verwaltung/01 - Arbeitszeit/Erfassung/Angestellte/2023/[2023 - Max Mustermann - Arbeitszeiten - Dokumentation.xlsx]Januar"
+            ws.Range("A3").Value = "https://d.docs.live.net/u48sf74834p67okw/05 - Verwaltung/01 - Arbeitszeit/Erfassung/Angestellte/2024/[2024 - Hans-Peter Lümmelklopper - Arbeitszeiten - Dokumentation.xlsx]Januar"
+            ws.Range("A4").Value = "https://d.docs.live.net/u48sf74834p67okw/05 - Verwaltung/01 - Arbeitszeit/Erfassung/Angestellte/2024/[2024 - Marius Mayer Wusterhagen - Arbeitszeiten - Dokumentation.xlsx]Januar"
+            ws.Range("A5").Value = "https://d.docs.live.net/u48sf74834p67okw/05 - Verwaltung/01 - Arbeitszeit/Erfassung/Angestellte/2025/[2025 - Gerd Wurschtelberg - Arbeitszeiten - Dokumentation.xlsx]Januar"
+            ws.Range("A6").Value = "https://d.docs.live.net/u48sf74834p67okw/05 - Verwaltung/01 - Arbeitszeit/Erfassung/Angestellte/2026/[2026 - Wladimir Platterini - Arbeitszeiten - Dokumentation.xlsx]Januar"
+            ws.Range("A7").Value = "https://d.docs.live.net/u48sf74834p67okw/05 - Verwaltung/01 - Arbeitszeit/Erfassung/Angestellte/2026/[2026 - Klaus-Walter von der Zitrusweide - Arbeitszeiten - Dokumentation.xlsx]Januar"
+            ws.Range("C1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[\d{4} - (.+?) - Arbeitszeiten"",2))"
+            ws.Range("D1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[.*? - (.+?) - Arbeitszeiten"",2))"
+            ws.Range("E1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[\d{4} - (.+?) - .*?\.xlsx"",2))"
+            ws.Range("F1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[.*? - (.+?) - .*?\.xlsx"",2))"
+            ws.Range("G1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[[^-]+ - (.+?) - [^]]+\.xlsx"",2))"
+            ws.Range("H1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[[^-]+ - (.+?) - [^]]+\]"",2))"
+            ws.Range("I1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[(?:.+?) - (.+?) - [^]]+\]"",2))"
+            ws.Range("J1").Formula2 = "=VSTACK(""Name"",REGEXEXTRACT(A2:.A999,""\[(?:.+?) - (.+?) -"",2))"
+            ws.Range("C9").Value = "Formel C1"
+            ws.Range("C10").Formula2 = "=FORMULATEXT(C1)"
+            ws.Range("D9").Value = "Formel D1"
+            ws.Range("D10").Formula2 = "=FORMULATEXT(D1)"
+            ws.Range("E9").Value = "Formel E1"
+            ws.Range("E10").Formula2 = "=FORMULATEXT(E1)"
+            ws.Range("F9").Value = "Formel F1"
+            ws.Range("F10").Formula2 = "=FORMULATEXT(F1)"
+            ws.Range("G9").Value = "Formel G1"
+            ws.Range("G10").Formula2 = "=FORMULATEXT(G1)"
+            ws.Range("H9").Value = "Formel H1"
+            ws.Range("H10").Formula2 = "=FORMULATEXT(H1)"
+            ws.Range("I9").Value = "Formel I1"
+            ws.Range("I10").Formula2 = "=FORMULATEXT(I1)"
+            ws.Range("J9").Value = "Formel J1"
+            ws.Range("J10").Formula2 = "=FORMULATEXT(J1)"
+            ws.Range("B1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("B2").Value = "RegEx-Demo"
+            ws.Range("B3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("B1:B3").Font
                 .ColorIndex = 16
                 .Size = 8
                 .Italic = True

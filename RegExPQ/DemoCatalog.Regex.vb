@@ -374,6 +374,56 @@ Formel in C1 und E2 (der Formeltext).
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_010",
+                .Category = DemoCategory.Regex,
+                .Title = "Dateipfade - Name auslesen",
+                .Tags = {"regex", "string", "pfad", "datei", "text"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A7) mit Dateipfaden wird der Vor- und Nachname ausgelesen. Verschiedenen Pattern (Herangehensweisen).
+
+Z. B. "https://d.docs.live.net/t56bk74834x63rgu/05 - Verwaltung/01 - Arbeitszeit/Erfassung/Angestellte/2023/[2023 - Max Mustermann - Arbeitszeiten - Dokumentation.xlsx]Januar".
+Wird zu "Max Mustermann".
+
+Die RegEx-Patten hier mal angedeutet:
+\[ → das öffnende [ (muss maskiert werden)
+\d{4} → vierstellige Jahreszahl
+- → Trennzeichen
+(.+?) → möglichst kurzer Treffer (= der Name)
+- Arbeitszeiten → Ende des Namens
+
+\[ → Beginn des Dateinamens
+[^-]+ → erster Teil (Jahr oder was auch immer)
+(.+?) → der Name
+[^]]+ → Beschreibung bis zur schließenden ]
+\.xlsx → Dateiendung
+
+(?:.+?) → nicht-speichernde Gruppe für den ersten Teil
+(.+?) → einzige Capture-Gruppe = Name
+[^]]+ → Rest des Dateinamens bis ]
+
+Weiter Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
+https://regex101.com/
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[\d{4} - (.+?) - Arbeitszeiten";2))
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[.*? - (.+?) - Arbeitszeiten";2))
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[\d{4} - (.+?) - .*?\.xlsx";2))
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[.*? - (.+?) - .*?\.xlsx";2))
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[[^-]+ - (.+?) - [^]]+\.xlsx";2))
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[[^-]+ - (.+?) - [^]]+\]";2))
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[(?:.+?) - (.+?) - [^]]+\]";2))
+=VSTAPELN("Name";REGEXEXTRAHIEREN(A2:.A999;"\[(?:.+?) - (.+?) -";2))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

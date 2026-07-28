@@ -12,7 +12,7 @@ Die aktuelle installierbare Version befindet sich unter:
 
 ## Funktionen
 
-✔ 9 RegEx-Beispiele
+✔ 10 RegEx-Beispiele
 
 ✔ 10 Power Query-Beispiele
 
