@@ -262,7 +262,8 @@ Aus einer Liste (A2:A6 - Ferientermine 2027 in Baden Württemberg) wird eine lau
 
 Der auskommentierte Code ist eine andere Herangehensweise ( also alles zwischen /* ...M-Code... */).
 
-Wenn Daten in Tabelle ausgegeben - dann Spalte Datum als "Datum" formatieren!!!
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
 
 Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
         ]]>
@@ -305,7 +306,7 @@ let
     Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_7"]}[Content],
     TypeG = Table.TransformColumnTypes(Quelle,{{"Ferien BW", type text}, {"Von", type date}, {"Bis", type date}}),
     ErwS = Table.AddColumn(TypeG, "Datum", each List.Dates([Von], Duration.Days([Bis] - [Von]) + 1, #duration(1,0,0,0))),
-    ExpandT = Table.ExpandListColumn(ErwS, "Datum"),
+    ExpandT = Table.TransformColumnTypes(Table.ExpandListColumn(ErwS, "Datum"),{{"Datum", type date}}),
     TagN = Table.AddColumn(ExpandT, "Tag", each Date.DayOfWeekName([Datum]), type text),
     Erg = Table.Sort(Table.SelectColumns(TagN,{"Datum", "Tag"}), {{"Datum", Order.Ascending}})
 in
@@ -527,6 +528,53 @@ let
     Expand = Table.ExpandTableColumn(Gruppe, "Alle Zeilen", {"Vorname", "Nachname", "Index"}),
     Final = Table.AddColumn(Expand, "FinalerNachnameVor", each if [Index] > 1 then [Nachname.Vorname] & Text.From([Index]) else [Nachname.Vorname]),
     Erg = Table.SelectColumns(Table.RenameColumns(Final,{{"FinalerNachnameVor", "NachnameVorneme3"}}), {"Vorname", "Nachname", "NachnameVorneme3"})
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0012",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "2 Wohnungen - Vermietung - nicht belegte Tage",
+                .Tags = {"power query", "vermietung", "m-code", "datum", "belegung"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:C30) werden aus der Vermietung von 2 Wohnungen (Wohnung, Anreise, Abreise) die Tage abgebildet, welche NICHT belegt sind.
+Wie der Abreisetag gerechnet werden kann/soll, ist im Kommentar des M-Codes gezeigt.
+
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_12"]}[Content],
+    TypG = Table.TransformColumnTypes(Quelle, {{"Anreise", type date}, {"Abreise", type date}, {"Wohnung", type text}}),
+    MinAnreise = if List.Count(TypG[Anreise]) > 0 then List.Min(TypG[Anreise]) else null,
+    MaxAbreise = if List.Count(TypG[Abreise]) > 0 then List.Max(TypG[Abreise]) else null,
+    DayB = if MinAnreise <> null and MaxAbreise <> null then Duration.Days(MaxAbreise - MinAnreise) else 0,
+    DateT = if MinAnreise <> null then Table.FromList(List.Dates(MinAnreise, DayB + 1, #duration(1, 0, 0, 0)), Splitter.SplitByNothing(), {"Nicht Belegt"}, null, ExtraValues.Error) else #table({"Nicht Belegt"}, {}),
+    Whg1 = Table.AddColumn(DateT, "Whg1", each if Table.RowCount(Table.SelectRows(TypG, (row) => row[Wohnung] = "Whg. 1" and row[Anreise] <= [Nicht Belegt] and row[Abreise] > [Nicht Belegt])) > 0 then 1 else 0),
+    // Wie der Abreisetag gerechnet werden soll liegt an > oder >=
+    //Whg1 = Table.AddColumn(DateT, "Whg1", each if Table.RowCount(Table.SelectRows(TypG, (row) => row[Wohnung] = "Whg. 1" and row[Anreise] <= [Nicht Belegt] and row[Abreise] >= [Nicht Belegt])) > 0 then 1 else 0),
+    Whg2 = Table.AddColumn(Whg1, "Whg2", each if Table.RowCount(Table.SelectRows(TypG, (row) => row[Wohnung] = "Whg. 2" and row[Anreise] <= [Nicht Belegt] and row[Abreise] > [Nicht Belegt])) > 0 then 1 else 0),
+    // Wie der Abreisetag gerechnet werden soll liegt an > oder >= bei row[Abreise] >= [Nicht Belegt]
+    //Whg2 = Table.AddColumn(Whg1, "Whg2", each if Table.RowCount(Table.SelectRows(TypG, (row) => row[Wohnung] = "Whg. 2" and row[Anreise] <= [Nicht Belegt] and row[Abreise] >= [Nicht Belegt])) > 0 then 1 else 0),
+    //Result = Table.SelectColumns(Table.SelectRows(Whg2, each ([Whg1] = 0) and ([Whg2] = 0)), {"Nicht Belegt"}),
+    Result = Table.TransformColumnTypes(Table.SelectColumns(Table.SelectRows(Whg2, each ([Whg1] = 0) and ([Whg2] = 0)), {"Nicht Belegt"}),{{"Nicht Belegt", type date}}, "de-DE"),
+    Monat = Table.AddColumn(Result, "Monat", each Date.MonthName([Nicht Belegt]), type text),
+    KW = Table.AddColumn(Monat, "KW", each let d = [Nicht Belegt], shifted = Date.AddDays(d, 3 - Date.DayOfWeek(d, Day.Monday)) in Date.WeekOfYear(shifted, Day.Monday), Int64.Type),
+    Jahr = Table.AddColumn(KW, "Jahr", each let d = [Nicht Belegt], shifted = Date.AddDays(d, 3 - Date.DayOfWeek(d, Day.Monday)) in Date.Year(shifted), Int64.Type),
+    KWText = Table.AddColumn(Jahr, "KWText", each Text.From([Jahr]) & "-KW " & Text.PadStart(Text.From([KW]), 2, "0"), type text),
+    Erg = Table.Sort(KWText, {{"Nicht Belegt", Order.Ascending}})
 in
     Erg
         ]]>

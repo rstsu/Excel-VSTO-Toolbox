@@ -10,11 +10,15 @@ Die aktuelle installierbare Version befindet sich unter:
 
 [Releases](https://github.com/rstsu/Excel-VSTO-Toolbox/releases)
 
+## HINWEIS
+
+Ab der Version 1.0.1.1 (29.07.2026) ist ein Zertifikat mit Installationsanweisungen (Installation.txt) dabei.
+
 ## Funktionen
 
 ✔ 10 RegEx-Beispiele
 
-✔ 11 Power Query-Beispiele
+✔ 12 Power Query-Beispiele
 
 ✔ 5 Formel-Beispiele
 

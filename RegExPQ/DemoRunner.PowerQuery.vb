@@ -492,4 +492,117 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreatePowerQueryDemo_12()
+        Dim ws = CreateFreshSheet("Demo_PQ_12")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Wohnung"
+            ws.Range("B1").Value = "Anreise"
+            ws.Range("C1").Value = "Abreise"
+            ws.Range("A2").Value = "Whg. 1"
+            ws.Range("B2").Value = "01.07.2024"
+            ws.Range("C2").Value = "04.07.2024"
+            ws.Range("A3").Value = "Whg. 1"
+            ws.Range("B3").Value = "06.07.2024"
+            ws.Range("C3").Value = "10.07.2024"
+            ws.Range("A4").Value = "Whg. 1"
+            ws.Range("B4").Value = "13.07.2024"
+            ws.Range("C4").Value = "27.07.2024"
+            ws.Range("A5").Value = "Whg. 1"
+            ws.Range("B5").Value = "27.07.2024"
+            ws.Range("C5").Value = "03.08.2024"
+            ws.Range("A6").Value = "Whg. 2"
+            ws.Range("B6").Value = "29.07.2024"
+            ws.Range("C6").Value = "03.08.2024"
+            ws.Range("A7").Value = "Whg. 1"
+            ws.Range("B7").Value = "03.08.2024"
+            ws.Range("C7").Value = "14.08.2024"
+            ws.Range("A8").Value = "Whg. 2"
+            ws.Range("B8").Value = "11.08.2024"
+            ws.Range("C8").Value = "17.08.2024"
+            ws.Range("A9").Value = "Whg. 2"
+            ws.Range("B9").Value = "17.08.2024"
+            ws.Range("C9").Value = "24.08.2024"
+            ws.Range("A10").Value = "Whg. 1"
+            ws.Range("B10").Value = "17.08.2024"
+            ws.Range("C10").Value = "24.08.2024"
+            ws.Range("A11").Value = "Whg. 1"
+            ws.Range("B11").Value = "03.10.2024"
+            ws.Range("C11").Value = "10.10.2024"
+            ws.Range("A12").Value = "Whg. 2"
+            ws.Range("B12").Value = "03.10.2024"
+            ws.Range("C12").Value = "10.10.2024"
+            ws.Range("A13").Value = "Whg. 2"
+            ws.Range("B13").Value = "11.10.2024"
+            ws.Range("C13").Value = "15.10.2024"
+            ws.Range("A14").Value = "Whg. 1"
+            ws.Range("B14").Value = "20.10.2024"
+            ws.Range("C14").Value = "27.10.2024"
+            ws.Range("A15").Value = "Whg. 1"
+            ws.Range("B15").Value = "21.12.2024"
+            ws.Range("C15").Value = "04.01.2025"
+            ws.Range("A16").Value = "Whg. 2"
+            ws.Range("B16").Value = "21.12.2024"
+            ws.Range("C16").Value = "28.12.2024"
+            ws.Range("A17").Value = "Whg. 2"
+            ws.Range("B17").Value = "28.12.2024"
+            ws.Range("C17").Value = "04.01.2025"
+            ws.Range("A18").Value = "Whg. 2"
+            ws.Range("B18").Value = "04.01.2025"
+            ws.Range("C18").Value = "09.01.2025"
+            ws.Range("A19").Value = "Whg. 1"
+            ws.Range("B19").Value = "01.02.2025"
+            ws.Range("C19").Value = "08.02.2025"
+            ws.Range("A20").Value = "Whg. 2"
+            ws.Range("B20").Value = "01.02.2025"
+            ws.Range("C20").Value = "08.02.2025"
+            ws.Range("A21").Value = "Whg. 1"
+            ws.Range("B21").Value = "08.02.2025"
+            ws.Range("C21").Value = "15.02.2025"
+            ws.Range("A22").Value = "Whg. 1"
+            ws.Range("B22").Value = "15.02.2025"
+            ws.Range("C22").Value = "22.02.2025"
+            ws.Range("A23").Value = "Whg. 2"
+            ws.Range("B23").Value = "15.02.2025"
+            ws.Range("C23").Value = "22.02.2025"
+            ws.Range("A24").Value = "Whg. 1"
+            ws.Range("B24").Value = "22.02.2025"
+            ws.Range("C24").Value = "01.03.2025"
+            ws.Range("A25").Value = "Whg. 2"
+            ws.Range("B25").Value = "22.02.2025"
+            ws.Range("C25").Value = "08.03.2025"
+            ws.Range("A26").Value = "Whg. 1"
+            ws.Range("B26").Value = "08.03.2025"
+            ws.Range("C26").Value = "15.03.2025"
+            ws.Range("A27").Value = "Whg. 1"
+            ws.Range("B27").Value = "15.03.2025"
+            ws.Range("C27").Value = "22.03.2025"
+            ws.Range("A28").Value = "Whg. 2"
+            ws.Range("B28").Value = "23.03.2025"
+            ws.Range("C28").Value = "28.03.2025"
+            ws.Range("A29").Value = "Whg. 1"
+            ws.Range("B29").Value = "23.03.2025"
+            ws.Range("C29").Value = "28.03.2025"
+            ws.Range("A30").Value = "Whg. 2"
+            ws.Range("B30").Value = "12.04.2025"
+            ws.Range("C30").Value = "22.04.2025"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:C30"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "Demo_PQ_12"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("E1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("E2").Value = "Power Query-Demo"
+            ws.Range("E3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("E1:E3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class

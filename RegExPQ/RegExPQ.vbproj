@@ -35,7 +35,7 @@
     <PublishUrl>veröffentlichen\</PublishUrl>
     <InstallUrl />
     <TargetCulture>de</TargetCulture>
-    <ApplicationVersion>1.0.0.17</ApplicationVersion>
+    <ApplicationVersion>1.0.1.2</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>8</UpdateInterval>
@@ -241,6 +241,8 @@
       <DependentUpon>Ribbon1.vb</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="ExcelVSTOToolbox.pfx" />
+    <None Include="RegExPQ_1_TemporaryKey.pfx" />
     <None Include="RegExPQ_TemporaryKey.pfx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.vb</DependentUpon>
@@ -290,10 +292,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>RegExPQ_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>ExcelVSTOToolbox.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>C8426AF360847BAAC2D4D9BC7C435B2F00ACA2BE</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>43CC7AE0FD4513CBC173BF2E9C0C3A33D4F73C59</ManifestCertificateThumbprint>
   </PropertyGroup>
   <!-- Include the build rules for a Visual Basic project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
