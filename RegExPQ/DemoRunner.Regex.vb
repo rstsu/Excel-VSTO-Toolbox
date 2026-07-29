@@ -349,4 +349,38 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreateRegexDemo_11()
+        Dim ws = CreateFreshSheet("Demo_Regex_11")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Daten"
+            ws.Range("A2").Value = "172411"
+            ws.Range("A3").Value = "172412"
+            ws.Range("A4").Value = "172413"
+            ws.Range("A5").Value = "172414"
+            ws.Range("A6").Value = "172415"
+            ws.Range("A7").Value = "172416"
+            ws.Range("A8").Value = "172417"
+            ws.Range("A9").Value = "172418"
+            ws.Range("A10").Value = "172419"
+            ws.Range("A11").Value = "172420"
+            ws.Range("C1").Formula2 = "=VSTACK(A1,REGEXREPLACE(TEXT(A2:.A999,""0""),""(.*)(\d)"",""$1.$2""))"
+            ws.Range("C13").Value = "Formel C1"
+            ws.Range("C14").Formula2 = "=FORMULATEXT(C1)"
+            ws.Range("E1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("E2").Value = "RegEx-Demo"
+            ws.Range("E3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("E1:E3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class

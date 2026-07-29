@@ -424,6 +424,32 @@ https://regex101.com/
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_011",
+                .Category = DemoCategory.Regex,
+                .Title = "Zahlen - letzte Zahl mit Punkt darstellen",
+                .Tags = {"regex", "zahl", "punkt", "zahlen", "spill"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A11) mit Zahlen wird die letzte Zahl mit Punkt angezeigt.
+
+Z. B. "172411".
+Wird zu "17241.1".
+
+Weiter Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
+https://regex101.com/
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN(A1;REGEXERSETZEN(TEXT(A2:.A999;"0");"(.*)(\d)";"$1.$2"))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

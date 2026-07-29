@@ -28,6 +28,8 @@ Partial Public Class DemoRunner
                 CreateRegexDemo_9()
             Case "regex_010"
                 CreateRegexDemo_10()
+            Case "regex_011"
+                CreateRegexDemo_11()
             Case "pq_001"
                 CreatePowerQueryDemo_1()
             Case "pq_002"
