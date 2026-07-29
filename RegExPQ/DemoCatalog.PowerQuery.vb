@@ -462,7 +462,7 @@ let
         in
             Table.Combine({x, z})
         ),
-    // Nach Ausgebe im Tabellenblatt Spalte Datum formatieren!
+    // Nach Ausgabe im Tabellenblatt die Spalte Datum formatieren!
     Erg = Table.InsertRows(Table.Combine(Block), Table.RowCount(EntfF)+Table.RowCount(Gruppe), {[Datum = null, Code = null, Betrag = List.Sum(EntfF[Betrag])]})
 in
     Erg
@@ -491,8 +491,42 @@ let
         in
             Table.Combine({x, z})
         ),
-    // Nach Ausgebe im Tabellenblatt Spalte Datum formatieren!
+    // Nach Ausgabe im Tabellenblatt die Spalte Datum formatieren!
     Erg = Table.Combine(Block)
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0011",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Anmeldename bilden aus Vor- und Nachname",
+                .Tags = {"power query", "vorname", "m-code", "nachname", "anmeldename"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:B10) werden Anmeldenamen aus Vorname und Nachname gebildet.
+Der Vorname nur 3 Buchstaben. Aus "Paul Huber" wird "Huber.Pau". Bei doppeltem Vor- und Nachname wird eine Zahl angehängt.
+
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_11"]}[Content],
+    HinzuVN = Table.AddColumn(Quelle, "Nachname.Vorname", each [Nachname] & "." & Text.Start([Vorname], 3)),
+    Gruppe = Table.Group(HinzuVN, {"Nachname.Vorname"}, {{"Alle Zeilen", each Table.AddIndexColumn(_, "Index", 1, 1, Int64.Type), type table [Vorname=nullable text, Nachname=nullable text, Nachname.Vor=nullable text, Index=Int64.Type]}}),
+    Expand = Table.ExpandTableColumn(Gruppe, "Alle Zeilen", {"Vorname", "Nachname", "Index"}),
+    Final = Table.AddColumn(Expand, "FinalerNachnameVor", each if [Index] > 1 then [Nachname.Vorname] & Text.From([Index]) else [Nachname.Vorname]),
+    Erg = Table.SelectColumns(Table.RenameColumns(Final,{{"FinalerNachnameVor", "NachnameVorneme3"}}), {"Vorname", "Nachname", "NachnameVorneme3"})
 in
     Erg
         ]]>

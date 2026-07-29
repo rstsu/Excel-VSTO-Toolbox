@@ -449,4 +449,47 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreatePowerQueryDemo_11()
+        Dim ws = CreateFreshSheet("Demo_PQ_11")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Vorname"
+            ws.Range("B1").Value = "Nachname"
+            ws.Range("A2").Value = "Paul"
+            ws.Range("B2").Value = "Huber"
+            ws.Range("A3").Value = "Gerda"
+            ws.Range("B3").Value = "Zickel"
+            ws.Range("A4").Value = "Hubertus"
+            ws.Range("B4").Value = "Klarer"
+            ws.Range("A5").Value = "Erwin"
+            ws.Range("B5").Value = "Brausemann"
+            ws.Range("A6").Value = "Brunhilde"
+            ws.Range("B6").Value = "Zanker"
+            ws.Range("A7").Value = "Gerda"
+            ws.Range("B7").Value = "Zickel"
+            ws.Range("A8").Value = "Franz"
+            ws.Range("B8").Value = "Huber"
+            ws.Range("A9").Value = "Ernst"
+            ws.Range("B9").Value = "Haft"
+            ws.Range("A10").Value = "Jim"
+            ws.Range("B10").Value = "Panse"
+            Dim lo = ws.ListObjects.Add(Excel.XlListObjectSourceType.xlSrcRange, ws.Range("A1:B10"),, Excel.XlYesNoGuess.xlYes)
+            lo.Name = "Demo_PQ_11"
+            lo.TableStyle = "TableStyleMedium2"
+            ws.Range("D1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("D2").Value = "Power Query-Demo"
+            ws.Range("D3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            With ws.Range("D1:D3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class
