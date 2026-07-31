@@ -21,7 +21,7 @@ Partial Public Class DemoRunner
             ws.Range("G2").Formula2 = "=LET(w,A2:.A999,x,REGEXEXTRACT(w,""\((\d+)\)"",2),y,REGEXEXTRACT(w,""(\(\d+\))""),z,REGEXEXTRACT(w,""^(.+?)\s*\(\d+\)$"",2),HSTACK(z,x,y))"
             ws.Range("B8").Value = "Excel-VSTO-Toolbox"
             ws.Range("B9").Value = "RegEx-Demo"
-            ws.Range("B10").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B10"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B8:B10").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -61,7 +61,7 @@ Partial Public Class DemoRunner
             ws.Range("J1").Formula2 = "=VSTACK(A1,TEXTBEFORE(A2:.A999,""\"",-B2:.B999))"
             ws.Range("C10").Value = "Excel-VSTO-Toolbox"
             ws.Range("C11").Value = "RegEx-Demo"
-            ws.Range("C12").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("C12"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("C10:C12").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -95,10 +95,10 @@ Partial Public Class DemoRunner
             ws.Range("A14").Value = "DIMENSIONAL STD. ASME B16.11 DN 1" & Chr(34) & " X 1" & Chr(34) & " X 1 1/2" & Chr(34) & " SCH 10"
             ws.Range("C1").Formula2 = "=LET(x,A2:.A999,p,""(?:\d+\s+)?\d+(?:/\d+)?"""""",n,MAX(MAP(x,LAMBDA(a,COUNTA(REGEXEXTRACT(a,p,1))))),VSTACK(""Z""&SEQUENCE(,n),MAKEARRAY(ROWS(x),n,LAMBDA(r,c,IFERROR(INDEX(REGEXEXTRACT(INDEX(x,r),p,1),c),"""")))))"
             ws.Range("G1").Formula2 = "=VSTACK({""Z1"",""Z2"",""Z3""},MAKEARRAY(ROWS(A2:.A999),3,LAMBDA(r,c,IFERROR(INDEX(REGEXEXTRACT(INDEX(A2:.A999,r),""(?:\d+\s+)?\d+(?:/\d+)?"""""",1),c),""""))))"
-            ws.Range("B17").Value = "Excel-VSTO-Toolbox"
-            ws.Range("B18").Value = "RegEx-Demo"
-            ws.Range("B19").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
-            With ws.Range("B17:B19").Font
+            ws.Range("K1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("K2").Value = "RegEx-Demo"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("K3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
+            With ws.Range("K1:K3").Font
                 .ColorIndex = 16
                 .Size = 8
                 .Italic = True
@@ -108,6 +108,7 @@ Partial Public Class DemoRunner
             app.EnableEvents = True
         End Try
         FormatSheet(ws)
+        ws.Columns("A").ColumnWidth = 70
     End Sub
     Private Sub CreateRegexDemo_4()
         Dim ws = CreateFreshSheet("Demo_Regex_4")
@@ -133,7 +134,7 @@ Partial Public Class DemoRunner
             ws.Range("H1").Formula2 = "=VSTACK(A1,TRIM(REGEXREPLACE(A2:.A999,J2,"""")))"
             ws.Range("B10").Value = "Excel-VSTO-Toolbox"
             ws.Range("B11").Value = "RegEx-Demo"
-            ws.Range("B12").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B12"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B10:B12").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -157,7 +158,7 @@ Partial Public Class DemoRunner
         ws.Range("C1").Formula2 = "=VSTACK(A1,REGEXEXTRACT(A2:.A999,""\\([^\\]+)\.pro\\"",2,1))"
         ws.Range("E1").Value = "Excel-VSTO-Toolbox"
         ws.Range("E2").Value = "RegEx-Demo"
-        ws.Range("E3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+        ws.Hyperlinks.Add(Anchor:=ws.Range("E3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
         With ws.Range("E1:E3").Font
             .ColorIndex = 16
             .Size = 8
@@ -185,7 +186,7 @@ Partial Public Class DemoRunner
             ws.Range("C1").Formula2 = "=LET(v,A2:.A999,w,HSTACK(""Straße"",""Hausnummer""),hn,IFERROR(REGEXEXTRACT(v,""\d+\s*[A-Za-z]?$""),""""),str,IF(hn="""",v,TRIM(REGEXREPLACE(v,""\s*\d+\s*[A-Za-z]?$"",""""))),VSTACK(w,HSTACK(str,hn)))"
             ws.Range("F1").Value = "Excel-VSTO-Toolbox"
             ws.Range("F2").Value = "RegEx-Demo"
-            ws.Range("F3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("F3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("F1:F3").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -219,7 +220,7 @@ Partial Public Class DemoRunner
             ws.Range("H1:I7").NumberFormat = "m/d/yyyy"
             ws.Range("B10").Value = "Excel-VSTO-Toolbox"
             ws.Range("B11").Value = "RegEx-Demo"
-            ws.Range("B12").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B12"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B10:B12").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -253,7 +254,7 @@ Partial Public Class DemoRunner
             ws.Range("E1").Formula2 = "=VSTACK(""Ausgabe"",REGEXREPLACE(A2:.A999,""^\s*\d+\.\s*(.*?)\s+\d{1,2}\s+\S+\s+\d{4}\s*$"",""$1""))"
             ws.Range("B15").Value = "Excel-VSTO-Toolbox"
             ws.Range("B16").Value = "RegEx-Demo"
-            ws.Range("B17").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B17"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B15:B17").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -286,7 +287,7 @@ Partial Public Class DemoRunner
             ws.Range("E2").Formula2 = "=FORMULATEXT(C1)"
             ws.Range("B13").Value = "Excel-VSTO-Toolbox"
             ws.Range("B14").Value = "RegEx-Demo"
-            ws.Range("B15").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B15"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B13:B15").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -335,10 +336,10 @@ Partial Public Class DemoRunner
             ws.Range("I10").Formula2 = "=FORMULATEXT(I1)"
             ws.Range("J9").Value = "Formel J1"
             ws.Range("J10").Formula2 = "=FORMULATEXT(J1)"
-            ws.Range("B1").Value = "Excel-VSTO-Toolbox"
-            ws.Range("B2").Value = "RegEx-Demo"
-            ws.Range("B3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
-            With ws.Range("B1:B3").Font
+            ws.Range("B12").Value = "Excel-VSTO-Toolbox"
+            ws.Range("B13").Value = "RegEx-Demo"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B14"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
+            With ws.Range("B12:B14").Font
                 .ColorIndex = 16
                 .Size = 8
                 .Italic = True
@@ -348,6 +349,7 @@ Partial Public Class DemoRunner
             app.EnableEvents = True
         End Try
         FormatSheet(ws)
+        ws.Columns("A").ColumnWidth = 70
     End Sub
     Private Sub CreateRegexDemo_11()
         Dim ws = CreateFreshSheet("Demo_Regex_11")
@@ -371,8 +373,70 @@ Partial Public Class DemoRunner
             ws.Range("C14").Formula2 = "=FORMULATEXT(C1)"
             ws.Range("E1").Value = "Excel-VSTO-Toolbox"
             ws.Range("E2").Value = "RegEx-Demo"
-            ws.Range("E3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("E3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("E1:E3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
+    Private Sub CreateRegexDemo_12()
+        Dim ws = CreateFreshSheet("Demo_Regex_12")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Daten"
+            ws.Range("A2").Value = "Team_112"
+            ws.Range("A3").Value = "Team ! 123"
+            ws.Range("A4").Value = "*Team #*!? 456"
+            ws.Range("A5").Value = "**Team / Köln##"
+            ws.Range("A6").Value = "Team Ä 33"
+            ws.Range("A7").Value = "Team / Kurz"
+            ws.Range("C1").Formula2 = "=VSTACK(""Test 1"",REGEXTEST(A2:.A999,""^[äöüßA-Za-z0-9\s-]+$""))"
+            ws.Range("D1").Formula2 = "=VSTACK(""Test 2"",REGEXTEST(A2:.A999,""[^a-zA-Z0-9\s-]""))"
+            ws.Range("E1").Formula2 = "=VSTACK(""Test 3"",REGEXTEST(A2:.A999,""^[a-zA-Z0-9\s-]+$""))"
+            ws.Range("G1").Formula2 = "=VSTACK(""Ohne Umlaute"",TRIM(REGEXREPLACE(A2:.A999,""[^a-zA-Z0-9\s-]"","" "")))"
+            ws.Range("H1").Formula2 = "=VSTACK(""Mit Umlaute"",TRIM(REGEXREPLACE(A2:.A999,""[^a-zA-ZÄÖÜäöüß0-9\s-]"","" "")))"
+            Dim formulatext As String = ws.Range("C1").Formula2Local
+            If ws.Range("C1").Comment IsNot Nothing Then ws.Range("C1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext) Then
+                ws.Range("C1").AddComment(formulatext)
+                ws.Range("C1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            Dim formulatext1 As String = ws.Range("D1").Formula2Local
+            If ws.Range("D1").Comment IsNot Nothing Then ws.Range("D1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext1) Then
+                ws.Range("D1").AddComment(formulatext1)
+                ws.Range("D1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            Dim formulatext2 As String = ws.Range("E1").Formula2Local
+            If ws.Range("E1").Comment IsNot Nothing Then ws.Range("E1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext2) Then
+                ws.Range("E1").AddComment(formulatext2)
+                ws.Range("E1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            Dim formulatext3 As String = ws.Range("G1").Formula2Local
+            If ws.Range("G1").Comment IsNot Nothing Then ws.Range("G1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext3) Then
+                ws.Range("G1").AddComment(formulatext3)
+                ws.Range("G1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            Dim formulatext4 As String = ws.Range("H1").Formula2Local
+            If ws.Range("H1").Comment IsNot Nothing Then ws.Range("H1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext4) Then
+                ws.Range("H1").AddComment(formulatext4)
+                ws.Range("H1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            ws.Range("J1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("J2").Value = "RegEx-Demo"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("J3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
+            With ws.Range("J1:J3").Font
                 .ColorIndex = 16
                 .Size = 8
                 .Italic = True

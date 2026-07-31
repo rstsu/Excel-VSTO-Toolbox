@@ -405,7 +405,7 @@ Die RegEx-Patten hier mal angedeutet:
 (.+?) → einzige Capture-Gruppe = Name
 [^]]+ → Rest des Dateinamens bis ]
 
-Weiter Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
+Weitere Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
 https://regex101.com/
         ]]>
     </text>
@@ -438,7 +438,7 @@ Aus einer Liste (A2:A11) mit Zahlen wird die letzte Zahl mit Punkt angezeigt.
 Z. B. "172411".
 Wird zu "17241.1".
 
-Weiter Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
+Weitere Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
 https://regex101.com/
         ]]>
     </text>
@@ -447,6 +447,41 @@ https://regex101.com/
     <code>
         <![CDATA[
 =VSTAPELN(A1;REGEXERSETZEN(TEXT(A2:.A999;"0");"(.*)(\d)";"$1.$2"))
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "regex_012",
+                .Category = DemoCategory.Regex,
+                .Title = "Umgang mit Sonderzeichen und Umlauten",
+                .Tags = {"regex", "zahl", "umlaute", "zahlen", "sonderzeichen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:A7) mit Texten werden die Sonderzeichen getestet und entfernt.
+Mit den Funktionen REGEXTESTEN und REGEXERSETZEN.
+
+In Spalte C:E Möglichkeiten mit unterschiedlichen Pattern zum TESTEN der Inhalte von Spalte A.
+In Spalte G:H Möglichkeiten mit unterschiedlichen Pattern zum ERSETZEN der Inhalte von Spalte A.
+
+Einmal bleiben die Umlaute vorhanden - dann werden sie entfernt.
+Die Formeln werden auch in die jeweiligen Zellen in die Kommentare geschrieben.
+Und ab Spalte L auch in die Zellen - mit z. B. =FORMELTEXT(C1).
+
+Weitere Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
+https://regex101.com/
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Test 1";REGEXTESTEN(A2:.A999;"^[äöüßA-Za-z0-9\s-]+$"))
+=VSTAPELN("Test 2";REGEXTESTEN(A2:.A999;"[^a-zA-Z0-9\s-]"))
+=VSTAPELN("Test 3";REGEXTESTEN(A2:.A999;"^[a-zA-Z0-9\s-]+$"))
+=VSTAPELN("Ohne Umlaute";GLÄTTEN(REGEXERSETZEN(A2:.A999;"[^a-zA-Z0-9\s-]";" ")))
+=VSTAPELN("Mit Umlaute";GLÄTTEN(REGEXERSETZEN(A2:.A999;"[^a-zA-ZÄÖÜäöüß0-9\s-]";" ")))
         ]]>
     </code>
         )

@@ -41,7 +41,7 @@ Partial Public Class DemoRunner
             ws.Range("C15").Value = "STD007"
             ws.Range("B18").Value = "Excel-VSTO-Toolbox"
             ws.Range("B19").Value = "VBA-Demo"
-            ws.Range("B20").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B20"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B18:B20").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -79,7 +79,7 @@ Partial Public Class DemoRunner
             ws.Range("C1").Value = "Link"
             ws.Range("E1").Value = "Excel-VSTO-Toolbox"
             ws.Range("E2").Value = "VBA-Demo"
-            ws.Range("E3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("E3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("E1:E3").Font
                 .ColorIndex = 16
                 .Size = 8

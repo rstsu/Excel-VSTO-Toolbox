@@ -16,7 +16,7 @@ Ab der Version 1.0.1.1 (29.07.2026) ist ein Zertifikat (ExcelVSTOToolbox.cer) mi
 
 ## Funktionen
 
-✔ 11 RegEx-Beispiele
+✔ 12 RegEx-Beispiele
 
 ✔ 12 Power Query-Beispiele
 

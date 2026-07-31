@@ -17,7 +17,7 @@
             ws.Range("D1").Formula2 = "=VSTACK(A1,SORT(UNIQUE(A2:.A999)))"
             ws.Range("F1").Value = "Excel-VSTO-Toolbox"
             ws.Range("F2").Value = "Formel-Demo"
-            ws.Range("F3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("F3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("F1:F3").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -59,7 +59,7 @@
             ws.Range("M1").Formula2 = "=LET(w,A2:.A999,x,A2:.B999,y,--TEXTBEFORE(w,"".""),z,--MID(TEXTAFTER(w,"".""),1,2),VSTACK(A1:B1,SORTBY(x,y,1,z,1)))"
             ws.Range("P1").Value = "Excel-VSTO-Toolbox"
             ws.Range("P2").Value = "Formel-Demo"
-            ws.Range("P3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("P3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("P1:P3").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -94,7 +94,7 @@
             ws.Range("J12").Value = "Internationaler Schwarzbier-Tag"
             ws.Range("L1").Value = "Excel-VSTO-Toolbox"
             ws.Range("L2").Value = "Formel-Demo"
-            ws.Range("L3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("L3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("L1:L3").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -152,7 +152,7 @@
             ws.Range("U1").Formula2 = "=LET(t,$A$2:.$A$999,u,LEFT(t,3),v,UNIQUE(u),w,MAX(MAP(v,LAMBDA(x,SUM(--(u=x))))),VSTACK(""Pos""&SEQUENCE(,w),MAKEARRAY(ROWS(v),w,LAMBDA(y,z,IFERROR(INDEX(FILTER(t,u=INDEX(v,y)),z),"""")))))"
             ws.Range("B18").Value = "Excel-VSTO-Toolbox"
             ws.Range("B19").Value = "Formel-Demo"
-            ws.Range("B20").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B20"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B18:B20").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -199,7 +199,7 @@
             ws.Range("H2:H90").NumberFormat = "m/d/yyyy"
             ws.Range("K1").Value = "Excel-VSTO-Toolbox"
             ws.Range("K2").Value = "Formel-Demo"
-            ws.Range("K3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("K3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("K1:K3").Font
                 .ColorIndex = 16
                 .Size = 8

@@ -25,7 +25,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("A11").Value = "Excel-VSTO-Toolbox"
             ws.Range("A12").Value = "Power Query-Demo"
-            ws.Range("A13").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("A13"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("A11:A13").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -64,7 +64,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("A17").Value = "Excel-VSTO-Toolbox"
             ws.Range("A18").Value = "Power Query-Demo"
-            ws.Range("A19").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("A19"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("A17:A19").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -86,7 +86,7 @@ Partial Public Class DemoRunner
             ws.Parent.Names.Add(Name:="Benutzername", RefersTo:="=Demo_PQ_3!G1")
             ws.Range("I1").Value = "Excel-VSTO-Toolbox"
             ws.Range("I2").Value = "Power Query-Demo"
-            ws.Range("I3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("I3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("I1:I3").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -117,7 +117,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("A11").Value = "Excel-VSTO-Toolbox"
             ws.Range("A12").Value = "Power Query-Demo"
-            ws.Range("A13").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("A13"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("A11:A13").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -155,7 +155,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("B18").Value = "Excel-VSTO-Toolbox"
             ws.Range("B19").Value = "Power Query-Demo"
-            ws.Range("B20").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B20"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B18:B20").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -190,7 +190,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("B15").Value = "Excel-VSTO-Toolbox"
             ws.Range("B16").Value = "Power Query-Demo"
-            ws.Range("B17").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B17"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B15:B17").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -231,7 +231,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("H1").Value = "Excel-VSTO-Toolbox"
             ws.Range("H2").Value = "Power Query-Demo"
-            ws.Range("H3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("H3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("H1:H3").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -309,7 +309,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("B14").Value = "Excel-VSTO-Toolbox"
             ws.Range("B15").Value = "Power Query-Demo"
-            ws.Range("B16").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("B16"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("B14:B16").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -366,7 +366,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("D15").Value = "Excel-VSTO-Toolbox"
             ws.Range("D16").Value = "Power Query-Demo"
-            ws.Range("D17").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("D17"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("D15:D17").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -437,7 +437,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("D20").Value = "Excel-VSTO-Toolbox"
             ws.Range("D21").Value = "Power Query-Demo"
-            ws.Range("D22").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("D22"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("D20:D22").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -480,7 +480,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("D1").Value = "Excel-VSTO-Toolbox"
             ws.Range("D2").Value = "Power Query-Demo"
-            ws.Range("D3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("D3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("D1:D3").Font
                 .ColorIndex = 16
                 .Size = 8
@@ -593,7 +593,7 @@ Partial Public Class DemoRunner
             lo.TableStyle = "TableStyleMedium2"
             ws.Range("E1").Value = "Excel-VSTO-Toolbox"
             ws.Range("E2").Value = "Power Query-Demo"
-            ws.Range("E3").Value = "https://github.com/rstsu/Excel-VSTO-Toolbox"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("E3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("E1:E3").Font
                 .ColorIndex = 16
                 .Size = 8
