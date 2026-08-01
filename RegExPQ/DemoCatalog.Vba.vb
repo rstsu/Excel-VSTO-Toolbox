@@ -23,6 +23,9 @@ Den Code über den Button "Code kopieren" in die Zwischenablage übernehmen und 
     <code>
         <![CDATA[
 Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' https://github.com/rstsu/Excel-VSTO-Toolbox
 Public Sub Main()
     Dim wkbBook As Workbook
     Dim strTMP() As String
@@ -69,6 +72,9 @@ Der Code gehört unter "DieseArbeitsmappe" - NICHT in ein Modul.
     <code>
         <![CDATA[
 Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' https://github.com/rstsu/Excel-VSTO-Toolbox
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
     Dim wksSheet As Worksheet
     For Each wksSheet In ThisWorkbook.Worksheets
@@ -112,6 +118,9 @@ Datei - Optionen - Trust Center - Einstellungen für das Trust Center... - Makro
     <code>
         <![CDATA[
 Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' https://github.com/rstsu/Excel-VSTO-Toolbox
 Public Sub Main()
   Dim strC As String
   strC = strC & vbLf & "Private WithEvents Opt1 as MSForms.OptionButton"

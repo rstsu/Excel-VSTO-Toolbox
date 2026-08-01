@@ -142,6 +142,37 @@ Formeln in E2 und H1 (diese ist mit Überschrift).
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_006",
+                .Category = DemoCategory.Formula,
+                .Title = "Primzahlen auflisten - Von Bis",
+                .Tags = {"formel", "primzahlen", "start", "ende", "zahlen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (B2:C5) werden die Primzahlen aufgelistet.
+
+Aufgeteilt, da mit einer Spill-Formel - je nach Größe der vorgegebenen Zahlen - die Berechnung schnell zu umfangreich wird.
+
+Formeln in E2, F2, G2, H2, J1 und K1.
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(Z;SEQUENZ(C2-B2+1;;B2);t;SEQUENZ(1;MAX(Z));FILTER(Z;(Z>1)*(MMULT(--(REST(Z;t)=0);MTRANS(t^0))=2)))
+=LET(Z;SEQUENZ(C3-B3+1;;B3);t;SEQUENZ(1;MAX(Z));FILTER(Z;(Z>1)*(MMULT(--(REST(Z;t)=0);MTRANS(t^0))=2)))
+=LET(Z;SEQUENZ(C4-B4+1;;B4);t;SEQUENZ(1;MAX(Z));FILTER(Z;(Z>1)*(MMULT(--(REST(Z;t)=0);MTRANS(t^0))=2)))
+=LET(Z;SEQUENZ(C5-B5+1;;B5);t;SEQUENZ(1;MAX(Z));FILTER(Z;(Z>1)*(MMULT(--(REST(Z;t)=0);MTRANS(t^0))=2)))
+
+=VSTAPELN("Gestapelt 1";VSTAPELN(E2#;F2#;G2#))
+
+=VSTAPELN("Gestapelt 2";ZUSPALTE(E2:.G999;1;WAHR))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

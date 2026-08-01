@@ -66,6 +66,8 @@ Partial Public Class DemoRunner
                 CreateFormulaDemo_4()
             Case "formula_005"
                 CreateFormulaDemo_5()
+            Case "formula_006"
+                CreateFormulaDemo_6()
             Case "vba_001"
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_002"

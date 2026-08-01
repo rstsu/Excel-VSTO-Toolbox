@@ -211,4 +211,44 @@
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreateFormulaDemo_6()
+        Dim ws = CreateFreshSheet("Demo_Formel_6")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("B1").Value = "Start"
+            ws.Range("C1").Value = "Ende"
+            ws.Range("B2").Value = "1"
+            ws.Range("C2").Value = "500"
+            ws.Range("B3").Value = "501"
+            ws.Range("C3").Value = "1000"
+            ws.Range("B4").Value = "1001"
+            ws.Range("C4").Value = "1500"
+            ws.Range("B5").Value = "1501"
+            ws.Range("C5").Value = "2000"
+            ws.Range("E1").Value = "Primzahlen B2:C2"
+            ws.Range("F1").Value = "Primzahlen B3:C3"
+            ws.Range("G1").Value = "Primzahlen B4:C4"
+            ws.Range("H1").Value = "Primzahlen B5:C5"
+            ws.Range("E2").Formula2 = "=LET(Z,SEQUENCE(C2-B2+1,,B2),t,SEQUENCE(1,MAX(Z)),FILTER(Z,(Z>1)*(MMULT(--(MOD(Z,t)=0),TRANSPOSE(t^0))=2)))"
+            ws.Range("F2").Formula2 = "=LET(Z,SEQUENCE(C3-B3+1,,B3),t,SEQUENCE(1,MAX(Z)),FILTER(Z,(Z>1)*(MMULT(--(MOD(Z,t)=0),TRANSPOSE(t^0))=2)))"
+            ws.Range("G2").Formula2 = "=LET(Z,SEQUENCE(C4-B4+1,,B4),t,SEQUENCE(1,MAX(Z)),FILTER(Z,(Z>1)*(MMULT(--(MOD(Z,t)=0),TRANSPOSE(t^0))=2)))"
+            ws.Range("H2").Formula2 = "=LET(Z,SEQUENCE(C5-B5+1,,B5),t,SEQUENCE(1,MAX(Z)),FILTER(Z,(Z>1)*(MMULT(--(MOD(Z,t)=0),TRANSPOSE(t^0))=2)))"
+            ws.Range("J1").Formula2 = "=VSTACK(""Gestapelt 1"",VSTACK(E2#,F2#,G2#))"
+            ws.Range("K1").Formula2 = "=VSTACK(""Gestapelt 2"",TOCOL(E2:.G999,1,TRUE))"
+            ws.Range("M1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("M2").Value = "Formel-Demo"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("M3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
+            With ws.Range("M1:M3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class
