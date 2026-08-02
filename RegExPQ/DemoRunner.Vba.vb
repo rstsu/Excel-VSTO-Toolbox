@@ -106,4 +106,29 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreateVBADemo_6()
+        Dim ws = CreateFreshSheet("Demo_VBA_6")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("E1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("E2").Value = "VBA-Demo"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("E3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
+            With ws.Range("E1:E3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+            With ws.Range("B4:C6")
+                Dim fbu = ws.Buttons.Add(.Left, .Top, .Width, .Height)
+                fbu.Caption = "Access Datenbank erstellen..."
+                fbu.OnAction = "Main_Access_1"
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
 End Class

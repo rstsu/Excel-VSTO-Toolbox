@@ -78,6 +78,8 @@ Partial Public Class DemoRunner
                 CreateVBADemo_4()
             Case "vba_005"
                 CreateVBADemo_5()
+            Case "vba_006"
+                CreateVBADemo_6()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()

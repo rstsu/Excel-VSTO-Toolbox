@@ -386,6 +386,126 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_006",
+                .Category = DemoCategory.Vba,
+                .Title = "Access Datenbank erstellen...",
+                .Tags = {"vba", "access", "adox", "ace", "oledb"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Eine Access-Datenbank komplett per VBA erzeugen – inklusive Tabelle, Autowert-Primärschlüssel und Index. Die Datenbank wird am Ende geöffnet.
+Die Datei wird im lokalenTemp-Ordner erstellt.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Den Code über den Button "Code kopieren" in die Zwischenablage übernehmen und dann im VBA-Editor ein Modul einfügen und dort den Code hineinkopieren.
+Erst dann funktioniert der Button im Tabellenblatt.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Private Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" ( _
+        ByVal hwnd As LongPtr, _
+        ByVal lpOperation As String, _
+        ByVal lpFile As String, _
+        ByVal lpParameters As String, _
+        ByVal lpDirectory As String, _
+        ByVal nShowCmd As Long) As LongPtr
+Private Const SW_MAXIMIZE = 3
+Public Sub Main_Access_1()
+    Dim strDescription As String
+    Dim varProvider As Variant
+    Dim strFileName As String
+    Dim strProvider As String
+    Dim catCatalog As Object
+    Dim objTable As Object
+    Dim objIndex As Object
+    Dim objConn As Object
+    Dim lngError As Long
+    strFileName = Environ$("TEMP") & "\VBA_Demo_6.accdb"
+    On Error GoTo Fin
+    If Len(Dir$(strFileName)) > 0 Then Kill strFileName
+    Set catCatalog = CreateObject("ADOX.Catalog")
+    For Each varProvider In Array("Microsoft.ACE.OLEDB.16.0", "Microsoft.ACE.OLEDB.12.0")
+        Err.Clear
+        On Error Resume Next
+        catCatalog.Create "Provider=" & CStr(varProvider) & ";Data Source=" & strFileName & ";"
+        If Err.Number = 0 Then
+            strProvider = CStr(varProvider)
+            On Error GoTo Fin
+            Exit For
+        End If
+        lngError = Err.Number
+        strDescription = Err.Description
+        On Error GoTo Fin
+    Next varProvider
+    If Len(strProvider) = 0 Then
+        Err.Raise vbObjectError + 1000, _
+            "CreateDataBase_1", _
+            "Es wurde kein geeigneter ACE-OLEDB-Provider gefunden." & _
+            vbCrLf & vbCrLf & _
+            "Letzter Fehler: " & lngError & _
+            vbCrLf & strDescription
+    End If
+    Set objConn = CreateObject("ADODB.Connection")
+    With objConn
+        .CursorLocation = 3       'adUseClient
+        .Provider = strProvider
+        .Properties("Data Source") = strFileName
+        .Open
+    End With
+    Set objTable = CreateObject("ADOX.Table")
+    With objTable
+        .Name = "Lieferanten"
+        .ParentCatalog = catCatalog
+        .Columns.Append "Primaer", 3   'adInteger
+        With .Columns("Primaer")
+            .Properties("Description") = "Schluessel"
+            .Properties("Autoincrement") = True
+        End With
+        .Columns.Append "Name", 202, 60   'adVarWChar
+        With .Columns("Name")
+            .Properties("Description") = "Nachname"
+            .Properties("Jet OLEDB:Allow Zero Length") = True
+            .Properties("Nullable") = True
+        End With
+    End With
+    catCatalog.Tables.Append objTable
+    Set objIndex = CreateObject("ADOX.Index")
+    With objIndex
+        .Name = "PrimaryKey"
+        .Columns.Append "Primaer"
+        .PrimaryKey = True
+        .Unique = True
+    End With
+    objTable.Indexes.Append objIndex
+    MsgBox "Datenbank wurde erstellt:" & vbCrLf & _
+        strFileName & vbCrLf & vbCrLf & _
+        "Provider: " & strProvider, vbInformation
+    If objConn.State = 1 Then objConn.Close
+    If ShellExecute(Application.hwnd, "Open", strFileName, vbNullString, vbNullString, SW_MAXIMIZE) <= 32 Then
+        MsgBox "Die Datenbank wurde erstellt, konnte aber nicht geöffnet werden.", vbExclamation
+    End If
+Fin:
+    If Err.Number <> 0 Then MsgBox "Fehler: " & Err.Number & vbCrLf & Err.Description, vbExclamation
+    If Not objConn Is Nothing Then
+        If objConn.State = 1 Then objConn.Close
+    End If
+    Set objIndex = Nothing
+    Set objTable = Nothing
+    Set catCatalog = Nothing
+    Set objConn = Nothing
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function
