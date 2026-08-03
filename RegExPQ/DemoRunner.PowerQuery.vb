@@ -605,4 +605,312 @@ Partial Public Class DemoRunner
         End Try
         FormatSheet(ws)
     End Sub
+    Private Sub CreatePowerQueryDemo_13()
+
+        Const sourceTableName As String = "Demo_PQ_13"
+
+        Const queryPivotName As String = "qryDemo_PQ_13_Pivot"
+        Const tablePivotName As String = "tblDemo_PQ_13_Pivot"
+
+        Const queryListName As String = "qryDemo_PQ_13_Liste"
+        Const tableListName As String = "tblDemo_PQ_13_Liste"
+
+        Dim ws As Excel.Worksheet = CreateFreshSheet("Demo_PQ_13")
+        Dim app As Excel.Application = ws.Application
+        Dim wb As Excel.Workbook = DirectCast(ws.Parent, Excel.Workbook)
+
+        Dim loSource As Excel.ListObject = Nothing
+
+        Dim mCodePivot As String
+        Dim mCodeList As String
+
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            app.Cursor = Excel.XlMousePointer.xlWait
+            app.StatusBar = "Power Query-Demo wird erstellt ..."
+            System.Windows.Forms.Application.DoEvents()
+            '----------------------------------------------------------
+            ' Quelldaten
+            '----------------------------------------------------------
+            ws.Range("A1").Value = "Name"
+            ws.Range("B1").Value = "item1"
+            ws.Range("C1").Value = "item2"
+            ws.Range("D1").Value = "item3"
+
+            ws.Range("A2").Value = "N1"
+            ws.Range("B2").Value = "item1"
+
+            ws.Range("A3").Value = "N1"
+            ws.Range("C3").Value = "item2"
+
+            ws.Range("A4").Value = "N1"
+            ws.Range("B4").Value = "item1"
+
+            ws.Range("A5").Value = "N1"
+            ws.Range("D5").Value = "item3"
+
+            ws.Range("A6").Value = "N2"
+            ws.Range("D6").Value = "item3"
+
+            ws.Range("A7").Value = "N2"
+            ws.Range("D7").Value = "item3"
+
+            ws.Range("A8").Value = "N3"
+            ws.Range("B8").Value = "item1"
+
+            ws.Range("A9").Value = "N4"
+            ws.Range("D9").Value = "item3"
+
+            ws.Range("A10").Value = "N4"
+            ws.Range("B10").Value = "item1"
+
+            ws.Range("A11").Value = "N4"
+            ws.Range("B11").Value = "item1"
+
+            loSource = ws.ListObjects.Add(
+            SourceType:=Excel.XlListObjectSourceType.xlSrcRange,
+            Source:=ws.Range("A1:D11"),
+            XlListObjectHasHeaders:=Excel.XlYesNoGuess.xlYes
+        )
+
+            loSource.Name = sourceTableName
+            loSource.TableStyle = "TableStyleMedium2"
+
+            '----------------------------------------------------------
+            ' Erste Abfrage:
+            ' Werte wieder auf einzelne Spalten verteilen
+            '----------------------------------------------------------
+            mCodePivot =
+            "let" & vbCrLf &
+            "    Quelle = Excel.CurrentWorkbook(){[Name=""" &
+                sourceTableName & """]}[Content]," & vbCrLf &
+            "    Entpivotieren = Table.UnpivotOtherColumns(" &
+                "Quelle, {""Name""}, ""Attribut"", ""Wert"")," & vbCrLf &
+            "    EntferneD = Table.Distinct(" &
+                "Entpivotieren, {""Name"", ""Wert""})," & vbCrLf &
+            "    PivotS = Table.Pivot(" &
+                "EntferneD, " &
+                "List.Distinct(EntferneD[Attribut]), " &
+                """Attribut"", ""Wert"")" & vbCrLf &
+            "in" & vbCrLf &
+            "    PivotS"
+
+            '----------------------------------------------------------
+            ' Zweite Abfrage:
+            ' Werte je Name zu einer Liste zusammenfassen
+            '----------------------------------------------------------
+            mCodeList =
+            "let" & vbCrLf &
+            "    Quelle = Excel.CurrentWorkbook(){[Name=""" &
+                sourceTableName & """]}[Content]," & vbCrLf &
+            "    Entpivotieren = Table.UnpivotOtherColumns(" &
+                "Quelle, {""Name""}, ""Attribut"", ""Wert"")," & vbCrLf &
+            "    EntferneD = Table.Distinct(" &
+                "Entpivotieren, {""Name"", ""Wert""})," & vbCrLf &
+            "    GruppeZ = Table.Group(" &
+                "EntferneD, " &
+                "{""Name""}, " &
+                "{{""items"", each _, " &
+                "type table [Name=text, Attribut=text, Wert=text]}})," & vbCrLf &
+            "    HinzuS = Table.AddColumn(" &
+                "GruppeZ, " &
+                """itemsN"", " &
+                "each Text.Combine(List.Sort([items][Wert]), "", ""))," & vbCrLf &
+            "    EntferneS = Table.RemoveColumns(" &
+                "HinzuS, {""items""})" & vbCrLf &
+            "in" & vbCrLf &
+            "    EntferneS"
+
+            '----------------------------------------------------------
+            ' Eventuell vorhandene alte Objekte entfernen
+            '----------------------------------------------------------
+            DeleteListObject(ws, tablePivotName)
+            DeleteListObject(ws, tableListName)
+
+            DeleteWorkbookQuery(wb, queryPivotName)
+            DeleteWorkbookQuery(wb, queryListName)
+
+            '----------------------------------------------------------
+            ' Queries erstellen und laden
+            '----------------------------------------------------------
+            AddPowerQueryTable(
+            wb:=wb,
+            ws:=ws,
+            queryName:=queryPivotName,
+            tableName:=tablePivotName,
+            mCode:=mCodePivot,
+            destination:=ws.Range("F1")
+        )
+
+            AddPowerQueryTable(
+            wb:=wb,
+            ws:=ws,
+            queryName:=queryListName,
+            tableName:=tableListName,
+            mCode:=mCodeList,
+            destination:=ws.Range("K1")
+        )
+
+            '----------------------------------------------------------
+            ' Hinweis
+            '----------------------------------------------------------
+            ws.Range("N1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("N2").Value = "Power Query-Demo"
+
+            ws.Hyperlinks.Add(
+            Anchor:=ws.Range("N3"),
+            Address:="https://github.com/rstsu/Excel-VSTO-Toolbox",
+            SubAddress:=Type.Missing,
+            ScreenTip:="Zur Website",
+            TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox"
+        )
+            With ws.Range("N1:N3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+            'ws.Columns("A:N").AutoFit()
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+            app.Cursor = Excel.XlMousePointer.xlDefault
+            app.StatusBar = False
+        End Try
+        FormatSheet(ws)
+    End Sub
+    Private Sub AddPowerQueryTable(
+    wb As Excel.Workbook,
+    ws As Excel.Worksheet,
+    queryName As String,
+    tableName As String,
+    mCode As String,
+    destination As Excel.Range
+)
+        Dim connectionString As String
+        Dim resultTable As Excel.ListObject = Nothing
+        Dim queryTable As Excel.QueryTable = Nothing
+
+        Try
+            AddWorkbookQuery(
+            wb:=wb,
+            queryName:=queryName,
+            mCode:=mCode
+        )
+
+            connectionString =
+            "OLEDB;" &
+            "Provider=Microsoft.Mashup.OleDb.1;" &
+            "Data Source=$Workbook$;" &
+            "Location=" & queryName & ";" &
+            "Extended Properties="""";"
+
+            resultTable = ws.ListObjects.Add(
+            SourceType:=Excel.XlListObjectSourceType.xlSrcExternal,
+            Source:=connectionString,
+            LinkSource:=False,
+            XlListObjectHasHeaders:=Excel.XlYesNoGuess.xlYes,
+            Destination:=destination
+        )
+
+            resultTable.Name = tableName
+            queryTable = resultTable.QueryTable
+
+            With queryTable
+                .CommandType = Excel.XlCmdType.xlCmdSql
+                .CommandText =
+                "SELECT * FROM [" & queryName & "]"
+                .BackgroundQuery = False
+                .Refresh(False)
+            End With
+
+        Finally
+            ReleaseComObject(queryTable)
+            ReleaseComObject(resultTable)
+        End Try
+    End Sub
+    Private Sub DeleteListObject(
+    ws As Excel.Worksheet,
+    tableName As String
+)
+
+        Dim lo As Excel.ListObject = Nothing
+
+        Try
+            lo = ws.ListObjects.Item(tableName)
+            lo.Delete()
+
+        Catch ex As Runtime.InteropServices.COMException
+            'Tabelle ist nicht vorhanden.
+        End Try
+
+    End Sub
+    Private Sub DeleteWorkbookQuery(
+    wb As Excel.Workbook,
+    queryName As String
+)
+        Dim queries As Object = Nothing
+        Dim query As Object = Nothing
+
+        Try
+            queries = CallByName(
+            wb,
+            "Queries",
+            CallType.Get
+        )
+
+            query = CallByName(
+            queries,
+            "Item",
+            CallType.Get,
+            queryName
+        )
+
+            CallByName(
+            query,
+            "Delete",
+            CallType.Method
+        )
+
+        Catch ex As Runtime.InteropServices.COMException
+            'Die Abfrage ist nicht vorhanden.
+
+        Finally
+            ReleaseComObject(query)
+            ReleaseComObject(queries)
+        End Try
+    End Sub
+    Private Sub AddWorkbookQuery(
+    wb As Excel.Workbook,
+    queryName As String,
+    mCode As String
+)
+        Dim queries As Object = Nothing
+
+        Try
+            queries = CallByName(
+                wb,
+                "Queries",
+                CallType.Get
+            )
+
+            CallByName(
+                queries,
+                "Add",
+                CallType.Method,
+                queryName,
+                mCode
+            )
+
+        Finally
+            ReleaseComObject(queries)
+        End Try
+    End Sub
+    Private Shared Sub ReleaseComObject(obj As Object)
+        If obj IsNot Nothing AndAlso
+           Runtime.InteropServices.Marshal.IsComObject(obj) Then
+
+            Runtime.InteropServices.Marshal.ReleaseComObject(obj)
+        End If
+    End Sub
 End Class

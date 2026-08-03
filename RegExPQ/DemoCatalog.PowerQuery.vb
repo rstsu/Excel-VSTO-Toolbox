@@ -580,6 +580,54 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0013",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Items zusammenfassen - auf 2 Arten",
+                .Tags = {"power query", "pivotieren", "m-code", "entpivotieren", "gruppieren"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:D11) werden die "items" (Spalte B:D) nach dem Namen (Spalte A) zusammengefasst.
+Einmal pivotiert und einmal als Liste mit zusammengefassten "items".
+
+!!!!!!!!WICHTIG!!!!!!!!
+Bei diesem Beispiel wird die Query UND die Ausgabe im Tabellenblatt DIREKT erzeugt!
+Es muss also kein M-Code kopiert werden. Die Ausgabe dauert einen Augenblick, da alles generiert wird!
+!!!!!!!!WICHTIG!!!!!!!!
+
+Für Informationen, wie mit dem M-Code umzugehen ist, auf den Button "PQ M-Code Info" klicken.
+Um die Beschreibung wieder zu sehen, auf die Bezeichnung klicken.
+
+Nach Änderungen in der Grundtabelle - Abfrage mit STRG+ALT+F5 aktualisieren!
+
+Das ist der zweite M-Code (Beide M-Codes sind im Beispiel schon drin):
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_13"]}[Content],
+    Entpivotieren = Table.UnpivotOtherColumns(Quelle, {"Name"}, "Attribut", "Wert"),
+    EntferneD = Table.Distinct(Entpivotieren, {"Name", "Wert"}),
+    GruppeZ = Table.Group(EntferneD, {"Name"}, {{"items", each _, type table [Name=text, Attribut=text, Wert=text]}}),
+    HinzuS = Table.AddColumn(GruppeZ, "itemsN", each Text.Combine(List.Sort([items][Wert]), ", ")),
+    EntferneS = Table.RemoveColumns(HinzuS, {"items"})
+in
+    EntferneS
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Demo_PQ_13"]}[Content],
+    Entpivotieren = Table.UnpivotOtherColumns(Quelle, {"Name"}, "Attribut", "Wert"),
+    EntferneD = Table.Distinct(Entpivotieren, {"Name", "Wert"}),
+    PivotS = Table.Pivot(EntferneD, List.Distinct(EntferneD[Attribut]), "Attribut", "Wert")
+in
+    PivotS
+        ]]>
+    </code>
+        )
             }
         }
     End Function

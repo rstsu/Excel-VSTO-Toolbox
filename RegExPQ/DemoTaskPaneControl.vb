@@ -11,6 +11,8 @@ Public Class DemoTaskPaneControl
     Private ReadOnly btnCreate As New Button()
     Private ReadOnly btnCopy As New Button()
     Private ReadOnly btnPowerQueryInfo As New Button()
+    Private ReadOnly runner As New DemoRunner(Globals.ThisAddIn.Application)
+    Private demoIsRunning As Boolean = False
     Public Sub New()
         Me.Padding = New Padding(10)
         lblTitle.Dock = DockStyle.Top
@@ -104,10 +106,18 @@ Public Class DemoTaskPaneControl
         txtDescription.Text = PowerQueryInfoText()
     End Sub
     Private Sub CreateSelectedDemo(sender As Object, e As EventArgs)
+        If demoIsRunning Then Exit Sub
         Dim demo = TryCast(lstExamples.SelectedItem, DemoDefinition)
-        If demo Is Nothing Then Return
-        Dim runner As New DemoRunner(Globals.ThisAddIn.Application)
-        runner.CreateDemo(demo)
+        If demo Is Nothing Then Exit Sub
+        Try
+            demoIsRunning = True
+            btnCreate.Text = "Wird erstellt ..."
+            Dim runner As New DemoRunner(Globals.ThisAddIn.Application)
+            runner.CreateDemo(demo)
+        Finally
+            btnCreate.Text = "Demo erzeugen"
+            demoIsRunning = False
+        End Try
     End Sub
     Private Sub CopyCode(sender As Object, e As EventArgs)
         If txtCode.Text.Trim() <> "" Then
