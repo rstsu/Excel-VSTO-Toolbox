@@ -403,6 +403,20 @@ Partial Public Class DemoRunner
             ws.Range("E1").Formula2 = "=VSTACK(""Test 3"",REGEXTEST(A2:.A999,""^[a-zA-Z0-9\s-]+$""))"
             ws.Range("G1").Formula2 = "=VSTACK(""Ohne Umlaute"",TRIM(REGEXREPLACE(A2:.A999,""[^a-zA-Z0-9\s-]"","" "")))"
             ws.Range("H1").Formula2 = "=VSTACK(""Mit Umlaute"",TRIM(REGEXREPLACE(A2:.A999,""[^a-zA-ZÄÖÜäöüß0-9\s-]"","" "")))"
+            ws.Range("L1").Value = "Formel aus C1"
+            ws.Range("L2").Formula2 = "=FORMULATEXT(C1)"
+            ws.Range("L3").Value = "Formel aus D1"
+            ws.Range("L3").Font.Bold = True
+            ws.Range("L4").Formula2 = "=FORMULATEXT(D1)"
+            ws.Range("L5").Value = "Formel aus E1"
+            ws.Range("L5").Font.Bold = True
+            ws.Range("L6").Formula2 = "=FORMULATEXT(E1)"
+            ws.Range("L7").Value = "Formel aus G1"
+            ws.Range("L7").Font.Bold = True
+            ws.Range("L8").Formula2 = "=FORMULATEXT(G1)"
+            ws.Range("L9").Value = "Formel aus H1"
+            ws.Range("L9").Font.Bold = True
+            ws.Range("L10").Formula2 = "=FORMULATEXT(H1)"
             Dim formulatext As String = ws.Range("C1").Formula2Local
             If ws.Range("C1").Comment IsNot Nothing Then ws.Range("C1").Comment.Delete()
             If Not String.IsNullOrWhiteSpace(formulatext) Then
@@ -437,6 +451,80 @@ Partial Public Class DemoRunner
             ws.Range("J2").Value = "RegEx-Demo"
             ws.Hyperlinks.Add(Anchor:=ws.Range("J3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
             With ws.Range("J1:J3").Font
+                .ColorIndex = 16
+                .Size = 8
+                .Italic = True
+            End With
+        Finally
+            app.ScreenUpdating = True
+            app.EnableEvents = True
+        End Try
+        FormatSheet(ws)
+    End Sub
+    Private Sub CreateRegexDemo_13()
+        Dim ws = CreateFreshSheet("Demo_Regex_13")
+        Dim app As Excel.Application = ws.Application
+        Try
+            app.ScreenUpdating = False
+            app.EnableEvents = False
+            ws.Range("A1").Value = "Daten:"
+            ws.Range("A2").Value = "5467121030655"
+            ws.Range("A2").NumberFormat = "0"
+            ws.Range("A3").Value = "9634144030365"
+            ws.Range("A3").NumberFormat = "0"
+            ws.Range("A4").Value = "1976236030197"
+            ws.Range("A4").NumberFormat = "0"
+            ws.Range("A5").Value = "8923187340518"
+            ws.Range("A5").NumberFormat = "0"
+            ws.Range("A6").Value = "3816128970491"
+            ws.Range("A6").NumberFormat = "0"
+            ws.Range("A7").Value = "4712"
+            ws.Range("A8").Value = "NullAchtSechzehn"
+            ws.Range("A9").Value = "1234 56-789/0123"
+            ws.Range("A10").Value = "ABC9876543210321"
+            ws.Range("C1").Formula2 = "=VSTACK(""Falsch:"",REGEXREPLACE(A2:.A999,""(\d{4})(\d{2})(\d{3})(\d{4})"",""$1-$2-$3-$4""))"
+            ws.Range("D1").Formula2 = "=VSTACK(""Fast richtig:"",REGEXREPLACE(REGEXREPLACE(A2:.A999,""[^\d]"",""""),""(\d{4})(\d{2})(\d{3})(\d{4})"",""$1-$2-$3-$4""))"
+            ws.Range("F1").Formula2 = "=VSTACK(""Möglichkeit 1:"",LET(x,REGEXREPLACE(A2:.A999,""[^\d]"",""""),IF(REGEXTEST(x,""^\d{13}$""),REGEXREPLACE(x,""(\d{4})(\d{2})(\d{3})(\d{4})"",""$1-$2-$3-$4""),""?"")))"
+            ws.Range("G1").Formula2 = "=VSTACK(""Möglichkeit 2:"",IF(REGEXTEST(A2:.A999,""^\d{13}$""),REGEXREPLACE(A2:.A999,""(\d{4})(\d{2})(\d{3})(\d{4})"",""$1-$2-$3-$4""),""?""))"
+            ws.Range("K1").Value = "Formel aus C1"
+            ws.Range("K2").Formula2 = "=FORMULATEXT(C1)"
+            ws.Range("K3").Value = "Formel aus D1"
+            ws.Range("K3").Font.Bold = True
+            ws.Range("K4").Formula2 = "=FORMULATEXT(D1)"
+            ws.Range("K5").Value = "Formel aus F1"
+            ws.Range("K5").Font.Bold = True
+            ws.Range("K6").Formula2 = "=FORMULATEXT(F1)"
+            ws.Range("K7").Value = "Formel aus G1"
+            ws.Range("K7").Font.Bold = True
+            ws.Range("K8").Formula2 = "=FORMULATEXT(G1)"
+            Dim formulatext As String = ws.Range("C1").Formula2Local
+            If ws.Range("C1").Comment IsNot Nothing Then ws.Range("C1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext) Then
+                ws.Range("C1").AddComment(formulatext)
+                ws.Range("C1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            Dim formulatext1 As String = ws.Range("D1").Formula2Local
+            If ws.Range("D1").Comment IsNot Nothing Then ws.Range("D1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext1) Then
+                ws.Range("D1").AddComment(formulatext1)
+                ws.Range("D1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            Dim formulatext2 As String = ws.Range("F1").Formula2Local
+            If ws.Range("F1").Comment IsNot Nothing Then ws.Range("F1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext2) Then
+                ws.Range("F1").AddComment(formulatext2)
+                ws.Range("F1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            Dim formulatext3 As String = ws.Range("G1").Formula2Local
+            If ws.Range("G1").Comment IsNot Nothing Then ws.Range("G1").Comment.Delete()
+            If Not String.IsNullOrWhiteSpace(formulatext3) Then
+                ws.Range("G1").AddComment(formulatext3)
+                ws.Range("G1").Comment.Shape.TextFrame.AutoSize = True
+            End If
+            ws.Range("I1").Value = "Excel-VSTO-Toolbox"
+            ws.Range("I2").Value = "RegEx-Demo"
+            ws.Hyperlinks.Add(Anchor:=ws.Range("I3"), Address:="https://github.com/rstsu/Excel-VSTO-Toolbox", SubAddress:=Type.Missing, ScreenTip:="Zur Website", TextToDisplay:="https://github.com/rstsu/Excel-VSTO-Toolbox")
+            With ws.Range("I1:I3").Font
                 .ColorIndex = 16
                 .Size = 8
                 .Italic = True

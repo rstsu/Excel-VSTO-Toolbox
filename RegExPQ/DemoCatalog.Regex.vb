@@ -466,8 +466,8 @@ In Spalte C:E Möglichkeiten mit unterschiedlichen Pattern zum TESTEN der Inhalt
 In Spalte G:H Möglichkeiten mit unterschiedlichen Pattern zum ERSETZEN der Inhalte von Spalte A.
 
 Einmal bleiben die Umlaute vorhanden - dann werden sie entfernt.
-Die Formeln werden auch in die jeweiligen Zellen in die Kommentare geschrieben.
-Und ab Spalte L auch in die Zellen - mit z. B. =FORMELTEXT(C1).
+Die Formeln werden in die jeweiligen Zellen in die Kommentare geschrieben.
+Und ab L1:Lx werden die Formeln in die Zellen - mit z. B. =FORMELTEXT(C1) - geschrieben.
 
 Weitere Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
 https://regex101.com/
@@ -482,6 +482,38 @@ https://regex101.com/
 =VSTAPELN("Test 3";REGEXTESTEN(A2:.A999;"^[a-zA-Z0-9\s-]+$"))
 =VSTAPELN("Ohne Umlaute";GLÄTTEN(REGEXERSETZEN(A2:.A999;"[^a-zA-Z0-9\s-]";" ")))
 =VSTAPELN("Mit Umlaute";GLÄTTEN(REGEXERSETZEN(A2:.A999;"[^a-zA-ZÄÖÜäöüß0-9\s-]";" ")))
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "regex_013",
+                .Category = DemoCategory.Regex,
+                .Title = "Zahl - an bestimmten Stellen ein Minus einfügen",
+                .Tags = {"regex", "zahl", "minus", "zahlen", "einfügen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+In einer Liste (A2:A10) mit Zahlen werden an bestimmten Stellen in der Zahl ein Minus eingefügt.
+Mit den Funktionen REGEXTESTEN und REGEXERSETZEN.
+
+Also aus z. B. 5467121030655 wird 5467-12-103-0655.
+
+Die Formeln werden in die jeweiligen Zellen in die Kommentare geschrieben.
+Und ab K1:Kx werden die Formeln in die Zellen - mit z. B. =FORMELTEXT(C1) - geschrieben.
+
+Weitere Infos zu RegEx und Pattern (dort können die Pattern auch getestet werden):
+https://regex101.com/
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Falsch:";REGEXERSETZEN(A2:.A999;"(\d{4})(\d{2})(\d{3})(\d{4})";"$1-$2-$3-$4"))
+=VSTAPELN("Fast richtig:";REGEXERSETZEN(REGEXERSETZEN(A2:.A999;"[^\d]";"");"(\d{4})(\d{2})(\d{3})(\d{4})";"$1-$2-$3-$4"))
+=VSTAPELN("Möglichkeit 1:";LET(x;REGEXERSETZEN(A2:.A999;"[^\d]";"");WENN(REGEXTESTEN(x;"^\d{13}$");REGEXERSETZEN(x;"(\d{4})(\d{2})(\d{3})(\d{4})";"$1-$2-$3-$4");"?")))
+=VSTAPELN("Möglichkeit 2:";WENN(REGEXTESTEN(A2:.A999;"^\d{13}$");REGEXERSETZEN(A2:.A999;"(\d{4})(\d{2})(\d{3})(\d{4})";"$1-$2-$3-$4");"?"))
         ]]>
     </code>
         )
