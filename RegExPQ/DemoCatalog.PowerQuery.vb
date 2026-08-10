@@ -628,8 +628,48 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0014",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Geburtstagsliste der nächsten X Tage anzeigen",
+                .Tags = {"power query", "beispieldatei", "m-code", "geburtstag", "zip"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Dieses Beispiel besteht aus einer Excel-Datei.
+PQ_Geburtstagsliste_Anzahl_Tage_vorgeben.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
+in folgenden Ordner entpackt:
+
+%TEMP%\Excel-VSTO-Toolbox\PQ_014
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Es sind zwei Arten des Umgangs im M-Code. Es geht einmal darum,
+wie mit den "TageBisGeburtstag" umgegangen wird. Entweder
+bei heute Geburtstag 0 oder 365/366. Auch der 29.2. wird anders
+behandelt.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Bitte auf "Demo erzeugen" klicken um die Beispieldatei
+zu entpacken und die XLSX zu öffnen.
+        ]]>
+    </code>
+        )
             }
         }
     End Function
 End Module
-

@@ -770,7 +770,6 @@ Partial Public Class DemoRunner
                 .Size = 8
                 .Italic = True
             End With
-            'ws.Columns("A:N").AutoFit()
         Finally
             app.ScreenUpdating = True
             app.EnableEvents = True
@@ -831,50 +830,38 @@ Partial Public Class DemoRunner
     End Sub
     Private Sub DeleteListObject(
     ws As Excel.Worksheet,
-    tableName As String
-)
-
+    tableName As String)
         Dim lo As Excel.ListObject = Nothing
-
         Try
             lo = ws.ListObjects.Item(tableName)
             lo.Delete()
-
         Catch ex As Runtime.InteropServices.COMException
             'Tabelle ist nicht vorhanden.
         End Try
-
     End Sub
     Private Sub DeleteWorkbookQuery(
     wb As Excel.Workbook,
-    queryName As String
-)
+    queryName As String)
         Dim queries As Object = Nothing
         Dim query As Object = Nothing
-
         Try
             queries = CallByName(
             wb,
             "Queries",
             CallType.Get
         )
-
             query = CallByName(
             queries,
             "Item",
             CallType.Get,
             queryName
         )
-
             CallByName(
             query,
             "Delete",
             CallType.Method
         )
-
         Catch ex As Runtime.InteropServices.COMException
-            'Die Abfrage ist nicht vorhanden.
-
         Finally
             ReleaseComObject(query)
             ReleaseComObject(queries)
@@ -883,17 +870,14 @@ Partial Public Class DemoRunner
     Private Sub AddWorkbookQuery(
     wb As Excel.Workbook,
     queryName As String,
-    mCode As String
-)
+    mCode As String)
         Dim queries As Object = Nothing
-
         Try
             queries = CallByName(
                 wb,
                 "Queries",
                 CallType.Get
             )
-
             CallByName(
                 queries,
                 "Add",
@@ -901,7 +885,6 @@ Partial Public Class DemoRunner
                 queryName,
                 mCode
             )
-
         Finally
             ReleaseComObject(queries)
         End Try

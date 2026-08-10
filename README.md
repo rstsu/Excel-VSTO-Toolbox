@@ -13,12 +13,13 @@ Die aktuelle installierbare Version befindet sich unter:
 ## HINWEIS
 
 Ab der Version 1.0.1.1 (29.07.2026) ist ein Zertifikat (ExcelVSTOToolbox.cer) mit Installationshinweisen (Installation.txt) dabei.
+Ab der Version 1.0.2.1 (10.08.2026) werden auch Beispieldateien angeboten.
 
 ## Funktionen
 
 ✔ 13 RegEx-Beispiele
 
-✔ 13 Power Query-Beispiele
+✔ 14 Power Query-Beispiele
 
 ✔ 6 Formel-Beispiele
 
