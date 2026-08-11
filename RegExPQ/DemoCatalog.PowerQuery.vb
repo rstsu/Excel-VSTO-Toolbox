@@ -664,8 +664,81 @@ bereitgestellt werden.
 .CodeText = TextBlock(
     <code>
         <![CDATA[
-Bitte auf "Demo erzeugen" klicken um die Beispieldatei
-zu entpacken und die XLSX zu öffnen.
+'Bitte auf "Demo erzeugen" klicken um die Beispieldatei
+'zu entpacken und die XLSX zu öffnen.
+'Mit folgendem VBA-Code kann die Aktualisierung
+'automatisch erfolgen:
+Option Explicit
+'Excel -VSTO - Toolbox
+'Power Query - Demo
+'Ralf Stolzenburg (Case)
+Private Sub Worksheet_Change(ByVal Target As Range)
+    On Error GoTo Fin
+    If Target.Address = "$E$2" Then
+        Application.EnableEvents = False
+        Me.ListObjects("tblErg_1").QueryTable.Refresh
+        Me.ListObjects("tblErg_2").QueryTable.Refresh
+    End If
+Fin:
+    Application.Goto Range("E2"), False
+    Application.EnableEvents = True
+End Sub
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0015",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Tage und Feiertage über Kontrollkästchen ausgeben",
+                .Tags = {"power query", "beispieldatei", "m-code", "feiertage", "zip"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Dieses Beispiel besteht aus einer Excel-Datei.
+PQ_Power_Query_Feiertage_und_Tage_von_Montag_bis_Sonntag_ueber_Kontrollkaestchen_ausgeben.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
+in folgenden Ordner entpackt:
+
+%TEMP%\Excel-VSTO-Toolbox\PQ_015
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Tage und Feiertage (mit KW und Quartal) werden als Liste ausgegeben.
+Auswahl der Tage über Kontrollkästchen -
+(die "neuen" über Einfügen - Kontrollkästchen).
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+'Bitte auf "Demo erzeugen" klicken um die Beispieldatei
+'zu entpacken und die XLSB zu öffnen.
+'Folgender VBA-Code ist schon in der Datei.
+'Hier nochmal zum kopieren:
+Option Explicit
+'Excel -VSTO - Toolbox
+'Power Query - Demo
+'Ralf Stolzenburg (Case)
+Private Sub Worksheet_Change(ByVal Target As Range)
+    On Error GoTo Fin
+    If Not Intersect(Target, Range("B2, J2:Q2")) Is Nothing Then
+        Application.EnableEvents = False
+        Me.ListObjects("tblErg").QueryTable.Refresh
+    End If
+Fin:
+    Application.Goto Range("B2"), False
+    Application.EnableEvents = True
+End Sub
         ]]>
     </code>
         )

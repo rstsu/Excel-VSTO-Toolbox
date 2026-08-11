@@ -1,54 +1,57 @@
 # Excel-VSTO-Toolbox
 
-Excel VSTO Add-in mit Demobeispielen für RegEx, Power Query, VBA und Formeln.
+Excel VSTO Add-in mit Demobeispielen für _RegEx_, _Power Query_, _VBA_ und _Formeln_.
 
 ![Startbildschirm](Images/Startbildschirm.png)
 
 ## Download
 
-Die aktuelle installierbare Version befindet sich unter:
+Die **aktuelle** installierbare Version befindet sich unter:
 
 [Releases](https://github.com/rstsu/Excel-VSTO-Toolbox/releases)
 
-## HINWEIS
+### HINWEIS
 
-Ab der Version 1.0.1.1 (29.07.2026) ist ein Zertifikat (ExcelVSTOToolbox.cer) mit Installationshinweisen (Installation.txt) dabei.
-Ab der Version 1.0.2.1 (10.08.2026) werden auch Beispieldateien angeboten.
+Ab der Version **1.0.1.1** (_29.07.2026_) ist ein Zertifikat (_ExcelVSTOToolbox.cer_) mit Installationshinweisen (_Installation.txt_) dabei.
 
-## Funktionen
+Ab der Version **1.0.2.1** (_10.08.2026_) werden auch Beispieldateien angeboten.
 
-✔ 13 RegEx-Beispiele
+#### Funktionen
 
-✔ 14 Power Query-Beispiele
+✔ **13** RegEx-Beispiele
 
-✔ 6 Formel-Beispiele
+✔ **15** Power Query-Beispiele
 
-✔ 6 VBA-Beispiele
+✔ **6** Formel-Beispiele
 
-## Voraussetzungen
+✔ **6** VBA-Beispiele
 
-- Excel 365 für Windows
-- .NET Framework 4.8.1
+##### Voraussetzungen
 
-Nicht unterstützt: Excel für Mac
+- Excel **365** für Windows
+- .NET Framework **4.8.1**
 
-## Installation
+**Nicht** unterstützt: Excel für Mac
 
-1. ZIP-Datei aus dem Release herunterladen
+###### Installation
 
-2. Inhalt in einen Ordner entpacken
+1. **ZIP-Datei** aus dem Release **herunterladen**
 
-3. setup.exe starten
+2. Inhalt in einen Ordner **entpacken**
 
-4. Excel neu starten
+3. Installation.txt **beachten**
 
-5. Das Add-in erscheint im Excel-Menüband (Ribbon)
+4. setup.exe **ausführen**
 
-## TaskPane
+4. Excel neu **starten**
+
+5. Das Add-in erscheint im **Excel-Menüband** (_Ribbon_)
+
+####### TaskPane
 
 Wenn der Katalog geöffnet ist, wird bei einem Klick auf "Power Query", "Regex", "VBA" oder "Formeln" der entsprechende Inhalt rechts im TaskPane angezeigt. Im TaskPane sind unten Buttons (je nachdem in welchem Bereich man ist). Bei "Power Query" sind es drei Buttons.
 
-"Demo erzeugen" - Ein Tabellenblatt mit den Grunddaten wird erstellt.
+"Demo erzeugen" - Ein Tabellenblatt mit den Grunddaten wird erstellt, oder eine Beispieldatei kopiert und geöffnet.
 
 "Code kopieren" - Der M-Code wird in die Zwischenablage kopiert.
 
