@@ -10,13 +10,13 @@ Die **aktuelle** installierbare Version befindet sich unter:
 
 [Releases](https://github.com/rstsu/Excel-VSTO-Toolbox/releases)
 
-### HINWEIS
+## HINWEIS
 
 Ab der Version **1.0.1.1** (_29.07.2026_) ist ein Zertifikat (_ExcelVSTOToolbox.cer_) mit Installationshinweisen (_Installation.txt_) dabei.
 
 Ab der Version **1.0.2.1** (_10.08.2026_) werden auch Beispieldateien angeboten.
 
-#### Funktionen
+## Funktionen
 
 ✔ **13** RegEx-Beispiele
 
@@ -26,14 +26,14 @@ Ab der Version **1.0.2.1** (_10.08.2026_) werden auch Beispieldateien angeboten.
 
 ✔ **6** VBA-Beispiele
 
-##### Voraussetzungen
+## Voraussetzungen
 
 - Excel **365** für Windows
 - .NET Framework **4.8.1**
 
 **Nicht** unterstützt: Excel für Mac
 
-###### Installation
+## Installation
 
 1. **ZIP-Datei** aus dem Release **herunterladen**
 
@@ -47,7 +47,7 @@ Ab der Version **1.0.2.1** (_10.08.2026_) werden auch Beispieldateien angeboten.
 
 5. Das Add-in erscheint im **Excel-Menüband** (_Ribbon_)
 
-####### TaskPane
+## TaskPane
 
 Wenn der Katalog geöffnet ist, wird bei einem Klick auf "Power Query", "Regex", "VBA" oder "Formeln" der entsprechende Inhalt rechts im TaskPane angezeigt. Im TaskPane sind unten Buttons (je nachdem in welchem Bereich man ist). Bei "Power Query" sind es drei Buttons.
 
