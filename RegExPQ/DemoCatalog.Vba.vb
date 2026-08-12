@@ -506,9 +506,104 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_007",
+                .Category = DemoCategory.Vba,
+                .Title = "Spalte nach Vorgabe aufteilen - mit UDF und Formeln",
+                .Tags = {"vba", "udf", "aufteilen", "spalte", "formeln"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Spalte A (mit Überschrift) und Spalte C (ohne Überschrift) werden nach Vorgaben aufgeteilt.
+Mit einer UDF (Tabellenblatt UDF) und mit Formeln (Tabellenblatt Formeln).
+"Alte" UDF mit "neuen" Formeln ersetzt. ;-)
+
+=fncSplit("A")          3er-Gruppen pro Zeile, keine Überschrift
+=fncSplit("A";4)        4er-Gruppen pro Zeile, keine Überschrift
+=fncSplit("A";;0)       3 Zeilen pro Spalte, Überschrift
+=fncSplit("A"; 3; 1)    3er-Gruppen pro Zeile, mit Überschrift
+=fncSplit("C";;0;0)     3 Zeilen pro Spalte, keine Überschrift
+=fncSplit("C";4;0;0)    4 Zeilen pro Spalte, keine Überschrift
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
+in folgenden Ordner entpackt:
+
+%TEMP%\Excel-VSTO-Toolbox\VBA_07
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Option Explicit
+'Excel -VSTO - Toolbox
+'Power Query - Demo
+'Ralf Stolzenburg (Case)
+'https://github.com/rstsu/Excel-VSTO-Toolbox
+
+'=fncSplit("A")         3er-Gruppen pro Zeile, keine Überschrift
+'=fncSplit("A";4)       4er-Gruppen pro Zeile, keine Überschrift
+'=fncSplit("A";;0)      3 Zeilen pro Spalte, Überschrift
+'=fncSplit("A"; 3; 1)   3er-Gruppen pro Zeile, mit Überschrift (erste Zeile ignoriert)
+'=fncSplit("C";;0;0)    3 Zeilen pro Spalte, keine Überschrift
+'=fncSplit("C";4;0;0)   4 Zeilen pro Spalte, keine Überschrift
+Public Function fncSplit(strColumn As String, Optional lngCount As Long = 3, Optional lngArt As Long = 1, Optional lngHead As Long = 1) As Variant
+    Dim varResult() As Variant
+    Dim lngColumn As Long
+    Dim rngRange As Range
+    Dim varArr As Variant
+    Dim lngRCount As Long
+    Dim lngCCount As Long
+    Dim lngStart As Long
+    Dim lngRow As Long
+    Dim lngRC As Long
+    Set rngRange = Range(strColumn & "1", Cells(Rows.Count, strColumn).End(xlUp))
+    lngStart = 1 + lngHead
+    varArr = rngRange.Resize(rngRange.Rows.Count - lngHead, 1).Offset(lngHead, 0).Value
+    lngRC = UBound(varArr, 1)
+    Do While lngRC Mod lngCount <> 0
+        lngRC = lngRC + 1
+    Loop
+    If lngArt = 1 Then
+        lngRCount = lngRC \ lngCount
+        lngCCount = lngCount
+        ReDim varResult(1 To lngRCount, 1 To lngCCount)
+        For lngRow = 1 To lngRCount
+            For lngColumn = 1 To lngCCount
+                If (lngRow - 1) * lngCount + lngColumn <= UBound(varArr, 1) Then
+                    varResult(lngRow, lngColumn) = varArr((lngRow - 1) * lngCount + lngColumn, 1)
+                Else
+                    varResult(lngRow, lngColumn) = vbNullString
+                End If
+            Next lngColumn
+        Next lngRow
+    Else
+        lngRCount = lngCount
+        lngCCount = lngRC \ lngCount
+        ReDim varResult(1 To lngRCount, 1 To lngCCount)
+        For lngColumn = 1 To lngCCount
+            For lngRow = 1 To lngRCount
+                If (lngColumn - 1) * lngCount + lngRow <= UBound(varArr, 1) Then
+                    varResult(lngRow, lngColumn) = varArr((lngColumn - 1) * lngCount + lngRow, 1)
+                Else
+                    varResult(lngRow, lngColumn) = vbNullString
+                End If
+            Next lngRow
+        Next lngColumn
+    End If
+    fncSplit = varResult
+End Function
+        ]]>
+    </code>
+        )
             }
         }
     End Function
-
 End Module
 

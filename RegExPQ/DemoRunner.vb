@@ -88,6 +88,8 @@ Partial Public Class DemoRunner
                 CreateVBADemo_5()
             Case "vba_006"
                 CreateVBADemo_6()
+            Case "vba_007"
+                CreateVBADemo_7()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
@@ -281,16 +283,13 @@ Partial Public Class DemoRunner
         End Try
     End Sub
     Private Sub CreatePowerQueryDemo_14()
-
         Try
             Dim workbook As Excel.Workbook =
                 DemoPackageManager.ExtractAndOpen(
                     App,
                     "Demo_PQ_14.zip",
                     "PQ_014")
-
             workbook.Activate()
-
         Catch ex As Exception
             MessageBox.Show(
                 "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
@@ -301,29 +300,43 @@ Partial Public Class DemoRunner
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
-
     End Sub
     Private Sub CreatePowerQueryDemo_15()
-
         Try
             Dim workbook As Excel.Workbook =
                 DemoPackageManager.ExtractAndOpen(
                     App,
                     "Demo_PQ_15.zip",
                     "PQ_015")
-
             workbook.Activate()
-
         Catch ex As Exception
             MessageBox.Show(
                 "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
-                "Demo PQ 014",
+                "Demo PQ 015",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
-
+    End Sub
+    Private Sub CreateVBADemo_7()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_VBA_7.zip",
+                    "VBA_07")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo VBA 07",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
     End Sub
 End Class

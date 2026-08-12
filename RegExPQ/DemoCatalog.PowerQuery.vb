@@ -674,13 +674,13 @@ Option Explicit
 'Ralf Stolzenburg (Case)
 Private Sub Worksheet_Change(ByVal Target As Range)
     On Error GoTo Fin
-    If Target.Address = "$E$2" Then
+    If Target.Address = "$E$1" Then
         Application.EnableEvents = False
         Me.ListObjects("tblErg_1").QueryTable.Refresh
         Me.ListObjects("tblErg_2").QueryTable.Refresh
     End If
 Fin:
-    Application.Goto Range("E2"), False
+    Application.Goto Range("E1"), False
     Application.EnableEvents = True
 End Sub
         ]]>
