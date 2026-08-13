@@ -76,6 +76,8 @@ Partial Public Class DemoRunner
                 CreateFormulaDemo_5()
             Case "formula_006"
                 CreateFormulaDemo_6()
+            Case "formula_007"
+                CreateFormelDemo_7()
             Case "vba_001"
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_002"
@@ -335,6 +337,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo VBA 07",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateFormelDemo_7()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_Formel_7.zip",
+                    "Formel_07")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo Formel 07",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try

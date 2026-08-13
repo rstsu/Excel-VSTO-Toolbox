@@ -173,6 +173,61 @@ Formeln in E2, F2, G2, H2, J1 und K1.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_007",
+                .Category = DemoCategory.Formula,
+                .Title = "Filtern bestimmter Tage aus Liste mit Datum",
+                .Tags = {"formel", "filter", "datum", "liste", "zahlen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Liste (A2:C368 - Geburtstagsliste) werden vorgegebene Tage aufgelistet.
+Formel_aus_einer_Geburtstagsliste_oder_anderen_Listen_mit_Datum_bestimmte_Tage_ausgeben_FILTER.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Formel_07
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in E2:H2, J2:M2, O2:R2, T1:W1.
+In X1 ist eine Liste der Tage (Daten Gültigkeit).
+Die Zellen in E2, G2, J2, L2, O2, Q2 sind "Benutzerdefiniertes Format". Je nach Aufbau der Formel gibt man 0 bis 6 oder 1 bis 7 ein.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=FILTER(C2:.C999;REST(C2:.C999;7)=E1;"----")
+=LET(x;FILTER(C2:.C999;REST(C2:.C999;7)=E1;"----");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1))
+=FILTER(Tabelle1[Geburtsdatum];REST(Tabelle1[Geburtsdatum];7)=G1;"----")
+=LET(x;FILTER(Tabelle1[Geburtsdatum];REST(Tabelle1[Geburtsdatum];7)=G1;"----");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1))
+
+=FILTER(C2:.C999;TEXT(C2:.C999;"tttt")=TEXT(J1;"tttt");"---")
+=LET(x;FILTER(C2:.C999;TEXT(C2:.C999;"tttt")=TEXT(J1;"tttt");"---");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1))
+=FILTER(Tabelle1[Geburtsdatum];TEXT(Tabelle1[Geburtsdatum];"tttt")=TEXT(L1;"tttt");"---")
+=LET(x;FILTER(Tabelle1[Geburtsdatum];TEXT(Tabelle1[Geburtsdatum];"tttt")=TEXT(L1;"tttt");"---");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1))
+
+=FILTER(C2:.C999;WOCHENTAG(C2:.C999;1)=O1;"----")
+=LET(x;FILTER(C2:.C999;WOCHENTAG(C2:.C999;1)=O1;"----");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1))
+=FILTER(Tabelle1[Geburtsdatum];WOCHENTAG(Tabelle1[Geburtsdatum];1)=Q1;"----")
+=LET(x;FILTER(Tabelle1[Geburtsdatum];WOCHENTAG(Tabelle1[Geburtsdatum];1)=Q1;"----");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1))
+
+=VSTAPELN(X1;FILTER(C2:.C999;TEXT(C2:.C999;"tttt")=TEXT(X1;"tttt");"---"))
+=VSTAPELN(X1;LET(x;FILTER(C2:.C999;TEXT(C2:.C999;"tttt")=TEXT(X1;"tttt");"---");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1)))
+=VSTAPELN(X1;FILTER(Tabelle1[Geburtsdatum];TEXT(Tabelle1[Geburtsdatum];"tttt")=TEXT(X1;"tttt");"---"))
+=VSTAPELN(X1;LET(x;FILTER(Tabelle1[Geburtsdatum];TEXT(Tabelle1[Geburtsdatum];"tttt")=TEXT(X1;"tttt");"---");SORTIERENNACH(x;MONAT(x)*100+TAG(x);1)))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

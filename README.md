@@ -14,7 +14,7 @@ Die **aktuelle** installierbare Version befindet sich unter:
 
 Ab der Version **1.0.1.1** (_29.07.2026_) ist ein Zertifikat (_ExcelVSTOToolbox.cer_) mit Installationshinweisen (_Installation.txt_) dabei.
 
-Ab der Version **1.0.2.1** (_10.08.2026_) werden auch Beispieldateien angeboten.
+Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ## Funktionen
 
@@ -22,7 +22,7 @@ Ab der Version **1.0.2.1** (_10.08.2026_) werden auch Beispieldateien angeboten.
 
 ✔ **15** Power Query-Beispiele
 
-✔ **6** Formel-Beispiele
+✔ **7** Formel-Beispiele
 
 ✔ **7** VBA-Beispiele
 
@@ -49,14 +49,14 @@ Ab der Version **1.0.2.1** (_10.08.2026_) werden auch Beispieldateien angeboten.
 
 ## TaskPane
 
-Wenn der Katalog geöffnet ist, wird bei einem Klick auf "Power Query", "Regex", "VBA" oder "Formeln" der entsprechende Inhalt rechts im TaskPane angezeigt. Im TaskPane sind unten Buttons (je nachdem in welchem Bereich man ist). Bei "Power Query" sind es drei Buttons.
+Wenn der Katalog geöffnet ist, wird bei einem Klick auf "_Power Query_", "_Regex_", "_VBA_" oder "_Formeln_" der entsprechende Inhalt **rechts** im TaskPane angezeigt. Im TaskPane sind **unten** Buttons (_je nachdem in welchem Bereich man ist_). Bei "Power Query" sind es **drei** Buttons.
 
-"Demo erzeugen" - Ein Tabellenblatt mit den Grunddaten wird erstellt, oder eine Beispieldatei kopiert und geöffnet.
+"_Demo erzeugen_" - Ein Tabellenblatt mit den Grunddaten wird erstellt, **oder** eine Beispieldatei kopiert und geöffnet.
 
-"Code kopieren" - Der M-Code wird in die Zwischenablage kopiert.
+"_Code kopieren_" - Der M-Code wird in die Zwischenablage kopiert.
 
-"PQ M-Code Info" - Es wird eine Info angezeigt, die erklärt, wo der M-Code eingefügt werden muss.
+"_PQ M-Code Info_" - Es wird eine **Info** angezeigt, die erklärt, wo der M-Code eingefügt werden muss.
 
-Bei Klick auf die Beschreibung oben erscheint diese wieder (statt der Info).
+Bei Klick auf die **Beschreibung** oben erscheint diese wieder (_statt der Info_).
 
 ![Startbildschirm](Images/TaskPane.png)
