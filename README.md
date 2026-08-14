@@ -2,7 +2,7 @@
 
 Excel VSTO Add-in mit Demobeispielen für _RegEx_, _Power Query_, _VBA_ und _Formeln_.
 
-![Startbildschirm](Images/Startbildschirm.png)
+![Startbildschirm](Images/Startbildschirm_1.png)
 
 ## Download
 
