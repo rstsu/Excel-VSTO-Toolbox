@@ -517,6 +517,83 @@ https://regex101.com/
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_014",
+                .Category = DemoCategory.Regex,
+                .Title = "Telefonnummern aus Text extrahieren",
+                .Tags = {"regex", "zahl", "telefonnummer", "zahlen", "extrahieren"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Mehrere Telefonnummern in zwei Formaten werden aus Spalte A extrahiert.
+REGEXEXTRAHIEREN_Telefonnummern_mehrere_aus_Zelle_zu_extrahieren.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Regex_14
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in C2, I2, M2.
+Pattern in I2/M2 ist besser.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=REGEXEXTRAHIEREN(A2;"\(?([\d \-\)\–\+\/\(]{8,})\)?([ .\-–\/]?)([\d]+)";1)
+=REGEXEXTRAHIEREN(A2;$H$1;1)
+=EINDEUTIG(REGEXEXTRAHIEREN(A2;"(?<!\w)\+?\d(?:[\s()./–-]*\d){7,14}(?!\w)";1);WAHR)
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "regex_015",
+                .Category = DemoCategory.Regex,
+                .Title = "Materialnummer - wenn in Liste - aus Text auslesen",
+                .Tags = {"regex", "zahl", "materialnummer", "zahlen", "auslesen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Materialnummern (Spalte B) werden im Text in Spalte A gesucht und wenn vorhanden ausgelesen.
+REGEXEXTRAHIEREN_Zahl_Materialnummer_nur_extrahieren_wenn_in_Liste_vorhanden_Vergleich.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Regex_15
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in D2, E2, F2, H2, I1.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=NACHZEILE(A2:.A999;LAMBDA(t;WENNFEHLER(VERWEIS(2;1/SUCHEN(B2:.B999;t);B2:.B999);"---")))
+=LET(m;B2:.B999;NACHZEILE(A2:.A999;LAMBDA(t;WENNFEHLER(VERWEIS(2;1/SUCHEN(m;t);m);"---"))))
+=LET(m;B2:.B999;NACHZEILE(A2:.A999;LAMBDA(t;XVERWEIS(WAHR;REGEXTESTEN(t;"(^|[^0-9])"&m&"([^0-9]|$)");m;"---";0;-1))))
+=LET(x;WENNFEHLER(REGEXEXTRAHIEREN(A2:.A999;"\d+")*1;NV());y;ISTZAHL(VERGLEICH(x;B2:.B999;0));WENN(y;x;"---"))
+=VSTAPELN("Formel 5:";LET(x;WENNFEHLER(REGEXEXTRAHIEREN(A2:.A999;"\d+")*1;NV());y;ISTZAHL(VERGLEICH(x;B2:.B999;0));WENN(y;x;"---")))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

@@ -34,6 +34,10 @@ Partial Public Class DemoRunner
                 CreateRegexDemo_12()
             Case "regex_013"
                 CreateRegexDemo_13()
+            Case "regex_014"
+                CreateRegexDemo_14()
+            Case "regex_015"
+                CreateRegexDemo_15()
             Case "pq_001"
                 CreatePowerQueryDemo_1()
             Case "pq_002"
@@ -332,7 +336,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das VBA-Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -351,11 +355,49 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Formel-Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
                 "Demo Formel 07",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateRegexDemo_14()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_Regex_14.zip",
+                    "Regex_14")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Regex-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo Regex 14",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateRegexDemo_15()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_Regex_15.zip",
+                    "Regex_15")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Regex-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo Regex 15",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try

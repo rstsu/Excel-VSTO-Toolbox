@@ -41,13 +41,14 @@
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Ribbon1))
         Me.Demo = Me.Factory.CreateRibbonTab
         Me.Group1 = Me.Factory.CreateRibbonGroup
+        Me.Group2 = Me.Factory.CreateRibbonGroup
         Me.btnPowerQuery = Me.Factory.CreateRibbonButton
         Me.btnRegex = Me.Factory.CreateRibbonButton
         Me.btnVba = Me.Factory.CreateRibbonButton
         Me.btnFormulas = Me.Factory.CreateRibbonButton
-        Me.Group2 = Me.Factory.CreateRibbonGroup
         Me.btnDeleteDemos = Me.Factory.CreateRibbonButton
         Me.btnDeleteDemo1 = Me.Factory.CreateRibbonButton
         Me.btnHidePane = Me.Factory.CreateRibbonButton
@@ -73,46 +74,6 @@
         Me.Group1.Label = "Demos..."
         Me.Group1.Name = "Group1"
         '
-        'btnPowerQuery
-        '
-        Me.btnPowerQuery.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.btnPowerQuery.Label = "Power Query"
-        Me.btnPowerQuery.Name = "btnPowerQuery"
-        Me.btnPowerQuery.OfficeImageId = "GetExternalDataFromOtherSources"
-        Me.btnPowerQuery.ScreenTip = "Power Query Demo Beispiele"
-        Me.btnPowerQuery.ShowImage = True
-        Me.btnPowerQuery.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
-        '
-        'btnRegex
-        '
-        Me.btnRegex.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.btnRegex.Label = "Regex"
-        Me.btnRegex.Name = "btnRegex"
-        Me.btnRegex.OfficeImageId = "FindDialog"
-        Me.btnRegex.ScreenTip = "RegEx Demo Beispiele"
-        Me.btnRegex.ShowImage = True
-        Me.btnRegex.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
-        '
-        'btnVba
-        '
-        Me.btnVba.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.btnVba.Label = "VBA"
-        Me.btnVba.Name = "btnVba"
-        Me.btnVba.OfficeImageId = "VisualBasic"
-        Me.btnVba.ScreenTip = "VBA Demo Beispiele"
-        Me.btnVba.ShowImage = True
-        Me.btnVba.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
-        '
-        'btnFormulas
-        '
-        Me.btnFormulas.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.btnFormulas.Label = "Formeln"
-        Me.btnFormulas.Name = "btnFormulas"
-        Me.btnFormulas.OfficeImageId = "FunctionWizard"
-        Me.btnFormulas.ScreenTip = "Formel Demo Beispiele"
-        Me.btnFormulas.ShowImage = True
-        Me.btnFormulas.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
-        '
         'Group2
         '
         Me.Group2.Items.Add(Me.btnDeleteDemos)
@@ -122,12 +83,52 @@
         Me.Group2.Label = "Tools..."
         Me.Group2.Name = "Group2"
         '
+        'btnPowerQuery
+        '
+        Me.btnPowerQuery.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.btnPowerQuery.Image = CType(resources.GetObject("btnPowerQuery.Image"), System.Drawing.Image)
+        Me.btnPowerQuery.Label = "Power Query"
+        Me.btnPowerQuery.Name = "btnPowerQuery"
+        Me.btnPowerQuery.ScreenTip = "Power Query Demo Beispiele"
+        Me.btnPowerQuery.ShowImage = True
+        Me.btnPowerQuery.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
+        '
+        'btnRegex
+        '
+        Me.btnRegex.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.btnRegex.Image = CType(resources.GetObject("btnRegex.Image"), System.Drawing.Image)
+        Me.btnRegex.Label = "Regex"
+        Me.btnRegex.Name = "btnRegex"
+        Me.btnRegex.ScreenTip = "RegEx Demo Beispiele"
+        Me.btnRegex.ShowImage = True
+        Me.btnRegex.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
+        '
+        'btnVba
+        '
+        Me.btnVba.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.btnVba.Image = CType(resources.GetObject("btnVba.Image"), System.Drawing.Image)
+        Me.btnVba.Label = "VBA"
+        Me.btnVba.Name = "btnVba"
+        Me.btnVba.ScreenTip = "VBA Demo Beispiele"
+        Me.btnVba.ShowImage = True
+        Me.btnVba.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
+        '
+        'btnFormulas
+        '
+        Me.btnFormulas.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.btnFormulas.Image = CType(resources.GetObject("btnFormulas.Image"), System.Drawing.Image)
+        Me.btnFormulas.Label = "Formeln"
+        Me.btnFormulas.Name = "btnFormulas"
+        Me.btnFormulas.ScreenTip = "Formel Demo Beispiele"
+        Me.btnFormulas.ShowImage = True
+        Me.btnFormulas.SuperTip = "Katalog öffnen um Beispiele zu sehen..."
+        '
         'btnDeleteDemos
         '
         Me.btnDeleteDemos.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.btnDeleteDemos.Image = CType(resources.GetObject("btnDeleteDemos.Image"), System.Drawing.Image)
         Me.btnDeleteDemos.Label = "ALLE Demo-Tabs löschen"
         Me.btnDeleteDemos.Name = "btnDeleteDemos"
-        Me.btnDeleteDemos.OfficeImageId = "Delete"
         Me.btnDeleteDemos.ScreenTip = "Tool - Demos löschen"
         Me.btnDeleteDemos.ShowImage = True
         Me.btnDeleteDemos.SuperTip = "Alle erstellten Demo Tabellenblätter (und nur diese) werden entfernt"
@@ -135,9 +136,9 @@
         'btnDeleteDemo1
         '
         Me.btnDeleteDemo1.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.btnDeleteDemo1.Image = CType(resources.GetObject("btnDeleteDemo1.Image"), System.Drawing.Image)
         Me.btnDeleteDemo1.Label = "EIN Demo-Tab löschen"
         Me.btnDeleteDemo1.Name = "btnDeleteDemo1"
-        Me.btnDeleteDemo1.OfficeImageId = "Export"
         Me.btnDeleteDemo1.ScreenTip = "Tool - Demo löschen"
         Me.btnDeleteDemo1.ShowImage = True
         Me.btnDeleteDemo1.SuperTip = "Das aktuelle erstellte Demo Tabellenblatt (und nur dieses) wird entfernt"
@@ -145,9 +146,9 @@
         'btnHidePane
         '
         Me.btnHidePane.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.btnHidePane.Label = "Katalog schließen..."
+        Me.btnHidePane.Image = CType(resources.GetObject("btnHidePane.Image"), System.Drawing.Image)
+        Me.btnHidePane.Label = "Katalog schließen"
         Me.btnHidePane.Name = "btnHidePane"
-        Me.btnHidePane.OfficeImageId = "FileClose"
         Me.btnHidePane.ScreenTip = "Tool - Katalog (Taskpane) schließen"
         Me.btnHidePane.ShowImage = True
         Me.btnHidePane.SuperTip = "Der Katalog mit den Beispielen wird geschlossen"
@@ -155,9 +156,9 @@
         'btnShowPane
         '
         Me.btnShowPane.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.btnShowPane.Label = "Katalog öffnen..."
+        Me.btnShowPane.Image = CType(resources.GetObject("btnShowPane.Image"), System.Drawing.Image)
+        Me.btnShowPane.Label = "Katalog öffnen"
         Me.btnShowPane.Name = "btnShowPane"
-        Me.btnShowPane.OfficeImageId = "FileOpen"
         Me.btnShowPane.ScreenTip = "Tool - Katalog (Taskpane) öffnen"
         Me.btnShowPane.ShowImage = True
         Me.btnShowPane.SuperTip = "Der Katalog mit den Beispielen wird rechts als TaskPane geöffnet"
