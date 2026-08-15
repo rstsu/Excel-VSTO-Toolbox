@@ -20,7 +20,7 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ✔ **15** RegEx-Beispiele
 
-✔ **15** Power Query-Beispiele
+✔ **16** Power Query-Beispiele
 
 ✔ **7** Formel-Beispiele
 
@@ -59,4 +59,10 @@ Wenn der Katalog geöffnet ist, wird bei einem Klick auf "_Power Query_", "_Rege
 
 Bei Klick auf die **Beschreibung** oben erscheint diese wieder (_statt der Info_).
 
-![Startbildschirm](Images/TaskPane.png)
+![Startbildschirm](Images/TaskPane_Power_Query.png)
+
+![Startbildschirm](Images/TaskPane_Regex.png)
+
+![Startbildschirm](Images/TaskPane_VBA.png)
+
+![Startbildschirm](Images/TaskPane_Formeln.png)

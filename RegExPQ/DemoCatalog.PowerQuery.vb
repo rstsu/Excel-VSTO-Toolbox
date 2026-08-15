@@ -742,6 +742,63 @@ End Sub
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0016",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Nummern mit 0 rechts auffüllen - auf 5 Stellen",
+                .Tags = {"power query", "beispieldatei", "m-code", "Nummern", "auffüllen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Dieses Beispiel besteht aus einer Excel-Datei.
+PQ_UND_Formel_immer_auf_5_Stellen_RECHTS_mit_0_Null_auffuellen_Groesser_5_rechts_abtrennen_ODER_lassen.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
+in folgenden Ordner entpackt:
+
+%TEMP%\Excel-VSTO-Toolbox\PQ_016
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Nummern werden mit 0 von rechts auf 5 Stellen aufgefüllt.
+Sind mehr als 5 Stellen vorhanden, wird einmal gekürzt und einmal nicht.
+Es ist auch mit Formeln in der Beispieldatei gelöst.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+'Bitte auf "Demo erzeugen" klicken um die Beispieldatei
+'zu entpacken und die XLSX zu öffnen.
+'Mit folgendem VBA-Code kann die Aktualisierung
+'automatisch erfolgen:
+Option Explicit
+'Excel -VSTO - Toolbox
+'Power Query - Demo
+'Ralf Stolzenburg (Case)
+Private Sub Worksheet_Change(ByVal Target As Range)
+    On Error GoTo Fin
+    If Target.Column = 1 And Target.Row > 1 Then
+        Application.EnableEvents = False
+        Me.ListObjects("tblErg_1").QueryTable.Refresh
+        Me.ListObjects("tblErg_2").QueryTable.Refresh
+    End If
+    Application.Goto Range(Target.Address), False
+Fin:
+    Application.EnableEvents = True
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function
