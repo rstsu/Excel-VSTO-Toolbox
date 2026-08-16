@@ -672,6 +672,7 @@ Option Explicit
 'Excel -VSTO - Toolbox
 'Power Query - Demo
 'Ralf Stolzenburg (Case)
+'https://github.com/rstsu/Excel-VSTO-Toolbox
 Private Sub Worksheet_Change(ByVal Target As Range)
     On Error GoTo Fin
     If Target.Address = "$E$1" Then
@@ -729,6 +730,7 @@ Option Explicit
 'Excel -VSTO - Toolbox
 'Power Query - Demo
 'Ralf Stolzenburg (Case)
+'https://github.com/rstsu/Excel-VSTO-Toolbox
 Private Sub Worksheet_Change(ByVal Target As Range)
     On Error GoTo Fin
     If Not Intersect(Target, Range("B2, J2:Q2")) Is Nothing Then
@@ -747,7 +749,7 @@ End Sub
                 .Id = "pq_0016",
                 .Category = DemoCategory.PowerQuery,
                 .Title = "Nummern mit 0 rechts auffüllen - auf 5 Stellen",
-                .Tags = {"power query", "beispieldatei", "m-code", "Nummern", "auffüllen"},
+                .Tags = {"power query", "beispieldatei", "m-code", "nummern", "auffüllen"},
                 .Description = TextBlock(
     <text>
         <![CDATA[
@@ -785,12 +787,74 @@ Option Explicit
 'Excel -VSTO - Toolbox
 'Power Query - Demo
 'Ralf Stolzenburg (Case)
+'https://github.com/rstsu/Excel-VSTO-Toolbox
 Private Sub Worksheet_Change(ByVal Target As Range)
     On Error GoTo Fin
     If Target.Column = 1 And Target.Row > 1 Then
         Application.EnableEvents = False
         Me.ListObjects("tblErg_1").QueryTable.Refresh
         Me.ListObjects("tblErg_2").QueryTable.Refresh
+    End If
+    Application.Goto Range(Target.Address), False
+Fin:
+    Application.EnableEvents = True
+End Sub
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0017",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Zeitstempel bei bestimmtem Text eintragen oder löschen",
+                .Tags = {"power query", "uhrzeit", "m-code", "zeitstempel", "datum"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Dieses Beispiel besteht aus einer Excel-Datei.
+PQ_Zeitstempel_TT_MM_JJJJ_hh_mm_ss_setzen_wenn_Spalte_C_leer_und_bestimmter_Text_in_Spalte_A.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
+in folgenden Ordner entpackt:
+
+%TEMP%\Excel-VSTO-Toolbox\PQ_017
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Wenn in Spalte "Wert_1"  "Neu" steht und in der Spalte "Zeitstempel" kein Eintrag vorhanden ist, wird das aktuelle Datum mit Zeit eingetragen.
+Wenn in Spalte "Wert_1"  "Alt" steht, wird der Zeitstempel geleert.
+tblErg_1 - Der Zeitstempel wird getrennt in Datum und Zeit.
+tblErg_2 - mit "Replacer.ReplaceValue" andere Herangehensweise.
+tblErg_2_1 - Der Zeitstempel wird nicht getrennt.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+'Bitte auf "Demo erzeugen" klicken um die Beispieldatei
+'zu entpacken und die XLSX zu öffnen.
+'Mit folgendem VBA-Code kann die Aktualisierung
+'automatisch erfolgen:
+Option Explicit
+'Excel -VSTO - Toolbox
+'Power Query - Demo
+'Ralf Stolzenburg (Case)
+'https://github.com/rstsu/Excel-VSTO-Toolbox
+Private Sub Worksheet_Change(ByVal Target As Range)
+    On Error GoTo Fin
+    If Target.Column = 1 And Target.Row > 1 Then
+        Application.EnableEvents = False
+        Tabelle2.ListObjects("tblErg_1").QueryTable.Refresh
+        Tabelle3.ListObjects("tblErg_2").QueryTable.Refresh
+        Tabelle4.ListObjects("tblErg_2_1").QueryTable.Refresh
     End If
     Application.Goto Range(Target.Address), False
 Fin:
