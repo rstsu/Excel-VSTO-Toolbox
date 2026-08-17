@@ -602,6 +602,195 @@ End Function
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_008",
+                .Category = DemoCategory.Vba,
+                .Title = "Access Datenbank erstellen - die Zweite...",
+                .Tags = {"vba", "access", "adox", "ace", "oledb"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Es wird eine Accessdatenbank im lokalen Temp-Ordner mit Namen "VBA_Demo_8.accdb" aus Excel erstellt.
+Access_Datenbank_erstellen_VBA_Demo_8_accdb.xlsb
+
+Dann werden folgende Tabellen angelegt:
+1. Kunden
+2. Artikel
+3. Bestellungen
+4. Bestellpositionen
+
+In den entsprechenden Tabellen werden Daten zu Kunden, Artikel, Bestellungen und  Bestellpositionen erstellt.
+Nachdem noch Beziehungen eingerichtet sind, wird die Datei geöffnet.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
+in folgenden Ordner entpackt:
+
+%TEMP%\Excel-VSTO-Toolbox\VBA_08
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Private Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" ( _
+        ByVal hwnd As LongPtr, _
+        ByVal lpOperation As String, _
+        ByVal lpFile As String, _
+        ByVal lpParameters As String, _
+        ByVal lpDirectory As String, _
+        ByVal nShowCmd As Long) As LongPtr
+Private Const SW_MAXIMIZE = 3
+Public Sub Main_Access_2()
+    Dim strDescription As String
+    Dim varProvider As Variant
+    Dim strFileName As String
+    Dim strProvider As String
+    Dim catCatalog As Object
+    Dim objTable As Object
+    Dim objIndex As Object
+    Dim objConn As Object
+    Dim lngError As Long
+    strFileName = Environ$("TEMP") & "\VBA_Demo_8.accdb"
+    On Error GoTo Fin
+    If Len(Dir$(strFileName)) > 0 Then Kill strFileName
+    Set catCatalog = CreateObject("ADOX.Catalog")
+    For Each varProvider In Array("Microsoft.ACE.OLEDB.16.0", "Microsoft.ACE.OLEDB.12.0")
+        Err.Clear
+        On Error Resume Next
+        catCatalog.Create "Provider=" & CStr(varProvider) & ";Data Source=" & strFileName & ";"
+        If Err.Number = 0 Then
+            strProvider = CStr(varProvider)
+            On Error GoTo Fin
+            Exit For
+        End If
+        lngError = Err.Number
+        strDescription = Err.Description
+        On Error GoTo Fin
+    Next varProvider
+    If Len(strProvider) = 0 Then
+        Err.Raise vbObjectError + 1000, _
+            "CreateDataBase_1", _
+            "Es wurde kein geeigneter ACE-OLEDB-Provider gefunden." & _
+            vbCrLf & vbCrLf & _
+            "Letzter Fehler: " & lngError & _
+            vbCrLf & strDescription
+    End If
+    Set objConn = CreateObject("ADODB.Connection")
+    With objConn
+        .CursorLocation = 3
+        .Open "Provider=" & strProvider & ";Data Source=" & strFileName & ";"
+        .Execute _
+            "CREATE TABLE Kunden (" & _
+            "KundenID AUTOINCREMENT CONSTRAINT PK_Kunden PRIMARY KEY, " & _
+            "Firma VARCHAR(100), " & _
+            "Ansprechpartner VARCHAR(100), " & _
+            "Ort VARCHAR(50), " & _
+            "Land VARCHAR(50))"
+        .Execute _
+            "CREATE TABLE Artikel (" & _
+            "ArtikelID AUTOINCREMENT CONSTRAINT PK_Artikel PRIMARY KEY, " & _
+            "Bezeichnung VARCHAR(100), " & _
+            "Preis CURRENCY, " & _
+            "Bestand INTEGER)"
+        .Execute _
+            "CREATE TABLE Bestellungen (" & _
+            "BestellID AUTOINCREMENT CONSTRAINT PK_Bestellungen PRIMARY KEY, " & _
+            "KundenID LONG, " & _
+            "Bestelldatum DATETIME)"
+        .Execute _
+            "CREATE TABLE Bestellpositionen (" & _
+            "PositionsID AUTOINCREMENT CONSTRAINT PK_Bestellpositionen PRIMARY KEY, " & _
+            "BestellID LONG, " & _
+            "ArtikelID LONG, " & _
+            "Menge INTEGER, " & _
+            "Einzelpreis CURRENCY)"
+        .Execute _
+            "ALTER TABLE Bestellungen " & _
+            "ADD CONSTRAINT FK_Bestellungen_Kunden " & _
+            "FOREIGN KEY (KundenID) REFERENCES Kunden (KundenID)"
+        .Execute _
+            "ALTER TABLE Bestellpositionen " & _
+            "ADD CONSTRAINT FK_Positionen_Bestellungen " & _
+            "FOREIGN KEY (BestellID) REFERENCES Bestellungen (BestellID)"
+        .Execute _
+            "ALTER TABLE Bestellpositionen " & _
+            "ADD CONSTRAINT FK_Positionen_Artikel " & _
+            "FOREIGN KEY (ArtikelID) REFERENCES Artikel (ArtikelID)"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Nordstern GmbH', 'Anna Berger', 'Hamburg', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Rheinblick AG', 'Michael Weber', 'Köln', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Alpenhandel KG', 'Sabine Keller', 'München', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Spree Büroservice', 'Thomas Richter', 'Berlin', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('MainTech GmbH', 'Julia Hartmann', 'Frankfurt', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Elbe Logistik', 'Martin Schulze', 'Dresden', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Westfalen Bürobedarf', 'Petra König', 'Dortmund', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Donau Consulting', 'Daniel Fischer', 'Ulm', 'Deutschland')"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Notebookständer', 29.9, 35)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('USB-C Hub', 39.5, 28)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Funkmaus', 24.9, 42)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Tastatur', 49.9, 21)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Webcam', 59.0, 17)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Headset', 69.9, 14)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Monitorarm', 84.5, 9)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Laptop-Tasche', 44.0, 31)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (1, #01/12/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (2, #01/18/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (1, #02/03/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (4, #02/15/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (5, #03/02/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (3, #03/21/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (6, #04/09/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (2, #04/28/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (7, #05/10/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (8, #05/23/2026#)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (1, 1, 2, 29.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (1, 3, 2, 24.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (2, 2, 3, 39.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (2, 4, 1, 49.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (3, 5, 2, 59)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (3, 6, 1, 69.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (4, 3, 4, 24.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (4, 8, 2, 44)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (5, 7, 2, 84.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (5, 2, 2, 39.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (6, 4, 3, 49.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (7, 6, 2, 69.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (8, 1, 5, 29.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (8, 5, 2, 59)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (9, 8, 3, 44)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (10, 2, 1, 39.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (10, 3, 2, 24.9)"
+        MsgBox "Datenbank wurde erstellt:" & vbCrLf & _
+            strFileName & vbCrLf & vbCrLf & _
+            "Provider: " & strProvider, vbInformation
+        If .State = 1 Then .Close
+    End With
+    If ShellExecute(Application.hwnd, "Open", strFileName, vbNullString, vbNullString, SW_MAXIMIZE) <= 32 Then
+        MsgBox "Die Datenbank wurde erstellt, konnte aber nicht geöffnet werden.", vbExclamation
+    End If
+Fin:
+    If Err.Number <> 0 Then MsgBox "Fehler: " & Err.Number & vbCrLf & Err.Description, vbExclamation
+    If Not objConn Is Nothing Then
+        If objConn.State = 1 Then objConn.Close
+    End If
+    Set objIndex = Nothing
+    Set objTable = Nothing
+    Set catCatalog = Nothing
+    Set objConn = Nothing
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function
