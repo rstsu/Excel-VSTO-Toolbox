@@ -228,6 +228,44 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_008",
+                .Category = DemoCategory.Formula,
+                .Title = "Aus Jahr und KW - Woche Von Bis in einer Zelle(n) darstellen",
+                .Tags = {"formel", "kw", "datum", "woche", "zahlen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Jahr und KW wird eine Woche in einer Zelle erstellt - z. B.:
+KW 34 - 17.08.2026 - 23.08.2026
+Formel_KW_Jahr_Datum_Woche_Von_Bis_in_einer_Zelle_ausgeben_mit_KW_am_Anfang.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Formel_08
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in I1, K1, M1.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Jahr A2 - KW B2";TEXT(7*KÜRZEN((2&-1&-$A$2)/7+C2)-5;"TT.MM.JJJJ - ")&TEXT(7*KÜRZEN((2&-1&-$A$2)/7+C2)+1;"TT.MM.JJJJ"))
+=LET(k;SEQUENZ($C$2);z;7*KÜRZEN((2&-1&-$A$2)/7+k);e;WENN($E$2;z-1;WENN($F$2;z;z+1));VSTAPELN("Jahr "&$A$2&" - KW bis "&$C$2;"KW "&k&" - "&TEXT(z-5;"TT.MM.JJJJ - ")&TEXT(e;"TT.MM.JJJJ")))
+=VSTAPELN("Woche - Heute";LET(x;ISOKALENDERWOCHE(HEUTE());y;JAHR(HEUTE());z;7*KÜRZEN((2&-1&-y)/7+x);"KW "&x&" - "&TEXT(z-5;"TT.MM.JJJJ - ")&TEXT(z+1;"TT.MM.JJJJ")))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
