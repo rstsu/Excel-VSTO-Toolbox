@@ -594,6 +594,42 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_016",
+                .Category = DemoCategory.Regex,
+                .Title = "Großbuchstaben aus String extrahieren",
+                .Tags = {"regex", "buchstaben", "sonderzeichen", "klein", "auslesen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Texten in Spalte A werden nur die Großbuchstaben ausgelesen. Auch Umlaute und das ß werden berücksichtigt.
+Formel_REGEXERSETZEN_Nur_Grossbuchstaben_ausgeben_Rest_mit_Nichts_ersetzen.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Regex_16
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in C1, D1.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Nur Großbuchstaben, Umlaute und ß ausgeben…";REGEXERSETZEN(A2:.A999;"[^A-ZÄÖÜß]";""))
+=VSTAPELN("Gib das andere aus…";REGEXERSETZEN(A2:.A999;"[A-ZÄÖÜß]";""))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
