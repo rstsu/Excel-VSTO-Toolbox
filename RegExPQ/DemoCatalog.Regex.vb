@@ -630,6 +630,46 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_017",
+                .Category = DemoCategory.Regex,
+                .Title = "Letzte Zahl in mehreren Variationen auslesen",
+                .Tags = {"regex", "zahl", "punkt", "klammer", "extrahieren"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Texten in Spalte A werden nur die letzten Zahlen - die in mehreren Variationen vorkommen können - extrahiert.
+REGEXEXTRAHIEREN_und_andere_Formeln_letzte_Zahl_mit_oder ohne_Punkt_davor_Optional_in_Klammern.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Regex_17
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in C1, D1, E1, F1, G1, H1.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("REGEX";WENNFEHLER(REGEXEXTRAHIEREN(A2:.A999;"(?:\(\s*)?([.,]?\d+(?:[.,]\d+)?)(?:\s*\))?\s*$";2);""))
+=VSTAPELN("REGEX_1";WENNFEHLER(REGEXEXTRAHIEREN(A2:.A999;"mm\s*\(?\s*([.,]?\d+(?:[.,]\d+)?)\s*\)?\s*$";2);""))
+=VSTAPELN("TEXTNACH";GLÄTTEN(WENNFEHLER(LET(x;TEXTNACH(A2:.A999;"mm ";-1);WECHSELN(WECHSELN(x;"(";"");")";""));"")))
+=VSTAPELN("TEXTTEILEN";MAP(A2:.A999;LAMBDA(a;WENN(a="";"";LET(x;GLÄTTEN(TEXTNACH(a;"mm"));y;TEXTTEILEN(WECHSELN(WECHSELN(x;"(";"");")";"");" ";;WAHR);WENNFEHLER(INDEX(y;1;1);""))))))
+=VSTAPELN("TEXTTEILEN_1";MAP(A2:.A999;LAMBDA(a;WENN(a="";"";LET(x;GLÄTTEN(TEXTNACH(a;"mm"));y;WECHSELN(WECHSELN(x;"(";"");")";"");z;TEXTTEILEN(y;" ";;WAHR);WENNFEHLER(INDEX(z;1);""))))
+=VSTAPELN("XMLFILTERN";MAP(A2:.A999;LAMBDA(a;WENN(a="";"";LET(x;GLÄTTEN(TEXTNACH(a;"mm"));y;WECHSELN(WECHSELN(x;"(";"");")";"");WENN(GLÄTTEN(y)="";"";LET(z;WECHSELN(GLÄTTEN(y);" ";"</s><s>_");r;XMLFILTERN("<t><s>_"&z&"</s></t>";"//s[last()]");WECHSELN(r;"_";""))))))))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
