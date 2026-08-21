@@ -266,6 +266,43 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_009",
+                .Category = DemoCategory.Formula,
+                .Title = "Zwei Spalten in eine Spalte zusammenfassen",
+                .Tags = {"formel", "spalte", "spalten", "kundennummer", "produktnummer"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Spalte A (Kundennummer) und Spalte B (Produktnummer) werden in eine Spalte zusammengefasst. Dabei werden zu jeder Kundennummer (in Spalte D nur die EINDEUTIGEN) alle Produkte ausgegeben.
+Über die Bedingte Formatierung werden die Kundennummern in Spalte D und E farbig dargestellt (Formel =REST(ZEILE(A2)-2;20)=0).
+Aus_zwei_Spalten_mit_Ueberschrift_EINE_Spalte_Namen_und_Produkte_untereinander.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Formel_09
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in D1 und E1.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(q;FILTER(A2:.A999;A2:.A999<>"");r;FILTER(B2:.B999;B2:.B999<>"");s;ZEILEN(q);t;ZEILEN(r);u;1+t;v;s*u;w;SEQUENZ(v);x;QUOTIENT(w-1;u)+1;y;REST(w-1;u);z;WENN(y=0;TEXT(INDEX(q;x);"@");INDEX(r;y));VSTAPELN({"Ausgabe"};z))
+=LET(q;EINDEUTIG(FILTER(A2:.A999;A2:.A999<>""));r;FILTER(B2:.B999;B2:.B999<>"");s;ZEILEN(q);t;ZEILEN(r);u;1+t;v;s*u;w;SEQUENZ(v);x;QUOTIENT(w-1;u)+1;y;REST(w-1;u);z;WENN(y=0;TEXT(INDEX(q;x);"@");INDEX(r;y));VSTAPELN({"Ausgabe EINDEUTIG"};z))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

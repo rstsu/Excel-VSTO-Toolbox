@@ -29,10 +29,10 @@ Public Class ThisAddIn
     Wn As Excel.Window) Handles Application.WindowActivate
         CreatePane(Wn)
     End Sub
-    Private Sub Application_WorkbookOpen(wb As Excel.Workbook)
+    Private Sub Application_WorkbookOpen(wb As Excel.Workbook) Handles Application.WorkbookOpen
         CheckForDemoSheet(wb)
     End Sub
-    Private Sub Application_NewWorkbook(wb As Excel.Workbook)
+    Private Sub Application_NewWorkbook(wb As Excel.Workbook) Handles Application.NewWorkbook
         CheckForDemoSheet(wb)
     End Sub
     Private Sub CheckForDemoSheet(wb As Excel.Workbook)
@@ -78,10 +78,10 @@ Public Class ThisAddIn
         _lastCategory = category
         My.Settings.LastCategory = category.ToString()
         My.Settings.Save()
-        Dim wnd = Application.ActiveWindow
+        Dim wnd As Excel.Window = EnsureActiveWindow()
         If wnd Is Nothing Then Return
-        Dim hwnd As Integer = wnd.Hwnd
         CreatePane(wnd)
+        Dim hwnd As Integer = wnd.Hwnd
         _paneControls(hwnd).SetCategory(category)
         _panes(hwnd).Visible = True
     End Sub
@@ -95,10 +95,10 @@ Public Class ThisAddIn
         End If
     End Sub
     Friend Sub ShowPaneOnly()
-        Dim wnd = Application.ActiveWindow
+        Dim wnd As Excel.Window = EnsureActiveWindow()
         If wnd Is Nothing Then Return
-        Dim hwnd As Integer = wnd.Hwnd
         CreatePane(wnd)
+        Dim hwnd As Integer = wnd.Hwnd
         _panes(hwnd).Visible = True
     End Sub
     Friend Sub HideExamples()
@@ -114,4 +114,12 @@ Public Class ThisAddIn
         _panes.Clear()
         _paneControls.Clear()
     End Sub
+    Private Function EnsureActiveWindow() As Excel.Window
+        Dim wnd As Excel.Window = Application.ActiveWindow
+        If wnd Is Nothing Then
+            Application.Workbooks.Add()
+            wnd = Application.ActiveWindow
+        End If
+        Return wnd
+    End Function
 End Class
