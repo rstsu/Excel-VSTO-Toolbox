@@ -24,7 +24,7 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ✔ **9** Formel-Beispiele
 
-✔ **8** VBA-Beispiele
+✔ **9** VBA-Beispiele
 
 ## Voraussetzungen
 

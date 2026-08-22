@@ -791,6 +791,125 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_009",
+                .Category = DemoCategory.Vba,
+                .Title = "Klassenprogrammierung - UserForm - TextBox - Text markieren",
+                .Tags = {"vba", "userform", "klassenprogrammierung", "textbox", "markieren", "farbe", "doppelklick"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+UserForm - TextBox - Klassenprogrammierung.
+Klassenprogrammierung_UserForm_TextBox_Text_markieren_Farbe_wechseln_und_zurueck.xlsb
+
+In einer UserForm werden alle TextBoxen in einem Array gesammelt und der Klasse zugewiesen.
+Damit wird bei jeder TextBox beim aktivieren der gesamte Text markiert.
+Bei einem Doppleklick in die TextBox wird Schrift- und Hintergrundfarbe geändert. Nächster Doppelklick alles wieder zurück.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
+in folgenden Ordner entpackt:
+
+%TEMP%\Excel-VSTO-Toolbox\VBA_09
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+DieseArbeitsmappe:
+Option Explicit
+Private Sub Workbook_Open()
+    UserForm1.Show
+End Sub
+
+UserForm1:
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+' Klasse initialisieren. Nur TextBoxen über Array sammeln.
+' Text in TextBox1 markieren. Bei Doppelklick Farbe wechseln und zurück.
+Private mobjTextBoxClass() As clsTextBox
+Private Sub UserForm_Initialize()
+    Dim objControl As Control
+    Dim lngIndex As Long
+    For Each objControl In Controls
+        If TypeOf objControl Is MSForms.TextBox Then
+            ReDim Preserve mobjTextBoxClass(lngIndex)
+            Set mobjTextBoxClass(lngIndex) = New clsTextBox
+            Set mobjTextBoxClass(lngIndex).prpTextBox = objControl
+            lngIndex = lngIndex + 1
+        End If
+    Next objControl
+    With TextBox1
+        .SelStart = 0
+        .SelLength = .TextLength
+    End With
+End Sub
+Private Sub UserForm_Terminate()
+    Dim lngIndex As Long
+    If CBool(Not Not mobjTextBoxClass) Then
+        For lngIndex = LBound(mobjTextBoxClass) To UBound(mobjTextBoxClass)
+            Set mobjTextBoxClass(lngIndex) = Nothing
+        Next lngIndex
+    End If
+End Sub
+Private Sub CommandButton1_Click()
+    Unload Me
+End Sub
+
+Modul1:
+Option Explicit
+Public Sub Main()
+    UserForm1.Show
+End Sub
+
+Klassenmodul (Name = clsTextBox):
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+' Klasse initialisieren. Nur TextBoxen über Array sammeln.
+' Text in TextBox1 markieren. Bei Doppelklick Farbe wechseln und zurück.
+' https://learn.microsoft.com/de-de/dotnet/visual-basic/language-reference/modifiers/withevents
+Private WithEvents mobjTextBox As MSForms.TextBox
+' https://learn.microsoft.com/de-de/office/vba/language/reference/user-interface-help/property-get-statement
+Private Property Get TextBox() As MSForms.TextBox
+    Set TextBox = mobjTextBox
+End Property
+' https://learn.microsoft.com/de-de/office/vba/language/reference/user-interface-help/property-set-statement
+Friend Property Set prpTextBox(objTextBox As MSForms.TextBox)
+    Set mobjTextBox = objTextBox
+End Property
+' https://learn.microsoft.com/de-de/office/vba/language/reference/user-interface-help/terminate-event-visual-basic-for-applications
+Private Sub Class_Terminate()
+    Set mobjTextBox = Nothing
+End Sub
+' https://learn.microsoft.com/de-de/office/vba/language/reference/user-interface-help/mousedown-mouseup-events
+Private Sub mobjTextBox_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    With mobjTextBox
+        .SelStart = 0
+        .SelLength = .TextLength
+    End With
+End Sub
+' https://learn.microsoft.com/de-de/office/vba/language/reference/user-interface-help/dblclick-event
+Private Sub mobjTextBox_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
+    With TextBox
+        .BackColor = IIf(.BackColor = &H80000005, &HC0FFC0, &H80000005)
+        .ForeColor = IIf(.ForeColor = -2147483640, &HFF&, -2147483640)
+    End With
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function

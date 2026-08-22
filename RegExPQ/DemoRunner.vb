@@ -110,6 +110,8 @@ Partial Public Class DemoRunner
                 CreateVBADemo_7()
             Case "vba_008"
                 CreateVBADemo_8()
+            Case "vba_009"
+                CreateVBADemo_9()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
@@ -374,6 +376,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo VBA 08",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateVBADemo_9()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_VBA_9.zip",
+                    "VBA_09")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das VBA-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo VBA 09",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
