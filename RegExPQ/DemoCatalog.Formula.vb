@@ -303,6 +303,56 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0010",
+                .Category = DemoCategory.Formula,
+                .Title = "Datum umwandeln",
+                .Tags = {"formel", "datum", "utc", "mez", "mesz", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+March 6 2020 8:00:12 AM
+February 28 2020 11:17:26 AM
+January 24 2020 3:22:44 PM
+December 30 2023 1:38 PM
+November 22 2024 7:29 AM
+8/31/2025 8:15:57 AM
+4/24/2022 9:31:16 AM
+9/24/2026 9:31:16 PM
+2026-11-22T14:30:00Z
+2026-08-12T14:30:00Z
+
+Diese Daten werden umgewandelt. Auch UTC nach MEZ/MESZ.
+VBA_Power_Query_Formel_Datum_umwandeln.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_VBA_PQ_Formel
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in C1, E1, H1, K2 und K3.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Daten";MAP(DatenENUS[#Daten];LAMBDA(x;LET(a;TEXTTEILEN(GLÄTTEN(x);" ");n;SPALTEN(a);ds;INDEX(a;1;1);ts;INDEX(a;1;n-1);ap;INDEX(a;1;n);dp;WENN(ISTZAHL(SUCHEN("/";ds));TEXTTEILEN(ds;"/");"");dt;WENN(ISTZAHL(SUCHEN("/";ds));DATUM(--INDEX(dp;1;3);--INDEX(dp;1;1);--INDEX(dp;1;2));DATUM(--INDEX(a;1;3);XVERGLEICH(INDEX(a;1;1);{"January"."February"."March"."April"."May"."June"."July"."August"."September"."October"."November"."December"});--INDEX(a;1;2)));tp;TEXTTEILEN(ts;":");tm;ZEIT(REST(--INDEX(tp;1;1);12)+12*(ap="PM");--INDEX(tp;1;2);WENNFEHLER(--INDEX(tp;1;3);0));dt+tm))))
+=LET(z;WEGLASSEN(C1#;1);VSTAPELN({"Datum"."Uhrzeit"};HSTAPELN(GANZZAHL(z);REST(z;1))))
+=VSTAPELN({"Datum"."Uhrzeit"};LET(z;MAP(DatenENUS[#Daten];LAMBDA(x;LET(a;TEXTTEILEN(GLÄTTEN(x);" ");n;SPALTEN(a);ds;INDEX(a;1;1);ts;INDEX(a;1;n-1);ap;INDEX(a;1;n);dp;WENN(ISTZAHL(SUCHEN("/";ds));TEXTTEILEN(ds;"/");"");dt;WENN(ISTZAHL(SUCHEN("/";ds));DATUM(--INDEX(dp;1;3);--INDEX(dp;1;1);--INDEX(dp;1;2));DATUM(--INDEX(a;1;3);XVERGLEICH(INDEX(a;1;1);{"January"."February"."March"."April"."May"."June"."July"."August"."September"."October"."November"."December"});--INDEX(a;1;2)));tp;TEXTTEILEN(ts;":");tm;ZEIT(REST(--INDEX(tp;1;1);12)+12*(ap="PM");--INDEX(tp;1;2);WENNFEHLER(--INDEX(tp;1;3);0));dt+tm)));HSTAPELN(GANZZAHL(z);REST(z;1))))
+=LET(v;A10;w;WERT(WECHSELN(TEIL(v;1;19);"T";" "));x;DATUM(JAHR(w);3;31-WOCHENTAG(DATUM(JAHR(w);3;31)+1));y;DATUM(JAHR(w);10;31-WOCHENTAG(DATUM(JAHR(w);10;31)+1));z;1+ WENN(UND(w>=x;w<y);1;0);w+z/24)
+=LET(v;A11;w;WERT(WECHSELN(TEIL(v;1;19);"T";" "));x;DATUM(JAHR(w);3;31-WOCHENTAG(DATUM(JAHR(w);3;31)+1));y;DATUM(JAHR(w);10;31-WOCHENTAG(DATUM(JAHR(w);10;31)+1));z;1+ WENN(UND(w>=x;w<y);1;0);w+z/24)
+        ]]>
+    </code>
+        )
             }
         }
     End Function

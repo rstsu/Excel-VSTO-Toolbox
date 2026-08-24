@@ -863,6 +863,148 @@ End Sub
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0018",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Datum umwandeln",
+                .Tags = {"formel", "datum", "utc", "mez", "mesz", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+March 6 2020 8:00:12 AM
+February 28 2020 11:17:26 AM
+January 24 2020 3:22:44 PM
+December 30 2023 1:38 PM
+November 22 2024 7:29 AM
+8/31/2025 8:15:57 AM
+4/24/2022 9:31:16 AM
+9/24/2026 9:31:16 PM
+2026-11-22T14:30:00Z
+2026-08-12T14:30:00Z
+
+Diese Daten werden umgewandelt. Auch UTC nach MEZ/MESZ.
+VBA_Power_Query_Formel_Datum_umwandeln.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_VBA_PQ_Formel
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Erg = Table.TransformColumnTypes(Quelle, {{"Daten", type datetime}}, "en-US")
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Parsen = Table.TransformColumnTypes(Quelle, {{"Daten", type datetime}}, "en-US"),
+    Erg = Table.TransformColumnTypes(Table.SplitColumn(Table.TransformColumnTypes(Parsen, {{"Daten", type text}}, "de-DE"), "Daten", Splitter.SplitTextByDelimiter(" ", QuoteStyle.Csv), {"Datum", "Uhrzeit"}),{{"Datum", type date}, {"Uhrzeit", type time}})
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Table.FromRows({
+        {"March 6 2020 5:00 AM"},          // Englisch
+        {"Février 28 2020 5:00 AM"},       // Französisch
+        {"Enero 15 2021 14:20"},           // Spanisch
+        {"Giugno 5 2022 8:15"},            // Italienisch
+        {"November 22 2019 7:29 AM"},      // Deutsch/Englisch
+        {"8/31/2012 8:15:57 AM"},          // US numerisch
+        {"4/24/2012 9:31:16 AM"},          // US numerisch
+        {"22/08/2026"},                    // DE numerisch
+        {"15.09.2025 14:45"},              // DE Punktformat
+        {"2026-11-22T14:30:00Z"},          // ISO UTC
+        {"2026-08-12T14:30:00Z"},          // ISO UTC
+        {"2026-08-17"}                     // ISO Datum
+    }, {"Original"}),
+    Lokal = {"en-US", "de-DE", "fr-FR", "es-ES", "it-IT", "nl-NL", "pt-PT"},
+    UTCLokal = (dt as datetime) as datetime =>
+        let
+            Zone = DateTimeZone.From(dt),
+            ZoneL = DateTimeZone.ToLocal(Zone),
+            ZoneN = DateTimeZone.RemoveZone(ZoneL)
+        in
+            ZoneN,
+    Parse = (val as any) as nullable datetime =>
+        let
+            DateOK = if Value.Is(val, type datetime) then val else null,
+            txt = if DateOK = null and Value.Is(val, type text) then Text.Trim(val) else null,
+            ParseISO = if txt <> null and Text.Length(txt) >= 4 and Text.Range(txt,0,4) >= "0001" and Text.Range(txt,0,4) <= "9999" and Text.Middle(txt,4,1) = "-" 
+                        then try DateTime.FromText(txt, "en-US") otherwise null
+                        else null,
+            parsedLocales = if DateOK = null and ParseISO = null and txt <> null then
+                                let
+                                    tryLocales = List.First(
+                                        List.RemoveNulls(
+                                            List.Transform(Lokal, each try DateTime.FromText(txt, _) otherwise null)
+                                        ),
+                                        null
+                                    )
+                                in
+                                    tryLocales
+                            else null,
+            ParseA = List.First(List.RemoveNulls({DateOK, ParseISO, parsedLocales}), null),
+            result = if txt <> null and Text.EndsWith(txt, "Z") and ParseA <> null
+                    then UTCLokal(ParseA)
+                    else ParseA
+        in
+            result,
+    MitDatumZeit = Table.AddColumn(
+        Quelle,
+        "DatumZeit",
+        each Parse([Original]),
+        type nullable datetime
+    ),
+    MitDatum = Table.AddColumn(
+        MitDatumZeit,
+        "Datum",
+        each if [DatumZeit] <> null then Date.From([DatumZeit]) else null,
+        type date
+    ),
+    MitUhrzeit = Table.AddColumn(
+        MitDatum,
+        "Uhrzeit",
+        each if [DatumZeit] <> null then Time.From([DatumZeit]) else null,
+        type time
+    ),
+    Erg = Table.RemoveColumns(MitUhrzeit, {"DatumZeit"})
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function

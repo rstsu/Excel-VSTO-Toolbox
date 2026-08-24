@@ -910,6 +910,98 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0010",
+                .Category = DemoCategory.Vba,
+                .Title = "Datum umwandeln",
+                .Tags = {"formel", "datum", "utc", "mez", "mesz", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+March 6 2020 8:00:12 AM
+February 28 2020 11:17:26 AM
+January 24 2020 3:22:44 PM
+December 30 2023 1:38 PM
+November 22 2024 7:29 AM
+8/31/2025 8:15:57 AM
+4/24/2022 9:31:16 AM
+9/24/2026 9:31:16 PM
+2026-11-22T14:30:00Z
+2026-08-12T14:30:00Z
+
+Diese Daten werden umgewandelt. Auch UTC nach MEZ/MESZ.
+VBA_Power_Query_Formel_Datum_umwandeln.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_VBA_PQ_Formel
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Option Explicit
+' Excel -VSTO - Toolbox
+' Power Query - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Private Declare PtrSafe Function VarDateFromStr Lib "oleaut32.dll" _
+    (ByVal strIn As LongPtr, _
+    ByVal lcid As Long, _
+    ByVal dwFlags As Long, _
+    ByRef pDateOut As Date) As Long
+' https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-vardatefromstr
+Function fncDate(ByVal strTMP As String, Optional ByVal lcid As Long = 1033) As Date
+    Call VarDateFromStr(StrPtr(strTMP), lcid, &H80000000, fncDate)
+End Function
+Public Sub Main()
+    Dim lngLastRow As Long
+    Dim dateTMP As Date
+    On Error GoTo Fin
+    With Tabelle1
+        For lngLastRow = 2 To IIf(Len(.Cells(.Rows.Count, 1)), .Rows.Count, .Cells(.Rows.Count, 1).End(xlUp).Row)
+            If .Cells(lngLastRow, 1).Value <> "" Then
+                dateTMP = fncDate(.Cells(lngLastRow, 1).Text)
+                If dateTMP = "00:00:00" Then dateTMP = fncUTCtoDE(.Cells(lngLastRow, 1).Text)
+                .Cells(lngLastRow, 4).NumberFormat = "dd/mm/yyyy hh:mm:ss"
+                .Cells(lngLastRow, 4).Value = dateTMP
+                .Cells(lngLastRow, 6).NumberFormat = "dd/mm/yyyy"
+                .Cells(lngLastRow, 6).Value = DateValue(dateTMP)
+                .Cells(lngLastRow, 7).NumberFormat = "hh:mm:ss"
+                .Cells(lngLastRow, 7).Value = TimeValue(dateTMP)
+            End If
+        Next lngLastRow
+    End With
+Fin:
+    If Err.Number <> 0 Then MsgBox "Fehler: " & Err.Number & " " & Err.Description
+End Sub
+Public Function fncUTCtoDE(utcString As String) As Date
+    Dim lngOffset As Long
+    Dim dateStart As Date
+    Dim dateEnd As Date
+    Dim dateUTC As Date
+    dateUTC = DateSerial(CInt(Mid$(utcString, 1, 4)), CInt(Mid$(utcString, 6, 2)), CInt(Mid$(utcString, 9, 2))) + _
+        TimeSerial(CInt(Mid$(utcString, 12, 2)), CInt(Mid$(utcString, 15, 2)), CInt(Mid$(utcString, 18, 2)))
+    dateStart = DateSerial(CInt(Mid$(utcString, 1, 4)), 3, 31 - Weekday(DateSerial(CInt(Mid$(utcString, 1, 4)), 3, 31), vbMonday) + 1)
+    dateEnd = DateSerial(CInt(Mid$(utcString, 1, 4)), 10, 31 - Weekday(DateSerial(CInt(Mid$(utcString, 1, 4)), 10, 31), vbMonday) + 1)
+    lngOffset = 1
+    If dateUTC >= dateStart + TimeSerial(1, 0, 0) And dateUTC < dateEnd + TimeSerial(1, 0, 0) Then
+        lngOffset = lngOffset + 1
+    End If
+    fncUTCtoDE = dateUTC + lngOffset / 24
+End Function
+        ]]>
+    </code>
+        )
             }
         }
     End Function
