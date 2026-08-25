@@ -670,6 +670,47 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_018",
+                .Category = DemoCategory.Regex,
+                .Title = "Datum UTC - MEZ - MESZ...",
+                .Tags = {"regex", "zahl", "mez", "mesz", "datum", "utc"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Daten in Spalte A (UTC) werden die Daten und Zeiten ausgelesen.
+UTC_MEZ_MESZ_REGEXEXTRAHIEREN_und_mehr.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Regex_18
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in C2, D2, F2, G2, I2, L2 und N2.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=REGEXEXTRAHIEREN(A2:.A989;"\d{4}-\d{2}-\d{2}")
+=REGEXEXTRAHIEREN(A2:.A989;"\d{2}:\d{2}:\d{2}")
+=--REGEXEXTRAHIEREN(A2:.A989;"\d{4}-\d{2}-\d{2}")
+=--REGEXEXTRAHIEREN(A2:.A989;"\d{2}:\d{2}:\d{2}")
+=--REGEXEXTRAHIEREN(A2;"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})";2)
+=LET(x;--WECHSELN(LINKS(A2;19);"T";" ");j;JAHR(x);SoM;DATUM(j;4;1)-WOCHENTAG(DATUM(j;4;1);2);SoO;DATUM(j;11;1)-WOCHENTAG(DATUM(j;11;1);2);x+WENN(UND(x>=SoM+1/24;x<SoO+1/24);2/24;1/24))
+=LET(d;REGEXEXTRAHIEREN(A2;"\d{4}-\d{2}-\d{2}");t;REGEXEXTRAHIEREN(A2;"\d{2}:\d{2}:\d{2}");x;--d+--t;j;JAHR(x);SoM;DATUM(j;4;1)-WOCHENTAG(DATUM(j;4;1);2);SoO;DATUM(j;11;1)-WOCHENTAG(DATUM(j;11;1);2);x+WENN(UND(x>=SoM+1/24;x<SoO+1/24);2/24;1/24))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

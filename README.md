@@ -18,7 +18,7 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ## Funktionen
 
-✔ **17** RegEx-Beispiele
+✔ **18** RegEx-Beispiele
 
 ✔ **18** Power Query-Beispiele
 
