@@ -1005,6 +1005,311 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0019",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Biorhythmus mit Diagramm...",
+                .Tags = {"pq", "power query", "chart", "diagramm", "biorhythmus", "vba"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Auf dem Tabellenblatt "Biorhythmus" werden im Diagramm alle Linien angezeigt (die Punkte der "kritischen Tage" können ausgewählt werden.
+Im Tabellenblatt "Biorhythmus_Part" können die anzuzeigenden Linien ausgewählt werden.
+Aktualisiert wird über VBA.
+
+PQ_Biorhythmus_Worksheet_Change_Diagramm_Chart.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\PQ_019
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    GebTagRaw  = Excel.CurrentWorkbook(){[Name="GebTag"]}[Content]{0}[Column1],
+    TageRaw    = Excel.CurrentWorkbook(){[Name="Tage"]}[Content]{0}[Column1],
+    KKurvenRaw = Excel.CurrentWorkbook(){[Name="KKurven"]}[Content]{0}[Column1],
+    GebTag = Date.From(GebTagRaw),
+    Tage   = Number.From(TageRaw),
+    NextDays = List.Dates(Date.From(DateTime.LocalNow()), Tage, #duration(1,0,0,0)),
+    Alter = List.Transform(NextDays, each Duration.Days(_ - GebTag)),
+    PI = 3.141592653589793,
+    Bio = (periode as number) as list =>
+        List.Transform(
+            Alter,
+            each Number.Round(
+                Number.Sin(2 * PI * _ / periode),
+                2
+            )
+        ),
+    Physisch      = Bio(23),
+    Emotional     = Bio(28),
+    Intellektuell = Bio(33),
+    Intuitiv      = Bio(38),
+    Spirituell    = Bio(53),
+    Kreativ       = Bio(41),
+    Perioden = [
+        physisch      = 23,
+        emotional     = 28,
+        intellektuell = 33,
+        intuitiv      = 38,
+        spirituell    = 53,
+        kreativ       = 41
+    ],
+    KritischeKurven =
+        let
+            txt = Text.Lower(Text.Trim(Text.From(KKurvenRaw)))
+        in
+            if txt = "alle" then
+                Record.FieldNames(Perioden)
+            else
+                List.Transform(
+                    Text.Split(txt, ","),
+                    each Text.Trim(_)
+                ),
+    IstKritisch =
+        (alterHeute as number, periode as number) as logical =>
+            Number.RoundDown(2 * (alterHeute - 1) / periode)
+            <>
+            Number.RoundDown(2 * alterHeute / periode),
+    Kritisch =
+    List.Transform(
+        Alter,
+        (a) =>
+            if
+                List.AnyTrue(
+                    List.Transform(
+                        KritischeKurven,
+                        (k) =>
+                            IstKritisch(
+                                a,
+                                Record.Field(Perioden, k)
+                            )
+                    )
+                )
+            then
+                0
+            else
+                null
+    ),
+        KritischeKurve =
+        List.Transform(
+            Alter,
+            (a) =>
+                let
+                    Treffer =
+                        List.Select(
+                            KritischeKurven,
+                            (k) =>
+                                IstKritisch(
+                                    a,
+                                    Record.Field(Perioden, k)
+                                )
+                        )
+                in
+                    if List.IsEmpty(Treffer) then
+                        null
+                    else
+                        Text.Combine(
+                            List.Transform(Treffer, each Text.Proper(_)),
+                            ", "
+                        )
+        ),
+    Tabelle =
+        Table.FromColumns(
+            {
+                NextDays,
+                Physisch,
+                Emotional,
+                Intellektuell,
+                Intuitiv,
+                Spirituell,
+                Kreativ,
+                Kritisch,
+                KritischeKurve
+            },
+            {
+                "Datum",
+                "Physisch",
+                "Emotional",
+                "Intellektuell",
+                "Intuitiv",
+                "Spirituell",
+                "Kreativ",
+                "Kritisch",
+                "Kritische Kurve"
+            }
+        ),
+    Erg =
+        Table.TransformColumns(
+            Tabelle,
+            {
+                {
+                    "Datum",
+                    each Date.ToText(_, "dd.MM.yyyy"),
+                    type text
+                }
+            }
+        )
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    GebTagRaw = Excel.CurrentWorkbook(){[Name="GebTagP"]}[Content]{0}[Column1],
+    TageRaw   = Excel.CurrentWorkbook(){[Name="TageP"]}[Content]{0}[Column1],
+    GebTag = Date.From(GebTagRaw),
+    Tage   = Number.From(TageRaw),
+    AuswahlRaw    = Excel.CurrentWorkbook(){[Name="tblKurve"]}[Content],
+    AuswahlRecord = AuswahlRaw{0},
+    AlleSpalten = {
+        "Physisch",
+        "Emotional",
+        "Intellektuell",
+        "Intuitiv",
+        "Spirituell",
+        "Kreativ",
+        "Kritisch"
+    },
+    Angehaakt = List.Select(Record.FieldNames(AuswahlRecord), each Record.HasFields(AuswahlRecord, _) and Record.Field(AuswahlRecord, _) = true),
+    Auswahl = if List.IsEmpty(Angehaakt) then AlleSpalten else Angehaakt,
+    BioNamen = {
+        "Physisch",
+        "Emotional",
+        "Intellektuell",
+        "Intuitiv",
+        "Spirituell",
+        "Kreativ"
+    },
+    AusgewaehlteBioKurven = List.Intersect({Auswahl, BioNamen}),
+    KritischeKurven = if List.IsEmpty(AusgewaehlteBioKurven) then BioNamen else AusgewaehlteBioKurven,
+    NextDays = List.Dates(Date.From(DateTime.LocalNow()), Tage, #duration(1, 0, 0, 0)),
+    Alter = List.Transform(NextDays, each Duration.Days(_ - GebTag)),
+    PI = 3.141592653589793,
+    Bio = (periode as number) as list =>
+        List.Transform(
+            Alter,
+            each Number.Round(
+                Number.Sin(2 * PI * _ / periode),
+                2
+            )
+        ),
+    Physisch      = Bio(23),
+    Emotional     = Bio(28),
+    Intellektuell = Bio(33),
+    Intuitiv      = Bio(38),
+    Spirituell    = Bio(53),
+    Kreativ       = Bio(41),
+    Perioden = [
+        Physisch      = 23,
+        Emotional     = 28,
+        Intellektuell = 33,
+        Intuitiv      = 38,
+        Spirituell    = 53,
+        Kreativ       = 41
+    ],
+    IstKritisch =
+        (alterHeute as number, periode as number) as logical =>
+            Number.RoundDown(
+                2 * (alterHeute - 1) / periode
+            )
+            <>
+            Number.RoundDown(
+                2 * alterHeute / periode
+            ),
+    Kritisch =
+        List.Transform(
+            Alter,
+            (a) =>
+                if
+                    List.AnyTrue(
+                        List.Transform(
+                            KritischeKurven,
+                            (k) =>
+                                IstKritisch(
+                                    a,
+                                    Record.Field(Perioden, k)
+                                )
+                        )
+                    )
+                then
+                    0
+                else
+                    null
+        ),
+    NullListe = List.Repeat({null}, Tage),
+    PhysischOut = if List.Contains(Auswahl, "Physisch") then Physisch else NullListe,
+    EmotionalOut = if List.Contains(Auswahl, "Emotional") then Emotional else NullListe,
+    IntellektuellOut = if List.Contains(Auswahl, "Intellektuell") then Intellektuell else NullListe,
+    IntuitivOut = if List.Contains(Auswahl, "Intuitiv") then Intuitiv else NullListe,
+    SpirituellOut = if List.Contains(Auswahl, "Spirituell") then Spirituell else NullListe,
+    KreativOut = if List.Contains(Auswahl, "Kreativ") then Kreativ else NullListe,
+    KritischOut = if List.Contains(Auswahl, "Kritisch") then Kritisch else NullListe,
+    Tabelle =
+        Table.FromColumns(
+            {
+                NextDays,
+                PhysischOut,
+                EmotionalOut,
+                IntellektuellOut,
+                IntuitivOut,
+                SpirituellOut,
+                KreativOut,
+                KritischOut
+            },
+            {
+                "Datum",
+                "Physisch",
+                "Emotional",
+                "Intellektuell",
+                "Intuitiv",
+                "Spirituell",
+                "Kreativ",
+                "Kritisch"
+            }
+        ),
+    Erg =
+        Table.TransformColumnTypes(
+            Tabelle,
+            {
+                {"Datum", type date},
+                {"Physisch", type number},
+                {"Emotional", type number},
+                {"Intellektuell", type number},
+                {"Intuitiv", type number},
+                {"Spirituell", type number},
+                {"Kreativ", type number},
+                {"Kritisch", type number}
+            }
+        )
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function
