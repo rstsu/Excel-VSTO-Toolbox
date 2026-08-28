@@ -711,6 +711,50 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_019",
+                .Category = DemoCategory.Regex,
+                .Title = "Name - Alter - Status auslesen",
+                .Tags = {"regex", "zahl", "name", "alter", "status", "auslesen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Daten in Spalte A (z. B. Bruno Graf (von) Bayern (72) - Abwesend) werden Name, Alter und Status ausgelesen.
+REGEXEXTRAHIEREN_Name_Alter_Status_auslesen.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Regex_19
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in C2, D2, E2, C15, C18, C19, C22, C36, C50 und C64.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=REGEXEXTRAHIEREN(A2;"^.*?(?=\s*\(\s*\d+)")
+=--REGEXEXTRAHIEREN(A2;"\d+")
+=WENNFEHLER(REGEXEXTRAHIEREN(A2;"(?<=[-–]\s).*$");"")
+=REGEXEXTRAHIEREN(A2;"^\s*(.*?)\s*\(\s*(\d+)(?:\s+Jahre)?\s*\)\s*(?:[-–]\s*)?(.*)$";2)
+=LET(x;REGEXEXTRAHIEREN(A2;"^\s*(.*?)\s*\(\s*(\d+)(?:\s+Jahre)?\s*\)\s*(?:[-–]\s*)?(.*)$";2);HSTAPELN(INDEX(x;1);--INDEX(x;2);INDEX(x;3)))
+=LET(x;REGEXEXTRAHIEREN(A2;"^\s*(.*?)\s*\(\s*(\d+)(?:\s+Jahre)?\s*\)\s*(?:[-–]\s*)?(.*)$";2);HSTAPELN(SPALTENWAHL(x;1);--SPALTENWAHL(x;2);SPALTENWAHL(x;3)))
+=VSTAPELN(HSTAPELN("Name";"Alter";"Status");LET(a;A2:.A1000;WEGLASSEN(REDUCE("";a;LAMBDA(x;y;VSTAPELN(x;REGEXEXTRAHIEREN(y;"^\s*(.*?)\s*\(\s*(\d+)(?:\s+Jahre)?\s*\)\s*(?:[-–]\s*)?(.*)$";2))));1)))
+=LET(x;A2:.A1000;r;WEGLASSEN(REDUCE("";x;LAMBDA(a;z;VSTAPELN(a;REGEXEXTRAHIEREN(z;"^\s*(.*?)\s*\(\s*(\d+)(?:\s+Jahre)?\s*\)\s*(?:[-–]\s*)?(.*)$";2))));1);VSTAPELN(HSTAPELN("Name";"Alter";"Status");HSTAPELN(SPALTENWAHL(r;1);--SPALTENWAHL(r;2);SPALTENWAHL(r;3))))
+=LET(x;A2:.A1000;r;WEGLASSEN(REDUCE("";x;LAMBDA(a;z;VSTAPELN(a;REGEXEXTRAHIEREN(z;"^\s*(.*?)\s*\(\s*(\d+)(?:\s+Jahre)?\s*\)\s*(?:[-–]\s*)?(.*)$";2))));1);VSTAPELN({"Name"."Alter"."Status"};HSTAPELN(INDEX(r;;1);--INDEX(r;;2);INDEX(r;;3))))
+=LET(x;A2:.A1000;VSTAPELN(HSTAPELN("Name";"Alter";"Status");HSTAPELN(MAP(x;LAMBDA(z;GLÄTTEN(REGEXEXTRAHIEREN(z;"^(.*?)\s*\(\s*\d+(?:\s*Jahre)?\s*\)";2))));MAP(x;LAMBDA(z;--REGEXEXTRAHIEREN(z;"^.*\(\s*(\d+)(?:\s*Jahre)?\s*\)";2)));MAP(x;LAMBDA(z;WENNFEHLER(GLÄTTEN(REGEXEXTRAHIEREN(z;"^.*\)\s*[-–]\s*(.*)$";2));""))))))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
