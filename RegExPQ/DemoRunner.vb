@@ -84,6 +84,8 @@ Partial Public Class DemoRunner
                 CreateVBA_PQ_FormelDemo()
             Case "pq_0019"
                 CreatePowerQueryDemo_19()
+            Case "pq_0020"
+                CreatePowerQueryDemo_20()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
@@ -354,6 +356,82 @@ Partial Public Class DemoRunner
                 MessageBoxIcon.Error)
         End Try
     End Sub
+    Private Sub CreatePowerQueryDemo_16()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_PQ_16.zip",
+                    "PQ_016")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo PQ 016",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreatePowerQueryDemo_17()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_PQ_17.zip",
+                    "PQ_017")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo PQ 017",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreatePowerQueryDemo_19()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_PQ_19.zip",
+                    "PQ_019")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo PQ 019",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreatePowerQueryDemo_20()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_PQ_20.zip",
+                    "PQ_020")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo PQ 020",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
     Private Sub CreateVBADemo_7()
         Try
             Dim workbook As Excel.Workbook =
@@ -578,63 +656,6 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo Regex 19",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
-        End Try
-    End Sub
-    Private Sub CreatePowerQueryDemo_16()
-        Try
-            Dim workbook As Excel.Workbook =
-                DemoPackageManager.ExtractAndOpen(
-                    App,
-                    "Demo_PQ_16.zip",
-                    "PQ_016")
-            workbook.Activate()
-        Catch ex As Exception
-            MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
-                Environment.NewLine &
-                Environment.NewLine &
-                ex.Message,
-                "Demo PQ 016",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
-        End Try
-    End Sub
-    Private Sub CreatePowerQueryDemo_17()
-        Try
-            Dim workbook As Excel.Workbook =
-                DemoPackageManager.ExtractAndOpen(
-                    App,
-                    "Demo_PQ_17.zip",
-                    "PQ_017")
-            workbook.Activate()
-        Catch ex As Exception
-            MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
-                Environment.NewLine &
-                Environment.NewLine &
-                ex.Message,
-                "Demo PQ 017",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
-        End Try
-    End Sub
-    Private Sub CreatePowerQueryDemo_19()
-        Try
-            Dim workbook As Excel.Workbook =
-                DemoPackageManager.ExtractAndOpen(
-                    App,
-                    "Demo_PQ_19.zip",
-                    "PQ_019")
-            workbook.Activate()
-        Catch ex As Exception
-            MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
-                Environment.NewLine &
-                Environment.NewLine &
-                ex.Message,
-                "Demo PQ 019",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try

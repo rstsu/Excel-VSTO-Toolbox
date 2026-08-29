@@ -3,7 +3,7 @@
         Return TextBlock(
         <text>
             <![CDATA[
-Um den M-Code zu testen:
+Um den M-Code zu testen (NICHT nötig bei Beispieldatei):
 Button "Demo erzeugen" klicken.
 Der Button "Code kopieren" kopiert den M-Code in die Zwischenablage.
 Dann im Ribbon Daten - "Daten abrufen und transformieren - Daten abrufen - Aus anderen Quellen - Leere Abfrage" anklicken.

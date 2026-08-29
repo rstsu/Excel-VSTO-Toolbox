@@ -1310,6 +1310,88 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0020",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Freitag der 13te...",
+                .Tags = {"pq", "power query", "freitag", "13", "formel", "vba"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Jeder Freitag der 13te wird ausgegeben. Nach Start- und Enddatum. Zusätzlich kann noch der Monat gewählt werden.
+Aktualisiert wird über VBA.
+PQ_Freitag_der_13te_Startdatum_Enddatum_Monat.xlsb
+
+Auch mit Formeln gelöst (Formeln in O1, Q1 und S1).
+=LET(x;SEQUENZ(A2-A1+1;1;A1;1);VSTAPELN("Freitag, der 13te...";FILTER(x;(x>=DATUM(1900;3;1))*(TAG(x)=13)*(WOCHENTAG(x;2)=5))))
+=LET(x;SEQUENZ(A2-A1+1;1;A1;1);m;MONAT(DATWERT("1. "&A4));VSTAPELN("Freitag, der 13te von A4";FILTER(x;(x>=DATUM(1900;3;1))*(TAG(x)=13)*(WOCHENTAG(x;2)=5)*(MONAT(x)=m))))
+=LET(x;SEQUENZ(Ende-Start+1;1;Start;1);m;MONAT(DATWERT("1. "&Monat));VSTAPELN("Freitag, der 13te ohne A4";FILTER(x;(x>=DATUM(1900;3;1))*(TAG(x)=13)*(WOCHENTAG(x;2)=5)*(MONAT(x)=m))))
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\PQ_020
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Startdatum = Date.From(Excel.CurrentWorkbook(){[Name="Start"]}[Content]{0}[Column1]),
+    Enddatum = Date.From(Excel.CurrentWorkbook(){[Name="Ende"]}[Content]{0}[Column1]),
+    StartMonat = Date.StartOfMonth(Startdatum),
+    EndeMonat = Date.StartOfMonth(Enddatum),
+    AnzahlMonate = (Date.Year(EndeMonat) - Date.Year(StartMonat)) * 12 + Date.Month(EndeMonat) - Date.Month(StartMonat) + 1,
+    Monate = List.Transform({0..AnzahlMonate - 1}, each Date.AddMonths(StartMonat, _)),
+    Dreizehnte = List.Transform(Monate, each #date(Date.Year(_), Date.Month(_), 13)),
+    Freitag13 = List.Select(Dreizehnte, each _ >= Startdatum and _ <= Enddatum and Date.DayOfWeek(_, Day.Monday) = 4),
+    Tabelle = Table.FromList(Freitag13, Splitter.SplitByNothing(), {"Datum"}),
+    MitWochentag = Table.AddColumn(Tabelle, "Wochentag", each Date.DayOfWeekName([Datum], "de-DE"), type text),
+    MitMonat = Table.AddColumn(MitWochentag, "Monat", each Date.MonthName([Datum], "de-DE"), type text),
+    MitJahr = Table.AddColumn(MitMonat, "Jahr", each Date.Year([Datum]), Int64.Type)
+in
+    MitJahr
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Startdatum = Date.From(Excel.CurrentWorkbook(){[Name="Start"]}[Content]{0}[Column1]),
+    Enddatum = Date.From(Excel.CurrentWorkbook(){[Name="Ende"]}[Content]{0}[Column1]),
+    AuswahlMonat = Text.From(Excel.CurrentWorkbook(){[Name="Monat"]}[Content]{0}[Column1]),
+    StartMonat = Date.StartOfMonth(Startdatum),
+    EndeMonat = Date.StartOfMonth(Enddatum),
+    AnzahlMonate = (Date.Year(EndeMonat) - Date.Year(StartMonat)) * 12 + Date.Month(EndeMonat) - Date.Month(StartMonat) + 1,
+    Monate = List.Transform({0..AnzahlMonate - 1}, each Date.AddMonths(StartMonat, _)),
+    Dreizehnte = List.Transform(Monate, each #date(Date.Year(_), Date.Month(_), 13)),
+    Freitag13 = List.Select(Dreizehnte, each _ >= Startdatum and _ <= Enddatum and Date.DayOfWeek(_, Day.Monday) = 4 and Date.MonthName(_, "de-DE") = AuswahlMonat),
+    Tabelle = Table.FromList(Freitag13, Splitter.SplitByNothing(), {"Datum"}),
+    MitWochentag = Table.AddColumn(Tabelle, "Wochentag", each Date.DayOfWeekName([Datum], "de-DE"), type text),
+    MitMonat = Table.AddColumn(MitWochentag, "Monat", each Date.MonthName([Datum], "de-DE"), type text),
+    MitJahr = Table.AddColumn(MitMonat, "Jahr", each Date.Year([Datum]), Int64.Type)
+in
+    MitJahr
+        ]]>
+    </code>
+        )
             }
         }
     End Function

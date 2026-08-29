@@ -20,7 +20,7 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ✔ **19** RegEx-Beispiele
 
-✔ **19** Power Query-Beispiele
+✔ **20** Power Query-Beispiele
 
 ✔ **10** Formel-Beispiele
 
