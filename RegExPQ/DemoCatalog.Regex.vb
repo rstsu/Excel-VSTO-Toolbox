@@ -755,6 +755,50 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_020",
+                .Category = DemoCategory.Regex,
+                .Title = "Zahlen mit 1.000er Punkt und Text am Ende",
+                .Tags = {"regex", "zahl", "punkt", "zahlen", "text", "auslesen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Daten in A1:F8.
+In Spalte G werden die Werte aus den jeweiligen Zeilen berechnet.
+Aus H (Haben) und S (Soll).
+
+In I1 folgende (Spill-Formel) werden die Daten ausgegeben.
+Mit Minus (-) wenn S (Soll) am Ende steht.
+
+1.000er Punkt, Positiv, Negativ und 0 über Benutzerdefiniertes Format.
+#.##0,00;-#.##0,00;0
+REGEXEXTRAHIEREN_Zahlen_mit_Punkt_und_Text_am_Ende_auslesen_bearbeiten.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Regex_19
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+Formeln in G1 und I1.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Ergebnis";NACHZEILE(C2:.F970;LAMBDA(y;LET(z;WENNNV(--REGEXEXTRAHIEREN(y;"\d{1,3}(?:[.,]\d{3})*(?:[.,]\d+)?");0);e;SUMME(z*WENN(REGEXTESTEN(y;"S\s*$");-1;1));WENN(e=0;0;ABS(e)&" "&WENN(e<0;"S";"H"))))))
+=LET(x;C2:.G970;z;WENNNV(--REGEXEXTRAHIEREN(x;"\d+(?:\.\d{3})*(?:,\d+)?");"");VSTAPELN(C1:G1;WENN(z="";"";z*WENN(REGEXTESTEN(x;"S\s*$");-1;1))))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
