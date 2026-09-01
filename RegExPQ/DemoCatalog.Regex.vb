@@ -799,6 +799,49 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_021",
+                .Category = DemoCategory.Regex,
+                .Title = "Langer Text in Zellen aufteilen...",
+                .Tags = {"auftrennenl", "text", "aufteilen", "formel", "regex", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Lange Texte in Zellen werden nach vorgegebener Anzahl von Zeichen aufgetrennt.
+Nicht mitten im Wort.
+Verschiedene Möglichkeiten (in Spalten, Zeilen, Blöcken...).
+Mit RegEx, Power Query, Formeln und VBA (UDF und Sub).
+
+RegEx_Power_Query_Formel_VBA_Text_auftrennen.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(x;A2:.A999;WENNFEHLER(WEGLASSEN(REDUCE("";x;LAMBDA(A;T;VSTAPELN(A;GLÄTTEN(REGEXEXTRAHIEREN(T;".{1,25}(?=\s|$)";1;1)))));1);""))
+=LET(x;A2:.A999;lg;D1;WENNFEHLER(WEGLASSEN(REDUCE("";x;LAMBDA(A;T;VSTAPELN(A;GLÄTTEN(REGEXEXTRAHIEREN(T;".{1,"&lg&"}(?=\s|$)";1;1)))));1);""))
+=LET(x;A2:.A999;lg;D1;WENNFEHLER(WEGLASSEN(REDUCE("";x;LAMBDA(A;T;VSTAPELN(A;GLÄTTEN(REGEXEXTRAHIEREN(T;"\S{"&(lg+1)&",}|.{1,"&lg&"}(?=\s|$)";1;1)))));1);""))
+
+=LET(x;A2;y;$C$1;z;"\S{"&(y+1)&",}|.{1,"&y&"}(?=\s|$)";MTRANS(GLÄTTEN(REGEXEXTRAHIEREN(x;z;1;1))))
+=LET(x;A2:.A999;lg;C1;WEGLASSEN(REDUCE("";x;LAMBDA(A;z;VSTAPELN(A;MTRANS(GLÄTTEN(REGEXEXTRAHIEREN(z;"\S{"&(lg+1)&",}|.{1,"&lg&"}(?=\s|$)";1;1))))));1))
+=LET(x;A2:.A999;y;$C$1;z;"\S{"&(y+1)&",}|.{1,"&y&"}(?=\s|$)";WENNNV(WEGLASSEN(REDUCE("";x;LAMBDA(A;T;HSTAPELN(A;MTRANS(GLÄTTEN(REGEXEXTRAHIEREN(T;z;1;1))))));;1);""))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

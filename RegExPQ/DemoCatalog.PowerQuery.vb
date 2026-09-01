@@ -1392,6 +1392,156 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0021",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Langer Text in Zellen aufteilen...",
+                .Tags = {"auftrennenl", "text", "aufteilen", "formel", "regex", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Lange Texte in Zellen werden nach vorgegebener Anzahl von Zeichen aufgetrennt.
+Nicht mitten im Wort.
+Verschiedene Möglichkeiten (in Spalten, Zeilen, Blöcken...).
+Mit RegEx, Power Query, Formeln und VBA (UDF und Sub).
+
+RegEx_Power_Query_Formel_VBA_Text_auftrennen.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    QuelleN = Excel.CurrentWorkbook(){[Name="AnzZ"]}[Content]{0}[Column1],
+    TextTrennen = (TextT as text, LenT as number) as list =>
+        let
+            Worte = Text.Split(TextT, " "),
+            Result = List.Accumulate(Worte, {""}, (Liste, Worte) =>
+                let
+                    ZeileL = List.Last(Liste),
+                    ZeileN = if Text.Length(ZeileL & " " & Worte) <= LenT then Text.Trim(ZeileL & " " & Worte) else Worte,
+                    ListeL = if Text.Length(ZeileL & " " & Worte) <= LenT then List.RemoveLastN(Liste,1) & {ZeileN} else Liste & {ZeileN}
+                in
+                    ListeL)
+        in
+            Result,
+    ListeM = Table.AddColumn(Quelle, "Getrennt_nach_C1", each TextTrennen([Daten], QuelleN)),
+    Erg = Table.RemoveColumns(Table.ExpandListColumn(ListeM, "Getrennt_nach_C1"),{"Daten"})
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle3"]}[Content],
+    TextTrennen = (TextT as text, LenT as number) as list =>
+        let
+            Worte = Text.Split(TextT, " "),
+            Result = List.Accumulate(Worte, {""}, (Liste, Worte) =>
+                let
+                    ZeileL = List.Last(Liste),
+                    ZeileN = if Text.Length(ZeileL & " " & Worte) <= LenT then Text.Trim(ZeileL & " " & Worte) else Worte,
+                    ListeL = if Text.Length(ZeileL & " " & Worte) <= LenT then List.RemoveLastN(Liste,1) & {ZeileN} else Liste & {ZeileN}
+                in
+                    ListeL)
+        in
+            Result,
+    MitListen = Table.AddColumn(Quelle, "Getrennt_nach_Spalte_B", each TextTrennen([Daten], [Länge])),
+    Erg = Table.RemoveColumns(Table.ExpandListColumn(MitListen, "Getrennt_nach_Spalte_B"),{"Daten", "Länge"})
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    QuelleN = Excel.CurrentWorkbook(){[Name="AnzZ"]}[Content]{0}[Column1],
+    TextTrennen = (TextT as text, LenT as number) as text =>
+        let
+            Worte = Text.Split(TextT, " "),
+            Result = List.Accumulate(Worte, {""}, (Liste, Worte) =>
+                let
+                    ZeileL = List.Last(Liste),
+                    ZeileN = if Text.Length(ZeileL & " " & Worte) <= LenT then Text.Trim(ZeileL & " " & Worte) else Worte,
+                    ListeL = if Text.Length(ZeileL & " " & Worte) <= LenT then List.RemoveLastN(Liste,1) & {ZeileN} else Liste & {ZeileN}
+                in
+                    ListeL),
+            Erg = Text.Combine(Result, "#(lf)")
+        in
+            Erg,
+    Erg1 = Table.RemoveColumns(Table.AddColumn(Quelle, "ZeilenText", each TextTrennen([Daten], QuelleN)),{"Daten"})
+in
+    Erg1
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    QuelleN = Excel.CurrentWorkbook(){[Name="AnzZ"]}[Content]{0}[Column1],
+    TextTrennen = (TextT as text, LenT as number) as list =>
+        let
+            Worte = Text.Split(Text.Trim(TextT), " "),
+            Result =
+                List.Accumulate(
+                    Worte,
+                    {""},
+                    (Liste, Wort) =>
+                        let
+                            ZeileL = List.Last(Liste),
+                            Neu = Text.Trim(ZeileL & " " & Wort),
+                            Passt = Text.Length(Neu) <= LenT,
+                            ListeN =
+                                if Passt
+                                then List.RemoveLastN(Liste, 1) & {Neu}
+                                else Liste & {Wort}
+                        in
+                            ListeN
+                )
+        in
+            Result,
+    MitListen = Table.AddColumn(Quelle, "Liste", each TextTrennen([Daten], QuelleN)),
+    MitRecords = Table.AddColumn(MitListen, "Getrennt", each Record.FromList([Liste], List.Transform({1..List.Count([Liste])}, each "Teil_" & Text.From(_)))),
+    AlleSpalten = List.Union(List.Transform(MitRecords[Getrennt], each Record.FieldNames(_))),
+    Expandiert = Table.ExpandRecordColumn(MitRecords, "Getrennt", AlleSpalten, AlleSpalten),
+    Erg = Table.RemoveColumns(Expandiert, {"Daten", "Liste"})
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function

@@ -353,6 +353,54 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0011",
+                .Category = DemoCategory.Formula,
+                .Title = "Langer Text in Zellen aufteilen...",
+                .Tags = {"auftrennenl", "text", "aufteilen", "formel", "regex", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Lange Texte in Zellen werden nach vorgegebener Anzahl von Zeichen aufgetrennt.
+Nicht mitten im Wort.
+Verschiedene Möglichkeiten (in Spalten, Zeilen, Blöcken...).
+Mit RegEx, Power Query, Formeln und VBA (UDF und Sub).
+
+RegEx_Power_Query_Formel_VBA_Text_auftrennen.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(x;A2:.A999;lg;$D$1;WENNNV(WEGLASSEN(REDUCE("";x;LAMBDA(A;txt;VSTAPELN(A;LET(w;TEXTTEILEN(GLÄTTEN(txt);" ");erg;REDUCE("";w;LAMBDA(acc;z;LET(V;TEXTTEILEN(acc;"♦");lst;INDEX(V;1;SPALTEN(V));WENN(acc="";z;WENN(LÄNGE(lst)+1+LÄNGE(z)<=lg;acc&" "&z;acc&"♦"&z)))));TEXTTEILEN(erg;"♦")))));1);""))
+
+=LET(txt;GLÄTTEN(A2);lg;$C$1;w;TEXTTEILEN(txt;" ");erg;REDUCE("";w;LAMBDA(A;z;LET(V;TEXTTEILEN(A;"♦");letzte;INDEX(V;1;SPALTEN(V));WENN(A="";z;WENN(LÄNGE(letzte)+1+LÄNGE(z)<=lg;A&" "&z;A&"♦"&z)))));MTRANS(TEXTTEILEN(erg;"♦")))
+=LET(x;A2:.A999;lg;C1;WEGLASSEN(REDUCE("";x;LAMBDA(A;txt;VSTAPELN(A;LET(w;TEXTTEILEN(GLÄTTEN(txt);" ");erg;REDUCE("";w;LAMBDA(acc;z;LET(V;TEXTTEILEN(acc;"♦");lst;INDEX(V;1;SPALTEN(V));WENN(acc="";z;WENN(LÄNGE(lst)+1+LÄNGE(z)<=lg;acc&" "&z;acc&"♦"&z)))));MTRANS(TEXTTEILEN(erg;"♦"))))));1))
+=LET(x;A2:.A999;lg;$C$1;WENNNV(WEGLASSEN(REDUCE("";x;LAMBDA(A;txt;HSTAPELN(A;MTRANS(LET(w;TEXTTEILEN(GLÄTTEN(txt);" ");erg;REDUCE("";w;LAMBDA(acc;z;LET(V;TEXTTEILEN(acc;"♦");lst;INDEX(V;1;SPALTEN(V));WENN(acc="";z;WENN(LÄNGE(lst)+1+LÄNGE(z)<=lg;acc&" "&z;acc&"♦"&z)))));TEXTTEILEN(erg;"♦"))))));;1);""))
+
+=MTRANS(fncTextSplit(A2;25))
+=LET(x;A2:.A999;WEGLASSEN(REDUCE("";x;LAMBDA(A;T;VSTAPELN(A;MTRANS(fncTextSplit(T;$C$1)))));1))
+=fncTexteSplit(A2;C1)
+=fncTextSplit(A2;25)
+=fncTexteSplitZ(A2:A14;C1)
+=LET(x;A2:A14;WENNNV(WEGLASSEN(REDUCE("";x;LAMBDA(A;T;HSTAPELN(A;MTRANS(fncTextSplit(T;$C$1)))));;1);""))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

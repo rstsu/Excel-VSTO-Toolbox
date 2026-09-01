@@ -1002,6 +1002,114 @@ End Function
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0011",
+                .Category = DemoCategory.Vba,
+                .Title = "Langer Text in Zellen aufteilen...",
+                .Tags = {"auftrennenl", "text", "aufteilen", "formel", "regex", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Lange Texte in Zellen werden nach vorgegebener Anzahl von Zeichen aufgetrennt.
+Nicht mitten im Wort.
+Verschiedene Möglichkeiten (in Spalten, Zeilen, Blöcken...).
+Mit RegEx, Power Query, Formeln und VBA (UDF und Sub).
+
+RegEx_Power_Query_Formel_VBA_Text_auftrennen.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Option Explicit
+'Excel -VSTO - Toolbox
+'Regex, Power Query, Formel und VBA - Demo
+'Ralf Stolzenburg (Case)
+'https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Main()
+    Dim varArr As Variant
+    Dim lngLoop As Long
+    Dim lngTMP As Long
+    Dim lngRow As Long
+    Range("D2:I14").ClearContents
+    lngRow = 2
+    For lngLoop = 2 To Cells(Rows.Count, "A").End(xlUp).Row
+        If Len(Cells(lngLoop, "A").Value) > 0 Then
+            varArr = SplitTextByLength(CStr(Cells(lngLoop, "A").Value), Range("C1").Value)
+            For lngTMP = 0 To UBound(varArr)
+                Cells(lngRow, 4 + lngTMP).Value = varArr(lngTMP)
+            Next lngTMP
+            lngRow = lngRow + 1
+        End If
+    Next lngLoop
+End Sub
+Private Function SplitTextByLength(ByVal strText As String, ByVal lngMaxLen As Long) As Variant
+    Dim strTestText As String
+    Dim strCurrTExt As String
+    Dim strResult() As String
+    Dim strWords() As String
+    Dim lngLoop As Long
+    Dim lngTMP As Long
+    strText = Application.Trim(strText)
+    If Len(strText) = 0 Or lngMaxLen <= 0 Then
+        SplitTextByLength = Array("")
+        Exit Function
+    End If
+    strWords = Split(strText, " ")
+    ReDim strResult(0 To UBound(strWords))
+    strCurrTExt = strWords(0)
+    For lngLoop = 1 To UBound(strWords)
+        strTestText = strCurrTExt & " " & strWords(lngLoop)
+        If Len(strTestText) <= lngMaxLen Then
+            strCurrTExt = strTestText
+        Else
+            strResult(lngTMP) = strCurrTExt
+            lngTMP = lngTMP + 1
+            strCurrTExt = strWords(lngLoop)
+        End If
+    Next lngLoop
+    strResult(lngTMP) = strCurrTExt
+    ReDim Preserve strResult(0 To lngTMP)
+    SplitTextByLength = strResult
+End Function
+Public Function TextTrennen(ByVal strText As String, ByVal lngMaxLen As Long) As Variant
+    Dim varResult() As Variant
+    Dim varArr As Variant
+    Dim lngLoop As Long
+    varArr = SplitTextByLength(strText, lngMaxLen)
+    ReDim varResult(1 To UBound(varArr) + 1, 1 To 1)
+    For lngLoop = 0 To UBound(varArr)
+        varResult(lngLoop + 1, 1) = varArr(lngLoop)
+    Next lngLoop
+    TextTrennen = varResult
+End Function
+Public Function TextTrennen_A(ByVal strText As String, ByVal lngMaxLen As Long) As Variant
+    Dim varResult() As Variant
+    Dim varArr As Variant
+    Dim lngLoop As Long
+    varArr = SplitTextByLength(strText, lngMaxLen)
+    ReDim varResult(1 To 1, 1 To UBound(varArr) + 1)
+    For lngLoop = 0 To UBound(varArr)
+        varResult(1, lngLoop + 1) = varArr(lngLoop)
+    Next lngLoop
+    TextTrennen_A = varResult
+End Function
+        ]]>
+    </code>
+        )
             }
         }
     End Function

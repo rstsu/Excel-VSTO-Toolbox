@@ -48,6 +48,8 @@ Partial Public Class DemoRunner
                 CreateRegexDemo_19()
             Case "regex_020"
                 CreateRegexDemo_20()
+            Case "regex_021"
+                CreateRegex_PQ_Formel_VBADemo()
             Case "pq_001"
                 CreatePowerQueryDemo_1()
             Case "pq_002"
@@ -88,6 +90,8 @@ Partial Public Class DemoRunner
                 CreatePowerQueryDemo_19()
             Case "pq_0020"
                 CreatePowerQueryDemo_20()
+            Case "pq_0021"
+                CreateRegex_PQ_Formel_VBADemo()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
@@ -108,6 +112,8 @@ Partial Public Class DemoRunner
                 CreateFormelDemo_9()
             Case "formula_0010"
                 CreateVBA_PQ_FormelDemo()
+            Case "formula_0011"
+                CreateRegex_PQ_Formel_VBADemo()
             Case "vba_001"
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_002"
@@ -128,6 +134,8 @@ Partial Public Class DemoRunner
                 CreateVBADemo_9()
             Case "vba_0010"
                 CreateVBA_PQ_FormelDemo()
+            Case "vba_0011"
+                CreateRegex_PQ_Formel_VBADemo()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
@@ -696,6 +704,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo_VBA_PQ_Formel",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateRegex_PQ_Formel_VBADemo()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_RegEx_PQ_Formel_VBA.zip",
+                    "Demo_RegEx_PQ_Formel_VBA")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo_RegEx_PQ_Formel_VBA",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
