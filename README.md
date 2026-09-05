@@ -4,6 +4,12 @@ Excel VSTO Add-in mit Demobeispielen für _RegEx_, _Power Query_, _VBA_ und _For
 
 ![Startbildschirm](Images/Startbildschirm_1.png)
 
+## Interaktiver Demo-Katalog
+
+Alle Beispiele können im öffentlichen, durchsuchbaren Katalog nach Power Query, RegEx, VBA und Formeln gefiltert werden. Vorhandene Beispieldateien sind direkt bei der jeweiligen Demo verlinkt.
+
+[Demo-Katalog öffnen](https://rstsu.github.io/Excel-VSTO-Toolbox/)
+
 ## Download
 
 Die **aktuelle** installierbare Version befindet sich unter:

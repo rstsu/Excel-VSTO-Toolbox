@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Durchsuchbarer Demo-Katalog der Excel-VSTO-Toolbox" />
+    <meta name="theme-color" content="#107c41" />
+    <title>Excel-VSTO-Toolbox · Demo-Katalog</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="masthead">
+        <a class="brand" href="#katalog" aria-label="Zum Demo-Katalog">
+          <span class="brand-mark" aria-hidden="true">
+            <span>X</span>
+          </span>
+          <span>
+            <strong>Excel-VSTO-Toolbox</strong>
+            <small>Demo-Katalog</small>
+          </span>
+        </a>
+        <div class="header-meta" aria-label="Katalogstatus">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>Originalkatalog</span>
+          <span id="catalog-version" class="version">v1.0.2.20</span>
+        </div>
+      </header>
+
+      <main id="katalog">
+        <section class="intro" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">Werkzeuge · Beispiele · Lösungen</p>
+            <h1 id="page-title">Die passende Demo.<br /><span>Sofort gefunden.</span></h1>
+            <p class="lede">Durchsuche kompakte Praxisbeispiele für Power Query, Regex, VBA und moderne Excel-Formeln.</p>
+          </div>
+          <dl class="catalog-stats" aria-label="Katalogübersicht">
+            <div><dt id="stat-total">0</dt><dd>Demos</dd></div>
+            <div><dt id="stat-new">0</dt><dd>neu</dd></div>
+            <div><dt id="stat-packages">0</dt><dd>mit Datei</dd></div>
+          </dl>
+        </section>
+
+        <section class="catalog-panel" aria-labelledby="catalog-title">
+          <h2 id="catalog-title" class="sr-only">Demos durchsuchen und filtern</h2>
+
+          <div class="toolbar">
+            <label class="search-box" for="search-input">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.15A7.5 7.5 0 1 1 4 11.5a7.5 7.5 0 0 1 15 0Z" /></svg>
+              <input id="search-input" type="search" placeholder="Demos durchsuchen …" autocomplete="off" />
+              <kbd>Ctrl K</kbd>
+            </label>
+
+            <div class="toggle-group">
+              <div class="new-toggle-wrap">
+                <label class="switch-label" for="new-only">
+                  <input id="new-only" type="checkbox" />
+                  <span class="switch" aria-hidden="true"></span>
+                  Nur neue
+                </label>
+              </div>
+              <div class="new-toggle-wrap">
+                <label class="switch-label" for="package-only">
+                  <input id="package-only" type="checkbox" />
+                  <span class="switch switch-file" aria-hidden="true"></span>
+                  Mit Datei
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <div id="category-filters" class="filter-tabs" role="group" aria-label="Nach Bereich filtern"></div>
+            <p id="result-count" class="result-count" aria-live="polite"></p>
+          </div>
+
+          <div id="demo-grid" class="demo-grid" aria-live="polite"></div>
+
+          <div id="empty-state" class="empty-state" hidden>
+            <div class="empty-icon" aria-hidden="true">⌕</div>
+            <h3>Keine Demo gefunden</h3>
+            <p>Versuche einen anderen Suchbegriff oder setze die Filter zurück.</p>
+            <button id="reset-filters" class="button button-primary" type="button">Alle Demos anzeigen</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title">
+      <div class="dialog-accent" aria-hidden="true"></div>
+      <div class="dialog-head">
+        <div id="detail-meta" class="card-meta"></div>
+        <button id="close-dialog" class="icon-button" type="button" aria-label="Details schließen">×</button>
+      </div>
+      <h2 id="detail-title"></h2>
+      <p id="detail-summary" class="detail-summary"></p>
+      <div id="detail-description" class="detail-description"></div>
+      <div id="package-info" class="package-info" hidden>
+        <span class="package-icon" aria-hidden="true">ZIP</span>
+        <span class="package-copy">
+          <strong id="package-name"></strong>
+          <small id="package-size"></small>
+        </span>
+        <a id="download-link" class="button download-button" href="#">ZIP laden</a>
+      </div>
+      <details id="code-details" class="code-details">
+        <summary>
+          <span>Code ansehen</span>
+          <span class="code-hint">Formel · M-Code · VBA</span>
+        </summary>
+        <div class="code-toolbar">
+          <span id="code-label"></span>
+          <button id="copy-code" class="copy-button" type="button">Code kopieren</button>
+        </div>
+        <pre><code id="detail-code"></code></pre>
+      </details>
+      <div class="dialog-foot">
+        <span id="detail-id" class="demo-id"></span>
+        <div class="dialog-actions">
+          <a id="source-link" class="source-link" href="#" target="_blank" rel="noopener">Auf GitHub</a>
+          <button id="dialog-done" class="button button-primary" type="button">Schließen</button>
+        </div>
+      </div>
+    </dialog>
+
+    <template id="demo-card-template">
+      <article class="demo-card">
+        <div class="card-topline">
+          <div class="card-meta"></div>
+          <div class="card-badges">
+            <span class="file-badge" hidden><span aria-hidden="true">▣</span> Beispieldatei</span>
+            <span class="new-badge" hidden><span aria-hidden="true">✦</span> Neu</span>
+          </div>
+        </div>
+        <h3></h3>
+        <p class="card-summary"></p>
+        <div class="card-bottom">
+          <div class="tag-list" aria-label="Schlagwörter"></div>
+          <button class="details-button" type="button">
+            Details
+            <svg aria-hidden="true" viewBox="0 0 20 20"><path d="M4 10h11m-4-4 4 4-4 4" /></svg>
+          </button>
+        </div>
+      </article>
+    </template>
+
+    <script src="demo-data.js"></script>
+    <script src="catalog-core.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
