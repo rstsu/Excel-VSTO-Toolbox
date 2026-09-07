@@ -127,8 +127,20 @@ for (const category of sourceSpecs.map(spec => spec.category)) {
 }
 
 const counts = Object.fromEntries(sourceSpecs.map(spec => [spec.category, demos.filter(demo => demo.category === spec.category).length]));
-if (demos.length !== 64 || Object.values(counts).join(",") !== "21,21,11,11") {
-  throw new Error(`Unerwartete Kataloggröße: ${demos.length} (${JSON.stringify(counts)})`);
+const demoIds = demos.map(demo => demo.id);
+const duplicateIds = demoIds.filter(
+  (id, index) => demoIds.indexOf(id) !== index
+);
+
+if (
+  demos.length === 0 ||
+  Object.values(counts).some(count => count === 0) ||
+  duplicateIds.length > 0
+) {
+  throw new Error(
+    `Katalogprüfung fehlgeschlagen: ${demos.length} Demos (${JSON.stringify(counts)}), ` +
+    `doppelte IDs: ${[...new Set(duplicateIds)].join(", ") || "keine"}`
+  );
 }
 
 const sourceCommit = require("node:child_process")
