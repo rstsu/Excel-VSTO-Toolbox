@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const childProcess = require("node:child_process");
 
 const sourceRoot = process.argv[2];
 const outputFile = process.argv[3] || path.resolve(__dirname, "../dist/demo-data.js");
@@ -21,6 +22,80 @@ const sourceSpecs = [
 
 function fromVbString(value) {
   return value.replace(/""/g, "\"");
+}
+
+function runGit(args, allowFailure = false) {
+  try {
+    return childProcess
+      .execFileSync("git", ["-C", sourceRoot, ...args], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"]
+      })
+      .trim();
+  } catch (error) {
+    if (allowFailure) return null;
+    throw error;
+  }
+}
+
+function extractSourceIds(source) {
+  return new Set(
+    Array.from(
+      source.matchAll(/\.Id\s*=\s*"((?:""|[^"])*)"/g),
+      match => fromVbString(match[1])
+    )
+  );
+}
+
+function getSourceIdsAtRevision(revision) {
+  const ids = new Set();
+
+  for (const spec of sourceSpecs) {
+    const source = runGit(["show", `${revision}:${spec.file}`], true);
+    if (source === null) continue;
+    for (const id of extractSourceIds(source)) ids.add(id);
+  }
+
+  return ids;
+}
+
+function difference(left, right) {
+  return new Set(Array.from(left).filter(value => !right.has(value)));
+}
+
+function resolveComparisonTag() {
+  if (version !== "main" && version !== "unbekannt") {
+    const requestedTag = runGit(["rev-parse", "--verify", `refs/tags/${version}`], true);
+    if (requestedTag !== null) return version;
+  }
+
+  return runGit(["describe", "--tags", "--abbrev=0", "--match", "v*", "HEAD"], true);
+}
+
+function getNewDemoInfo(currentIds) {
+  const currentTag = resolveComparisonTag();
+  if (currentTag === null) return { ids: new Set(), comparedToTag: null };
+
+  const currentTagIds = getSourceIdsAtRevision(currentTag);
+  const addedAfterCurrentTag = difference(currentIds, currentTagIds);
+
+  // Vor dem nächsten Release: alles markieren, was seit dem letzten Tag hinzukam.
+  if (addedAfterCurrentTag.size > 0) {
+    return { ids: addedAfterCurrentTag, comparedToTag: currentTag };
+  }
+
+  // Nach einem Release: die Zugänge dieses Releases weiterhin als neu anzeigen.
+  const previousTag = runGit(
+    ["describe", "--tags", "--abbrev=0", "--match", "v*", `${currentTag}^`],
+    true
+  );
+  if (previousTag === null) return { ids: new Set(), comparedToTag: null };
+
+  const previousTagIds = getSourceIdsAtRevision(previousTag);
+  return {
+    ids: difference(currentTagIds, previousTagIds),
+    comparedToTag: previousTag
+  };
 }
 
 function extractVbString(block, field) {
@@ -118,13 +193,8 @@ function parseFile(spec) {
 }
 
 const demos = sourceSpecs.flatMap(parseFile);
-for (const category of sourceSpecs.map(spec => spec.category)) {
-  const inCategory = demos.filter(demo => demo.category === category);
-  const newestNumber = Math.max(...inCategory.map(demo => Number(demo.sourceId.match(/(\d+)$/)[1])));
-  for (const demo of inCategory) {
-    demo.isNew = Number(demo.sourceId.match(/(\d+)$/)[1]) === newestNumber;
-  }
-}
+const newDemoInfo = getNewDemoInfo(new Set(demos.map(demo => demo.sourceId)));
+for (const demo of demos) demo.isNew = newDemoInfo.ids.has(demo.sourceId);
 
 const counts = Object.fromEntries(sourceSpecs.map(spec => [spec.category, demos.filter(demo => demo.category === spec.category).length]));
 const demoIds = demos.map(demo => demo.id);
@@ -143,9 +213,7 @@ if (
   );
 }
 
-const sourceCommit = require("node:child_process")
-  .execFileSync("git", ["-C", sourceRoot, "rev-parse", "HEAD"], { encoding: "utf8" })
-  .trim();
+const sourceCommit = runGit(["rev-parse", "HEAD"]);
 
 const header = `/* Automatisch aus dem VSTO-Katalog erzeugt.\n * Quelle: https://github.com/rstsu/Excel-VSTO-Toolbox\n * Erneut erzeugen: node scripts/import-vsto-catalog.js <Repository-Ordner> dist/demo-data.js <Version>\n */\n`;
 const meta = {
@@ -153,10 +221,15 @@ const meta = {
   sourceCommit,
   repositoryUrl: "https://github.com/rstsu/Excel-VSTO-Toolbox",
   counts,
+  newDemoCount: newDemoInfo.ids.size,
+  newComparedToTag: newDemoInfo.comparedToTag,
   packageDemoCount: demos.filter(demo => demo.package).length,
   uniquePackageCount: new Set(demos.filter(demo => demo.package).map(demo => demo.package.fileName)).size
 };
 const output = `${header}window.CATALOG_META = ${JSON.stringify(meta, null, 2)};\n\nwindow.DEMO_CATALOG = ${JSON.stringify(demos, null, 2)};\n`;
 fs.writeFileSync(outputFile, output, "utf8");
 
-console.log(`✓ ${demos.length} Demos importiert: ${JSON.stringify(counts)}`);
+console.log(
+  `✓ ${demos.length} Demos importiert: ${JSON.stringify(counts)}; ` +
+  `${newDemoInfo.ids.size} neu seit ${newDemoInfo.comparedToTag || "Beginn der Historie"}`
+);

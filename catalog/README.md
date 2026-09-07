@@ -11,7 +11,7 @@ Die Quelldaten stammen direkt aus:
 - `RegExPQ/DemoRunner.vb`
 - `RegExPQ/Demos/*.zip`
 
-`catalog/scripts/import-vsto-catalog.js` erzeugt daraus `catalog/site/demo-data.js`. Die jeweils höchste Demo-Nummer eines Bereichs wird als neu markiert. ZIP-Zuordnungen werden aus `DemoRunner.vb` übernommen.
+`catalog/scripts/import-vsto-catalog.js` erzeugt daraus `catalog/site/demo-data.js`. Als neu gelten automatisch die seit dem vorherigen Release hinzugekommenen Demo-IDs. Vor einem neuen Release wird dafür mit dem letzten vorhandenen Release-Tag verglichen; nach dem Release bleiben dessen neue Einträge markiert. ZIP-Zuordnungen werden aus `DemoRunner.vb` übernommen.
 
 Der Workflow `.github/workflows/demo-catalog-pages.yml` prüft den erzeugten JavaScript-Code und veröffentlicht anschließend `catalog/site`.
 
