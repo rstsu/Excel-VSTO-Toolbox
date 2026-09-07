@@ -1542,6 +1542,123 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0022",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Werte aus Spalten in einer Spalte ausgeben...",
+                .Tags = {"auftrennen", "text", "aufteilen", "formel", "m-code", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Daten aus Spalten (im Beispiel A:F) werden in eine Spalte zusammengeführt.
+Mit Power Query und Formeln gelöst. Aktualisierung der Power Query Abfragen mit VBA.
+
+PQ_Power_Query_Formeln_mehrere_Spalten_in_EINE_Spalte.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    SoderZ = Excel.CurrentWorkbook(){[Name="ZoderS"]}[Content]{0}[Column1],
+    Erg = Table.FromList(List.Combine( if SoderZ then Table.ToColumns(Quelle) else Table.ToRows(Quelle)), Splitter.SplitByNothing(), {"Wert"})
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Bereich"]}[Content],
+    SoderZ = Excel.CurrentWorkbook(){[Name="SoderZ"]}[Content]{0}[Column1],
+    Erg = Table.FromList(List.Combine( if SoderZ then Table.ToColumns(Quelle) else Table.ToRows(Quelle)), Splitter.SplitByNothing(), {"Wert"})
+in
+    Erg
+//Mit List.Accumulate gelöst
+/*
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Bereich"]}[Content],
+    SoderZ = Excel.CurrentWorkbook(){[Name="SoderZ"]}[Content]{0}[Column1],
+    Result =
+        if SoderZ then
+            List.Accumulate(
+                {0 .. Table.ColumnCount(Quelle) - 1},
+                {},
+                (st, cur) => st & Table.Column(Quelle, Table.ColumnNames(Quelle){cur})
+            )
+        else
+            List.Accumulate(
+                {0 .. Table.RowCount(Quelle) - 1},
+                {},
+                (st, cur) => st & Record.ToList(Quelle{cur})
+            ),
+    Erg = Table.FromList(Result, Splitter.SplitByNothing(), {"Wert"})
+in
+    Erg
+*/
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Bereich_1"]}[Content],
+    SoderZ = Excel.CurrentWorkbook(){[Name="SoderZ"]}[Content]{0}[Column1],
+    Erg = Table.FromList(List.Combine( if SoderZ then Table.ToColumns(Quelle) else Table.ToRows(Quelle)), Splitter.SplitByNothing(), {"Wert"})
+in
+    Erg
+
+//Mit List.Accumulate gelöst
+/*
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Bereich_1"]}[Content],
+    SoderZ = Excel.CurrentWorkbook(){[Name="SoderZ"]}[Content]{0}[Column1],
+    Result =
+        if SoderZ then
+            List.Accumulate(
+                {0 .. Table.ColumnCount(Quelle) - 1},
+                {},
+                (st, cur) => st & Table.Column(Quelle, Table.ColumnNames(Quelle){cur})
+            )
+        else
+            List.Accumulate(
+                {0 .. Table.RowCount(Quelle) - 1},
+                {},
+                (st, cur) => st & Record.ToList(Quelle{cur})
+            ),
+    Erg = Table.FromList(Result, Splitter.SplitByNothing(), {"Wert"})
+in
+    Erg
+*/
+        ]]>
+    </code>
+        )
             }
         }
     End Function

@@ -358,7 +358,7 @@ bereitgestellt werden.
                 .Id = "formula_0011",
                 .Category = DemoCategory.Formula,
                 .Title = "Langer Text in Zellen aufteilen...",
-                .Tags = {"auftrennenl", "text", "aufteilen", "formel", "regex", "vba", "power query"},
+                .Tags = {"auftrennen", "text", "aufteilen", "formel", "regex", "vba", "power query"},
                 .Description = TextBlock(
     <text>
         <![CDATA[
@@ -398,6 +398,71 @@ bereitgestellt werden.
 =fncTextSplit(A2;25)
 =fncTexteSplitZ(A2:A14;C1)
 =LET(x;A2:A14;WENNNV(WEGLASSEN(REDUCE("";x;LAMBDA(A;T;HSTAPELN(A;MTRANS(fncTextSplit(T;$C$1)))));;1);""))
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0012",
+                .Category = DemoCategory.Formula,
+                .Title = "Werte aus Spalten in einer Spalte ausgeben...",
+                .Tags = {"auftrennen", "text", "aufteilen", "formel", "m-code", "vba", "power query"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Daten aus Spalten (im Beispiel A:F) werden in eine Spalte zusammengeführt.
+Mit Power Query und Formeln gelöst. Aktualisierung der Power Query Abfragen mit VBA.
+
+PQ_Power_Query_Formeln_mehrere_Spalten_in_EINE_Spalte.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Liste";LET(k;0;z;ANZAHL2($A:$A);s;XVERGLEICH(WAHR;INDEX($A:$K;k+1;0)<>"";0;-1);d;INDEX($A:$K;k+1;1):INDEX($A:$K;z;s);ZUSPALTE(d;1;WAHR)))
+
+=VSTAPELN("Liste";LET(k;0;z;ANZAHL2($A:$A);s;XVERGLEICH(WAHR;INDEX($A:$K;k+1;0)<>"";0;-1);d;INDEX($A:$K;k+1;1):INDEX($A:$K;z;s);ZUSPALTE(d;1;FALSCH)))
+
+=VSTAPELN("Liste";ZUSPALTE(A1:.K999;;WAHR))
+
+=VSTAPELN("Liste";ZUSPALTE(A1:.K999))
+
+=VSTAPELN("Liste";LET(k;0;z;ANZAHL2($A:$A);d;INDEX($A:$F;k+1;1):INDEX($A:$F;z;SPALTEN($A:$F));ZUSPALTE(d;1;WAHR)))
+
+=VSTAPELN("Liste";LET(k;0;z;ANZAHL2($A:$A);d;INDEX($A:$F;k+1;1):INDEX($A:$F;z;SPALTEN($A:$F));ZUSPALTE(d;1;FALSCH)))
+
+=VSTAPELN("Liste";LET(k;0;z;ANZAHL2($A:$A);s;ANZAHL2(INDEX($1:$1048576;k+1;0));d;INDEX($1:$1048576;k+1;1):INDEX($1:$1048576;z;s);ZUSPALTE(d;1;FALSCH)))
+
+=VSTAPELN("Liste";LET(k;0;z;ANZAHL2($A:$A);s;ANZAHL2(INDEX($1:$1048576;k+1;0));d;INDEX($1:$1048576;k+1;1):INDEX($1:$1048576;z;s);ZUSPALTE(d;1;WAHR)))
+
+=VSTAPELN("Liste";LET(k;1;z;ANZAHL2($A:$A);s;XVERGLEICH(WAHR;INDEX($A:$K;k+1;0)<>"";0;-1);d;INDEX($A:$K;k+1;1):INDEX($A:$K;z;s);ZUSPALTE(d;1;WAHR)))
+
+=VSTAPELN("Liste";LET(k;1;z;ANZAHL2($A:$A);s;XVERGLEICH(WAHR;INDEX($A:$K;k+1;0)<>"";0;-1);d;INDEX($A:$K;k+1;1):INDEX($A:$K;z;s);ZUSPALTE(d;1;FALSCH)))
+
+=VSTAPELN("Liste";ZUSPALTE(A2:.K999;;WAHR))
+
+=VSTAPELN("Liste";ZUSPALTE(A2:.K999))
+
+=VSTAPELN("Liste";LET(k;1;z;ANZAHL2($A:$A);d;INDEX($A:$F;k+1;1):INDEX($A:$F;z;SPALTEN($A:$F));ZUSPALTE(d;1;WAHR)))
+
+=VSTAPELN("Liste";LET(k;1;z;ANZAHL2($A:$A);d;INDEX($A:$F;k+1;1):INDEX($A:$F;z;SPALTEN($A:$F));ZUSPALTE(d;1;FALSCH)))
+
+=VSTAPELN("Liste";LET(k;1;z;ANZAHL2($A:$A);s;ANZAHL2(INDEX($1:$1048576;k+1;0));d;INDEX($1:$1048576;k+1;1):INDEX($1:$1048576;z;s);ZUSPALTE(d;1;FALSCH)))
+
+=VSTAPELN("Liste";LET(k;1;z;ANZAHL2($A:$A);s;ANZAHL2(INDEX($1:$1048576;k+1;0));d;INDEX($1:$1048576;k+1;1):INDEX($1:$1048576;z;s);ZUSPALTE(d;1;WAHR)))
         ]]>
     </code>
         )
