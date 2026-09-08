@@ -466,6 +466,48 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0013",
+                .Category = DemoCategory.Formula,
+                .Title = "Geburtstagsliste nach Monaten...",
+                .Tags = {"geburtstag", "liste", "datum", "formel", "m-code", "vba", "power query", "pivot"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Eine Geburtstagsliste wird mit Formeln erweitert.
+Anschließend mit einer Pivot und einem Datenschnitt (Mehrfachauswahl möglich) nach Monaten gefiltert.
+
+Power_Query_Pivot_mit_Formel_Geburtstagsliste_Monate.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_Pivot
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=TEXT(B2;"TTTT")
+=TEXT(DATUM(JAHR(HEUTE());MONAT(B2);TAG(B2));"TTTT")
+=DATEDIF(B2;HEUTE();"y")
+=WENN(DATUM(JAHR(HEUTE());MONAT(B2);TAG(B2))<HEUTE();DATUM(JAHR(HEUTE())+1;MONAT(B2);TAG(B2));DATUM(JAHR(HEUTE());MONAT(B2);TAG(B2)))
+=DATEDIF(HEUTE();F2;"d")
+=WENNFEHLER(LET(sel;MONAT(FILTER(J3:.J999;ISTZAHL(J3:.J999)));allm;SEQUENZ(12);m;FILTER(allm;ISTZAHL(VERGLEICH(allm;sel;0)));n;ZEILEN(m);WENN(n=1;"Geburtstagsliste "&TEXT(DATUM(2000;INDEX(m;1);1);"MMMM");LET(prev;VSTAPELN(-1;WEGLASSEN(m;-1));nxt;VSTAPELN(WEGLASSEN(m;1);13);starts;FILTER(m;m-prev>1);ends;FILTER(m;nxt-m>1);g;ZEILEN(starts);parts;MAP(starts;ends;LAMBDA(a;b;WENN(a=b;TEXT(DATUM(2000;a;1);"MMMM");WENN(ODER(g=1;g>=3);"von ";"")&TEXT(DATUM(2000;a;1);"MMMM")&" bis "&TEXT(DATUM(2000;b;1);"MMMM"))));"Geburtstagsliste "&WENN(g=1;INDEX(parts;1);WENN(g=2;INDEX(parts;1)&" und "&INDEX(parts;2);TEXTVERKETTEN(", ";WAHR;ÜBERNEHMEN(parts;g-1))&" und "&INDEX(parts;g))))));"Geburtstagsliste")
+
+=WENNFEHLER(LET(sel;MONAT(FILTER(E3:.E999;ISTZAHL(E3:.E999)));allm;SEQUENZ(12);m;FILTER(allm;ISTZAHL(VERGLEICH(allm;sel;0)));n;ZEILEN(m);WENN(n=1;"Geburtstagsliste "&TEXT(DATUM(2000;INDEX(m;1);1);"MMMM");LET(prev;VSTAPELN(-1;WEGLASSEN(m;-1));nxt;VSTAPELN(WEGLASSEN(m;1);13);starts;FILTER(m;m-prev>1);ends;FILTER(m;nxt-m>1);g;ZEILEN(starts);parts;MAP(starts;ends;LAMBDA(a;b;WENN(a=b;TEXT(DATUM(2000;a;1);"MMMM");WENN(ODER(g=1;g>=3);"von ";"")&TEXT(DATUM(2000;a;1);"MMMM")&" bis "&TEXT(DATUM(2000;b;1);"MMMM"))));"Geburtstagsliste "&WENN(g=1;INDEX(parts;1);WENN(g=2;INDEX(parts;1)&" und "&INDEX(parts;2);TEXTVERKETTEN(", ";WAHR;ÜBERNEHMEN(parts;g-1))&" und "&INDEX(parts;g))))));"Geburtstagsliste")
+        ]]>
+    </code>
+        )
             }
         }
     End Function

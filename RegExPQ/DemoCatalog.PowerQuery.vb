@@ -1659,6 +1659,227 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0023",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Geburtstagsliste nach Monaten...",
+                .Tags = {"geburtstag", "liste", "datum", "formel", "m-code", "vba", "power query", "pivot"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Über die Kontrollkästchen können die gewünschten Monate ausgewählt werden.
+Beim Aktualisieren (geht über VBA) liest Power Query deren Status ein,
+filtert die Geburtstagsliste und berechnet Wochentage, Alter sowie die Tage bis zum nächsten Geburtstag.
+Sind keine Monate angehakt, werden automatisch alle Monate berücksichtigt.
+Die Überschrift wird passend zur jeweiligen Monatsauswahl erzeugt.
+
+Power_Query_Pivot_mit_Formel_Geburtstagsliste_Monate.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_Pivot
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Daten = Table.TransformColumnTypes(Quelle, {{"Name", type text}, {"Geburtstag", type date}}),
+    Monatsnamen = {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"},
+    Haken = Record.ToList(Excel.CurrentWorkbook(){[Name="Monate"]}[Content]{0}),
+    Auswahl = List.Select({1..12}, each try Haken{_ - 1} = true otherwise false),
+    Monate = if List.IsEmpty(Auswahl) then {1..12} else Auswahl,
+    Gruppen = List.Accumulate(
+        Monate,
+        {},
+        (s, m) =>
+            if List.IsEmpty(s) or m <> List.Last(List.Last(s)) + 1
+            then s & {{m}}
+            else List.RemoveLastN(s, 1) &
+                 {List.Last(s) & {m}}
+    ),
+    AnzahlGruppen = List.Count(Gruppen),
+    Teile = List.Transform(
+        Gruppen,
+        each
+            let
+                Von = List.First(_),
+                Bis = List.Last(_)
+            in
+                if Von = Bis then
+                    Monatsnamen{Von - 1}
+                else
+                    (if AnzahlGruppen = 1 or AnzahlGruppen >= 3
+                     then "von "
+                     else "") &
+                    Monatsnamen{Von - 1} & " bis " &
+                    Monatsnamen{Bis - 1}
+    ),
+    Monatstext =
+        if AnzahlGruppen = 1 then
+            Teile{0}
+        else if AnzahlGruppen = 2 then
+            Teile{0} & " und " & Teile{1}
+        else
+            Text.Combine(List.RemoveLastN(Teile, 1), ", ") &
+            " und " & List.Last(Teile),
+    Überschrift = "Geburtstagsliste " & Monatstext,
+    Gefiltert = Table.SelectRows(Daten, each List.Contains(Monate, Date.Month([Geburtstag]))),
+    Heute = Date.From(DateTime.LocalNow()),
+    Berechnet = Table.AddColumn(
+        Gefiltert,
+        "Daten",
+        each
+            let
+                Geburtstag = [Geburtstag],
+                GeburtstagDiesesJahr =
+                    try #date(
+                        Date.Year(Heute),
+                        Date.Month(Geburtstag),
+                        Date.Day(Geburtstag)
+                    )
+                    otherwise #date(Date.Year(Heute), 2, 28),
+                NächsterGeburtstag =
+                    if GeburtstagDiesesJahr < Heute
+                    then Date.AddYears(GeburtstagDiesesJahr, 1)
+                    else GeburtstagDiesesJahr,
+                Alter =
+                    Date.Year(Heute) - Date.Year(Geburtstag) -
+                    (
+                        if GeburtstagDiesesJahr > Heute
+                        then 1
+                        else 0
+                    )
+            in
+                [
+                    TagG = Date.DayOfWeekName(Geburtstag, "de-DE"),
+                    TageBis = Duration.Days(NächsterGeburtstag - Heute),
+                    TagH = Date.DayOfWeekName(NächsterGeburtstag, "de-DE"),
+                    Alter = Alter
+                ]
+    ),
+    Erweitert = Table.ExpandRecordColumn(Berechnet, "Daten", {"TagG", "TageBis", "TagH", "Alter"}),
+    Sortiert = Table.Sort(Erweitert, {{"Name", Order.Ascending}}),
+    /*
+    Titelzeile = #table(
+        Table.ColumnNames(Sortiert),
+        {{Überschrift, null, null, null, null, null}}
+    ),
+    Erg = Table.Combine({Titelzeile, Sortiert})
+    */
+    Erg = Table.RenameColumns(Sortiert, {{"Name", Überschrift}})
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+// Die Überschrift der ersten Spalte ist Name. Die ausgewählten Monate werden in der ersten Datenzeile ausgegeben.
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Daten = Table.TransformColumnTypes(Quelle, {{"Name", type text}, {"Geburtstag", type date}}),
+    Monatsnamen = {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"},
+    Haken = Record.ToList(Excel.CurrentWorkbook(){[Name="Monate"]}[Content]{0}),
+    Auswahl = List.Select({1..12}, each try Haken{_ - 1} = true otherwise false),
+    Monate = if List.IsEmpty(Auswahl) then {1..12} else Auswahl,
+    Gruppen = List.Accumulate(
+        Monate,
+        {},
+        (s, m) =>
+            if List.IsEmpty(s) or m <> List.Last(List.Last(s)) + 1
+            then s & {{m}}
+            else List.RemoveLastN(s, 1) &
+                 {List.Last(s) & {m}}
+    ),
+    AnzahlGruppen = List.Count(Gruppen),
+    Teile = List.Transform(
+        Gruppen,
+        each
+            let
+                Von = List.First(_),
+                Bis = List.Last(_)
+            in
+                if Von = Bis then
+                    Monatsnamen{Von - 1}
+                else
+                    (if AnzahlGruppen = 1 or AnzahlGruppen >= 3
+                     then "von "
+                     else "") &
+                    Monatsnamen{Von - 1} & " bis " &
+                    Monatsnamen{Bis - 1}
+    ),
+    Monatstext =
+        if AnzahlGruppen = 1 then
+            Teile{0}
+        else if AnzahlGruppen = 2 then
+            Teile{0} & " und " & Teile{1}
+        else
+            Text.Combine(List.RemoveLastN(Teile, 1), ", ") &
+            " und " & List.Last(Teile),
+    Überschrift = "Geburtstagsliste " & Monatstext,
+    Gefiltert = Table.SelectRows(Daten, each List.Contains(Monate, Date.Month([Geburtstag]))),
+    Heute = Date.From(DateTime.LocalNow()),
+    Berechnet = Table.AddColumn(
+        Gefiltert,
+        "Daten",
+        each
+            let
+                Geburtstag = [Geburtstag],
+                GeburtstagDiesesJahr =
+                    try #date(
+                        Date.Year(Heute),
+                        Date.Month(Geburtstag),
+                        Date.Day(Geburtstag)
+                    )
+                    otherwise #date(Date.Year(Heute), 2, 28),
+                NächsterGeburtstag =
+                    if GeburtstagDiesesJahr < Heute
+                    then Date.AddYears(GeburtstagDiesesJahr, 1)
+                    else GeburtstagDiesesJahr,
+                Alter =
+                    Date.Year(Heute) - Date.Year(Geburtstag) -
+                    (
+                        if GeburtstagDiesesJahr > Heute
+                        then 1
+                        else 0
+                    )
+            in
+                [
+                    TagG = Date.DayOfWeekName(Geburtstag, "de-DE"),
+                    TageBis = Duration.Days(NächsterGeburtstag - Heute),
+                    TagH = Date.DayOfWeekName(NächsterGeburtstag, "de-DE"),
+                    Alter = Alter
+                ]
+    ),
+    Erweitert = Table.ExpandRecordColumn(Berechnet, "Daten", {"TagG", "TageBis", "TagH", "Alter"}),
+    Sortiert = Table.Sort(Erweitert, {{"Name", Order.Ascending}}),
+    Titelzeile = #table(Table.ColumnNames(Sortiert), {{Überschrift, null, null, null, null, null}}),
+    Erg = Table.Combine({Titelzeile, Sortiert})
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function

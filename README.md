@@ -26,9 +26,9 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ✔ **21** RegEx-Beispiele
 
-✔ **22** Power Query-Beispiele
+✔ **23** Power Query-Beispiele
 
-✔ **12** Formel-Beispiele
+✔ **13** Formel-Beispiele
 
 ✔ **11** VBA-Beispiele
 
