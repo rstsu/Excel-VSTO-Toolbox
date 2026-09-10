@@ -804,7 +804,7 @@ bereitgestellt werden.
                 .Id = "regex_021",
                 .Category = DemoCategory.Regex,
                 .Title = "Langer Text in Zellen aufteilen...",
-                .Tags = {"auftrennenl", "text", "aufteilen", "formel", "regex", "vba", "power query"},
+                .Tags = {"auftrennen", "text", "aufteilen", "formel", "regex", "vba", "power query"},
                 .Description = TextBlock(
     <text>
         <![CDATA[
@@ -839,6 +839,44 @@ bereitgestellt werden.
 =LET(x;A2;y;$C$1;z;"\S{"&(y+1)&",}|.{1,"&y&"}(?=\s|$)";MTRANS(GLÄTTEN(REGEXEXTRAHIEREN(x;z;1;1))))
 =LET(x;A2:.A999;lg;C1;WEGLASSEN(REDUCE("";x;LAMBDA(A;z;VSTAPELN(A;MTRANS(GLÄTTEN(REGEXEXTRAHIEREN(z;"\S{"&(lg+1)&",}|.{1,"&lg&"}(?=\s|$)";1;1))))));1))
 =LET(x;A2:.A999;y;$C$1;z;"\S{"&(y+1)&",}|.{1,"&y&"}(?=\s|$)";WENNNV(WEGLASSEN(REDUCE("";x;LAMBDA(A;T;HSTAPELN(A;MTRANS(GLÄTTEN(REGEXEXTRAHIEREN(T;z;1;1))))));;1);""))
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "regex_022",
+                .Category = DemoCategory.Regex,
+                .Title = "Text zwischen zwei Zeichen auslesen...",
+                .Tags = {"auftrennen", "text", "aufteilen", "regex", "extrahieren", "zeichen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Über die Auswahlliste in Zelle I1 können verschiedene Regex-Pattern ausgewählt und direkt miteinander verglichen werden (G1).
+Je nach gewähltem Pattern können einzelne Treffer vollständig oder nur teilweise erkannt werden.
+Unvollständige Ergebnisse werden automatisch durch eine bedingte Formatierung hervorgehoben.
+
+Regex_zwischen_zwei_Zeichen_String_auslesen.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_22
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("RegEx_1";REGEXEXTRAHIEREN(A2:.A975;"#.+? - [\w]+(?: [\w]+)?"))
+=VSTAPELN("RegEx_2";REGEXEXTRAHIEREN(A2:.A976;"#.+? - [A-Za-z]+(?: [A-Za-z]+)?"))
+=VSTAPELN("RegEx_3";REGEXEXTRAHIEREN(A2:.A976;I1))
         ]]>
     </code>
         )
