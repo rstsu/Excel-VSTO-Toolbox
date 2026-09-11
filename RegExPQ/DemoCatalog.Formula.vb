@@ -508,6 +508,51 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0014",
+                .Category = DemoCategory.Formula,
+                .Title = "Text auftrennen - Zahlen vervollständigen...",
+                .Tags = {"text", "liste", "aufteilen", "formel", "trennen", "vervollständigen", "zahlen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Strings (hier A2:A7) werden aufgeteilt und wenn vorhanden (r4-7) werden die Zahlen vervollständigt.
+Steht am Ende z. B. nur r3 passiert nichts.
+Formeln zum "ziehen" und "Spill-Formeln".
+Die Formeln in B11:Bx und D10 sind über LAMBDA - siehe Namens-Manager.
+
+String_aufteilen_Zahlen_vervollstaendigen.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_Formel_14
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(t;A2;p;TEXTNACH(t;"r");v;TEXTTEILEN(p;"-");WENN(SPALTEN(v)=1;t;TEXTVOR(t;"r")&"r"&TEXTVERKETTEN(",";;SEQUENZ(;--INDEX(v;1;2)---INDEX(v;1;1)+1;--INDEX(v;1;1)))))
+
+=rWahl(A2)
+
+=VSTAPELN(A1;NACHZEILE(A2:.A999;LAMBDA(t;LET(p;TEXTNACH(t;"r");v;TEXTTEILEN(p;"-");WENN(SPALTEN(v)=1;t;TEXTVOR(t;"r")&"r"&TEXTVERKETTEN(",";;SEQUENZ(;--INDEX(v;1;2)---INDEX(v;1;1)+1;--INDEX(v;1;1))))))))
+
+=VSTAPELN(A1;NACHZEILE(A2:A7;LAMBDA(t;rWahl(t))))
+
+=VSTAPELN(A1;NACHZEILE(A2:.A999;LAMBDA(t;LET(p;TEXTNACH(t;"r");v;TEXTTEILEN(p;"-");a;--INDEX(v;1;1);e;--INDEX(v;1;2);WENN(SPALTEN(v)=1;t;TEXTVOR(t;"r")&"r"&TEXTVERKETTEN(",";;SEQUENZ(;e-a+1;a)))))))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
