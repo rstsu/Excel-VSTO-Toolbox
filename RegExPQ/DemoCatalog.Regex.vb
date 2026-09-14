@@ -880,6 +880,54 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_023",
+                .Category = DemoCategory.Regex,
+                .Title = "Ordner- Datei- Tabellenblattnamen prüfen...",
+                .Tags = {"ordnername", "dateiname", "tabellenblattname", "regex", "prüfen"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Ordner- Datei- Tabellenblattnamen werden mit Regex auf ungültige Zeichen geprüft.
+Länge 31 bei Tabellenblattname, 255 bei Ordner- und Dateiname und die reservierten Namen unter Windows werden berücksichtigt.
+
+Ordner_Datei_Tabellenblattneme_mit_RegEx_pruefen.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_23
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Ordnername Fehler";REGEXTESTEN(A2:.A998;"[<>:""/\\|?*]"))
+=WENNNV(VSTAPELN("Ordnername Fehler";LET(d;A2:.A998;f;REGEXERSETZEN(d;"[^<>:""/\\|?*]";"");m;MAX(LÄNGE(f));WENN(m=0;"";TEIL(f;SEQUENZ(;m);1))));"")
+=VSTAPELN("Dateiname Fehler";REGEXTESTEN(B2:.B998;"[<>:""/\\|?*]"))
+=WENNNV(VSTAPELN("Dateiname Fehler";LET(d;B2:.B998;f;REGEXERSETZEN(d;"[^<>:""/\\|?*]";"");m;MAX(LÄNGE(f));WENN(m=0;"";TEIL(f;SEQUENZ(;m);1))));"")
+=VSTAPELN("Tabellenblatt Fehler";LET(d;C2:.C998;(REGEXTESTEN(d;"[:\\/?*\[\]]")+(LÄNGE(d)>31))>0))
+=WENNNV(VSTAPELN("Tabellenblatt Fehler";LET(d;C2:.C998;f;REGEXERSETZEN(d;"[^:\\/?*\[\]]";"")&WENN(LÄNGE(d)>31;"L";"");m;MAX(LÄNGE(f));WENN(m=0;"";TEIL(f;SEQUENZ(;m);1))));"")
+=REGEXTESTEN(A2;"(?i)^(?=.{1,})(?=.{0,255}$)(?!\s+$)(?:\s|.*\s{2,}.*|.*[<>:""/\\|?*].*|(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?)$")
+=ODER(REGEXTESTEN(A2;"(?i)^[\s]|[\s]$|[\s]{2,}|[<>:""/\\|?*]|^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$");LÄNGE(A2)>255;GLÄTTEN(A2)="")
+=ODER(REGEXTESTEN(A2;"(?i)^[\s]|[\s]$|[\s]{2,}|[<>:""/\\|?*]|^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$");LÄNGE(A2)>255)
+=LINKS(REGEXERSETZEN(REGEXERSETZEN(REGEXERSETZEN(GLÄTTEN(A2);"[<>:""/\\|?*]";"");"^(?i)(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$"; "_$1$2");"\s{2,}";" ");255)
+=REGEXTESTEN(A6;"(?i)^(?=.{1,})(?=.{0,255}$)(?!\s+$)(?:\s|.*\s{2,}.*|.*[<>:""/\\|?*].*|(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?)$")
+=ODER(REGEXTESTEN(A6;"(?i)^[\s]|[\s]$|[\s]{2,}|[<>:""/\\|?*]|^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$");LÄNGE(A2)>255;GLÄTTEN(A2)="")
+=ODER(REGEXTESTEN(A6;"(?i)^[\s]|[\s]$|[\s]{2,}|[<>:""/\\|?*]|^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$");LÄNGE(A2)>255)
+=LINKS(REGEXERSETZEN(REGEXERSETZEN(REGEXERSETZEN(GLÄTTEN(A6);"[<>:""/\\|?*]";"");"^(?i)(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$"; "_$1$2");"\s{2,}";" ");255)
+        ]]>
+    </code>
+        )
             }
         }
     End Function
