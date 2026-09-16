@@ -928,6 +928,49 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_024",
+                .Category = DemoCategory.Regex,
+                .Title = "Telefonnummern auf einheitliches Niveau bringen...",
+                .Tags = {"telefonnummer", "0049", "lambda", "regex", "ändern"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Telefonnummern werden auf ein einheitliches Format gebracht.
+Mit und ohne Leerzeichen zwischen den Zahlen. Auch mit LAMBDA.
+
+Telefonnummern_Internationales_Format_bringen_0049.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_24
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(n;TEXTNACH(E2;"0049");v;VwV!A2:.A9999&"";p;FILTER(v;LINKS(n;LÄNGE(v))=v);vw;INDEX(SORTIERENNACH(p;LÄNGE(p);-1);1);"0049 "&vw&" "&TEXTNACH(n;vw))
+=LET(x;REGEXERSETZEN(A2;"\D";"");n;REGEXERSETZEN(x;"^(?:0049|49|0)";"");v;FILTER(VwV!A2:.A9999&"";VwV!C2:.C9999=1);p;FILTER(v;LINKS(n;LÄNGE(v))=v);vw;INDEX(SORTIERENNACH(p;LÄNGE(p);-1);1);"0049 "&vw&" "&RECHTS(n;LÄNGE(n)-LÄNGE(vw)))
+=LET(x;REGEXERSETZEN(A2;"\D";"");n;REGEXERSETZEN(x;"^(?:0049|49|0)";"");v;FILTER(VwV!A2:.A9999&"";VwV!C2:.C9999=1);o;FILTER(VwV!B2:B6000;VwV!C2:C6000=1);p;FILTER(v;LINKS(n;LÄNGE(v))=v);vw;INDEX(SORTIERENNACH(p;LÄNGE(p);-1);1);ort;XVERWEIS(vw;v;o);HSTAPELN("0049 "&vw&" "&RECHTS(n;LÄNGE(n)-LÄNGE(vw));ort))
+=VSTAPELN("Von Spalte A";LET(d;FILTER(A2:.A999;A2:.A999<>"");v;FILTER(VwV!A2:.A9999&"";VwV!C2:.C9999=1);NACHZEILE(d;LAMBDA(t;LET(x;REGEXERSETZEN(t;"\D";"");n;REGEXERSETZEN(x;"^(?:0049|49|0)";"");p;FILTER(v;LINKS(n;LÄNGE(v))=v);vw;INDEX(SORTIERENNACH(p;LÄNGE(p);-1);1);"0049 "&vw&" "&RECHTS(n;LÄNGE(n)-LÄNGE(vw)))))))
+=LET(d;FILTER(A2:.A999;A2:.A999<>"");v;FILTER(VwV!A2:.A9999&"";VwV!C2:.C9999=1);o;FILTER(VwV!B2:.B9999;VwV!C2:.C9999=1);REDUCE({"Telefonnummer"."Ortsnetz"};d;LAMBDA(a;t;LET(x;REGEXERSETZEN(t;"\D";"");n;REGEXERSETZEN(x;"^(?:0049|49|0)";"");p;FILTER(v;LINKS(n;LÄNGE(v))=v);vw;INDEX(SORTIERENNACH(p;LÄNGE(p);-1);1);VSTAPELN(a;HSTAPELN("0049 "&vw&" "&RECHTS(n;LÄNGE(n)-LÄNGE(vw));XVERWEIS(vw;v;o)))))))
+=Telefonformat(A2:.A999)
+=TeleFormat(A2:.A999;"Ort")
+=TeleFormat(A2:.A999;"Nummer")
+=TeleFormat(A2:.A999;"Alle")
+        ]]>
+    </code>
+        )
             }
         }
     End Function

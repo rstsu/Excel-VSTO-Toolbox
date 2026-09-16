@@ -54,6 +54,8 @@ Partial Public Class DemoRunner
                 CreateRegexDemo_22()
             Case "regex_023"
                 CreateRegexDemo_23()
+            Case "regex_024"
+                CreateRegexDemo_24()
             Case "pq_001"
                 CreatePowerQueryDemo_1()
             Case "pq_002"
@@ -756,6 +758,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo Regex 23",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateRegexDemo_24()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_Regex_24.zip",
+                    "Regex_24")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Regex-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo Regex 24",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
