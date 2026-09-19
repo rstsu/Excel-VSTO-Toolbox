@@ -553,6 +553,52 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0015",
+                .Category = DemoCategory.Formula,
+                .Title = "Längste Reihe positiver Zahlen...",
+                .Tags = {"zahl", "positiv", "reihe", "formel", "let", "längste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Reihe von Zahlen wird die längste positive Zahlenreihe gesucht.
+Ausgegeben werden - welche Zahl, Länge, Start, Ende und Summe.
+Auch mehrere gleiche Zahlenreihen sind berücksichtigt.
+
+PQ_Formel_Laengste_Reihe_positive_Zahlen.xlsx
+
+Formeln in C5, F5, J5 und P5.
+
+Auch mit Power Query gelöst.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_1
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(q;Tabelle1[Zahlen];r;ANZAHL(q);s;SCAN(0;SEQUENZ(r);LAMBDA(t;u;LET(v;INDEX(q;u);w;WENN(u=1;0;INDEX(q;u-1));WENN(v>0;WENN(UND(u>1;v=w);t+1;1);0))));x;MAX(s);y;VERGLEICH(x;s;0);z;INDEX(q;y);VSTAPELN(HSTAPELN("Länge";"Summe");HSTAPELN(x;z*x)))
+
+=LET(q;Tabelle1[Zahlen];r;ANZAHL(q);s;SCAN(0;SEQUENZ(r);LAMBDA(t;u;LET(v;INDEX(q;u);w;WENN(u=1;0;INDEX(q;u-1));WENN(v>0;WENN(UND(u>1;v=w);t+1;1);0))));x;MAX(s);y;VERGLEICH(x;s;0);z;INDEX(q;y);VSTAPELN(HSTAPELN("Zahl";"Länge";"Summe");HSTAPELN(z;x;z*x)))
+
+=LET(q;Tabelle1[Zahlen];r;ANZAHL(q);s;SCAN(0;SEQUENZ(r);LAMBDA(t;u;LET(v;INDEX(q;u);w;WENN(u=1;0;INDEX(q;u-1));WENN(v>0;WENN(UND(u>1;v=w);t+1;1);0))));x;MAX(s);y;VERGLEICH(x;s;0);z;INDEX(q;y);VSTAPELN(HSTAPELN("Zahl";"Länge";"Start";"Ende";"Summe");HSTAPELN(z;x;y-x+1;y;z*x)))
+
+=LET(q;Tabelle1[Zahlen];r;ANZAHL(q);s;SCAN(0;SEQUENZ(r);LAMBDA(t;u;LET(v;INDEX(q;u);w;WENN(u=1;0;INDEX(q;u-1));WENN(v>0;WENN(UND(u>1;v=w);t+1;1);0))));x;MAX(s);y;FILTER(SEQUENZ(r);s=x);z;INDEX(q;y);VSTAPELN(HSTAPELN("Zahl";"Länge";"Start";"Ende";"Summe");HSTAPELN(z;x+0*y;y-x+1;y;z*x)))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

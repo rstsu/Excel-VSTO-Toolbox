@@ -940,7 +940,7 @@ bereitgestellt werden.
 Telefonnummern werden auf ein einheitliches Format gebracht.
 Mit und ohne Leerzeichen zwischen den Zahlen. Auch mit LAMBDA.
 
-Telefonnummern_Internationales_Format_bringen_0049.xlsx
+Telefonnummern_in_bestimmtes_Format_bringen_0049.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
 %TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_24

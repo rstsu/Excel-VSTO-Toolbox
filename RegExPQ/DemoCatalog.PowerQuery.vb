@@ -1880,6 +1880,284 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0024",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Längste Reihe positiver Zahlen...",
+                .Tags = {"zahl", "positiv", "reihe", "formel", "let", "längste"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus einer Reihe von Zahlen wird die längste positive Zahlenreihe gesucht.
+Ausgegeben werden - welche Zahl, Länge, Start, Ende und Summe.
+Auch mehrere gleiche Zahlenreihen sind berücksichtigt.
+
+PQ_Formel_Laengste_Reihe_positive_Zahlen.xlsx
+
+In den Abfragen werden unterschiedliche Herangehensweisen gezeigt.
+
+Auch mit Formeln gelöst.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_1
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Zahlen = Quelle[Zahlen],
+    Gruppen =
+        List.Accumulate(
+            Zahlen,
+            {},
+            (s, x) =>
+                let
+                    Letzte = if List.IsEmpty(s) then null else List.Last(s),
+                    Neu =
+                        if x > 0 then
+                            if Letzte <> null and Letzte[Zahl] = x then
+                                List.RemoveLastN(s, 1) &
+                                {[
+                                    Zahl = x,
+                                    Länge = Letzte[Länge] + 1
+                                ]}
+                            else
+                                s & {[Zahl = x, Länge = 1]}
+                        else
+                            s & {[Zahl = null, Länge = 0]}
+                in
+                    Neu
+        ),
+    Positiv = List.Select(Gruppen, each [Länge] > 0),
+    MaxLänge = List.Max(List.Transform(Positiv, each [Länge])),
+    Treffer = List.First(List.Select(Positiv, each [Länge] = MaxLänge)),
+    Erg =
+        #table(
+            {"Länge", "Summe"},
+            {{Treffer[Länge], Treffer[Zahl] * Treffer[Länge]}}
+        )
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Zahlen = Quelle[Zahlen],
+    Gruppen =
+        List.Accumulate(
+            Zahlen,
+            {},
+            (s, x) =>
+                let
+                    Letzte = if List.IsEmpty(s) then null else List.Last(s),
+                    Neu =
+                        if x > 0 then
+                            if Letzte <> null and Letzte[Zahl] = x then
+                                List.RemoveLastN(s, 1) &
+                                {[
+                                    Zahl = x,
+                                    Länge = Letzte[Länge] + 1
+                                ]}
+                            else
+                                s & {[Zahl = x, Länge = 1]}
+                        else
+                            s & {[Zahl = null, Länge = 0]}
+                in
+                    Neu
+        ),
+    Positiv = List.Select(Gruppen, each [Länge] > 0),
+    MaxLänge = List.Max(List.Transform(Positiv, each [Länge])),
+    Treffer = List.First(List.Select(Positiv, each [Länge] = MaxLänge)),
+    Erg =
+        #table(
+            {"Zahl", "Länge", "Summe"},
+            {{
+                Treffer[Zahl],
+                Treffer[Länge],
+                Treffer[Zahl] * Treffer[Länge]
+            }}
+        )
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Zahlen = Quelle[Zahlen],
+    Gruppen =
+        List.Accumulate(
+            {0 .. List.Count(Zahlen) - 1},
+            {},
+            (s, i) =>
+                let
+                    x = Zahlen{i},
+                    Letzte = if List.IsEmpty(s) then null else List.Last(s),
+                    Neu =
+                        if x > 0 then
+                            if Letzte <> null and Letzte[Zahl] = x then
+                                List.RemoveLastN(s, 1) &
+                                {[
+                                    Zahl = x,
+                                    Länge = Letzte[Länge] + 1,
+                                    Start = Letzte[Start],
+                                    Ende = i + 1
+                                ]}
+                            else
+                                s & {[
+                                    Zahl = x,
+                                    Länge = 1,
+                                    Start = i + 1,
+                                    Ende = i + 1
+                                ]}
+                        else
+                            s
+                in
+                    Neu
+        ),
+    MaxLänge = List.Max(List.Transform(Gruppen, each [Länge])),
+    Treffer = List.First(List.Select(Gruppen, each [Länge] = MaxLänge)),
+    Erg =
+        #table(
+            {"Zahl", "Länge", "Start", "Ende", "Summe"},
+            {{
+                Treffer[Zahl],
+                Treffer[Länge],
+                Treffer[Start],
+                Treffer[Ende],
+                Treffer[Zahl] * Treffer[Länge]
+            }}
+        )
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Zahlen = Quelle[Zahlen],
+    Gruppen =
+        List.Accumulate(
+            {0 .. List.Count(Zahlen) - 1},
+            {},
+            (s, i) =>
+                let
+                    x = Zahlen{i},
+                    Letzte = if List.IsEmpty(s) then null else List.Last(s),
+                    Neu =
+                        if x > 0 then
+                            if Letzte <> null and Letzte[Zahl] = x then
+                                List.RemoveLastN(s, 1) &
+                                {[
+                                    Zahl = x,
+                                    Länge = Letzte[Länge] + 1,
+                                    Start = Letzte[Start],
+                                    Ende = i + 1
+                                ]}
+                            else
+                                s & {[
+                                    Zahl = x,
+                                    Länge = 1,
+                                    Start = i + 1,
+                                    Ende = i + 1
+                                ]}
+                        else
+                            s
+                in
+                    Neu
+        ),
+    MaxLänge = List.Max(List.Transform(Gruppen, each [Länge])),
+    Treffer = List.Select(Gruppen, each [Länge] = MaxLänge),
+    //Erg =Table.FromRecords(List.Select(Gruppen, each [Länge] = MaxLänge))
+    Erg = Table.FromRecords(List.Transform(List.Select(Gruppen, each [Länge] = MaxLänge), each Record.AddField(_, "Summe", [Zahl] * [Länge])))
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Tabelle1"]}[Content],
+    Zahlen = Quelle[Zahlen],
+    Gruppen =
+        List.Accumulate(
+            {0 .. List.Count(Zahlen) - 1},
+            {},
+            (s, i) =>
+                let
+                    x = Zahlen{i},
+                    Letzte = if List.IsEmpty(s) then null else List.Last(s),
+                    Neu =
+                        if x > 0 then
+                            if Letzte <> null and Letzte[Zahl] = x then
+                                List.RemoveLastN(s, 1) &
+                                {[
+                                    Zahl = x,
+                                    Länge = Letzte[Länge] + 1,
+                                    Start = Letzte[Start],
+                                    Ende = i + 1,
+                                    Summe = x * (Letzte[Länge] + 1)
+                                    //Felder eines Records können bei der Berechnung weiterer Felder verwendet werden.
+                                    //Summe = Zahl * Länge
+                                ]}
+                            else
+                                s & {[
+                                    Zahl = x,
+                                    Länge = 1,
+                                    Start = i + 1,
+                                    Ende = i + 1,
+                                    Summe = x
+                                    //Felder eines Records können bei der Berechnung weiterer Felder verwendet werden.
+                                    //Summe = Zahl * Länge
+                                ]}
+                        else
+                            s
+                in
+                    Neu
+        ),
+    MaxLänge = List.Max(List.Transform(Gruppen, each [Länge])),
+    Treffer = List.Select(Gruppen, each [Länge] = MaxLänge),
+    Erg =Table.FromRecords(Treffer)
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function
