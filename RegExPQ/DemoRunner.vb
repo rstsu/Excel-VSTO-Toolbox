@@ -134,6 +134,8 @@ Partial Public Class DemoRunner
                 CreateFormelDemo_14()
             Case "formula_0015"
                 CreatePQ_Formel_1_Demo()
+            Case "formula_0016"
+                CreateFormelDemo_16()
             Case "vba_001"
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_002"
@@ -591,6 +593,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo Formel 14",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateFormelDemo_16()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_Formel_16.zip",
+                    "Formel_16")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Formel-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo Formel 16",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try

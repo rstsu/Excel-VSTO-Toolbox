@@ -599,6 +599,42 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0016",
+                .Category = DemoCategory.Formula,
+                .Title = "Variationen mit Datum...",
+                .Tags = {"tag", "datum", "februar", "formel", "monat", "jahr"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+15 Tabellenblätter - Variationen mit Datum.
+Erstes Tabellenblatt "Übersicht" mit Erklärungen.
+
+Formel_Variationen_mit_Datum.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_Formel_16
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Es sind viele Formeln.
+Bitte in die Beispieldatei schauen.
+        ]]>
+    </code>
+        )
             }
         }
     End Function
