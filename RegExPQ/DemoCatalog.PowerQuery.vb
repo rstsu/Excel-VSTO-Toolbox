@@ -2158,6 +2158,72 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0025",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Variationen mit Datum...",
+                .Tags = {"tag", "datum", "februar", "formel", "monat", "jahr"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Variationen mit Datum. In Anlehnung an die Formellösung.
+Erstes Tabellenblatt "Übersicht" mit Erklärungen.
+
+PQ_Variationen_mit_Datum.xlsb
+
+In den Abfragen werden unterschiedliche Herangehensweisen gezeigt.
+
+Auch mit Formeln gelöst.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\PQ_25
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+//Man könnte die ISO-KW (oder auch das Jahr) mit einer Funktion laden:
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+(Date as date) as number =>
+let
+    Donnerstag = Date.AddDays(Date, 3 - Date.DayOfWeek(Date, Day.Monday)),
+    KW = Number.IntegerDivide(Date.DayOfYear(Donnerstag) - 1, 7) + 1
+in
+    KW
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+(Date as date) as record =>
+let
+    Donnerstag = Date.AddDays(Date, 3 - Date.DayOfWeek(Date, Day.Monday)),
+    ISOJahr = Date.Year(Donnerstag),
+    ISOKW = Number.IntegerDivide(Date.DayOfYear(Donnerstag) - 1, 7) + 1
+in
+    [ISOJahr = ISOJahr, ISOKW = ISOKW]
+        ]]>
+    </code>
+        )
             }
         }
     End Function
