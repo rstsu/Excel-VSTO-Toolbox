@@ -971,6 +971,95 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_025",
+                .Category = DemoCategory.Regex,
+                .Title = "String - Treffer, Position und Länge...",
+                .Tags = {"string", "regex", "lambda", "regex", "position"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Textzeilen werden alle passenden Ausdrücke in eckigen Klammern ermittelt.
+Die Formeln geben zu jedem Treffer die Startposition, die Länge und den gefundenen Text aus – auch wenn ein Ausdruck mehrfach vorkommt.
+
+REGEXP_String_bestimmte_Zeichen_zerlegen_Ausgabe_Positionen_und_Laenge.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_25
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(t;A2;r;REGEXEXTRAHIEREN(t;"\[\w+\]";1);s;SEQUENZ(;LÄNGE(t));p;FILTER(s;REGEXTESTEN(TEIL(t;s;LÄNGE(t));"^\[\w+\]"));HSTAPELN(p;LÄNGE(r);r))
+
+=LET(
+ d;FILTER(A2:A100;A2:A100<>"");
+ x;REDUCE("";d;LAMBDA(a;t;
+   LET(
+     r;REGEXEXTRAHIEREN(t;"\[\w+\]";1);
+     s;SEQUENZ(;LÄNGE(t));
+     p;FILTER(s;REGEXTESTEN(TEIL(t;s;LÄNGE(t));"^\[\w+\]"));
+     VSTAPELN(a;HSTAPELN(p;LÄNGE(r);r))
+   )
+ ));
+ WENNNV(WEGLASSEN(x;1);"")
+)
+
+=LET(
+ d;FILTER(A2:A100;A2:A100<>"");
+ x;REDUCE("";d;LAMBDA(a;t;
+   LET(
+     r;REGEXEXTRAHIEREN(t;"\[\w+\]";1);
+     s;SEQUENZ(;LÄNGE(t));
+     p;FILTER(s;REGEXTESTEN(TEIL(t;s;LÄNGE(t));"^\[\w+\]"));
+     VSTAPELN(a;HSTAPELN(p;LÄNGE(r);r))
+   )
+ ));
+ WENNNV(WEGLASSEN(x;1);"")
+)
+
+=RegexInfo(A2:.A999;"\[\w+\]")
+
+=LAMBDA(Bereich;Pattern;
+ LET(
+  d;FILTER(Bereich;Bereich<>"");
+  n;REDUCE(0;d;LAMBDA(m;t;
+    MAX(m;ANZAHL2(REGEXEXTRAHIEREN(t;Pattern;1)))
+  ));
+  k;HSTAPELN(
+    "Start"&SEQUENZ(;n);
+    "Länge"&SEQUENZ(;n);
+    "Value"&SEQUENZ(;n)
+  );
+  x;REDUCE("";d;LAMBDA(a;t;
+    LET(
+      r;REGEXEXTRAHIEREN(t;Pattern;1);
+      s;SEQUENZ(;LÄNGE(t));
+      p;FILTER(s;REGEXTESTEN(TEIL(t;s;LÄNGE(t));"^"&Pattern));
+      VSTAPELN(a;HSTAPELN(
+        ERWEITERN(p;1;n;"");
+        ERWEITERN(LÄNGE(r);1;n;"");
+        ERWEITERN(r;1;n;"")
+      ))
+    )
+  ));
+  VSTAPELN(k;WENNNV(WEGLASSEN(x;1);""))
+ ))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
