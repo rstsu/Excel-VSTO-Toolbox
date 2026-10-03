@@ -162,6 +162,8 @@ Partial Public Class DemoRunner
                 CreateVBA_PQ_FormelDemo()
             Case "vba_0011"
                 CreateRegex_PQ_Formel_VBADemo()
+            Case "vba_0012"
+                CreateVBADemo_12()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
@@ -540,6 +542,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo VBA 09",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateVBADemo_12()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_VBA_12.zip",
+                    "VBA_12")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das VBA-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo VBA 12",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
