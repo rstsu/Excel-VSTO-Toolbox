@@ -1234,6 +1234,124 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0013",
+                .Category = DemoCategory.Vba,
+                .Title = "Ereignisse applikationsweit mit einer Klasse überwachen...",
+                .Tags = {"vba", "applikation", "klassenprogrammierung", "ereignisse", "events", "protokoll"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Eine Klasse hört mit – auch wenn eine andere Arbeitsmappe aktiv ist.
+Die Klasse clsApplication empfängt Ereignisse der Excel-Anwendung.
+Damit erfasst sie auch Aktionen in anderen geöffneten Arbeitsmappen derselben Excel-Instanz.
+Eine separat gestartete Excel-Instanz wird nicht überwacht.
+
+Klassenprogrammierung_Applikationweit.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\VBA_13
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+DieseArbeitsmappe:
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Private mobjApplication As clsApplication
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    If Not Saved Then
+        Select Case MsgBox("Sollen Ihre Änderungen in '" & Name & "' gespeichert werden", vbExclamation Or vbYesNoCancel)
+            Case vbYes
+                Save
+            Case vbNo
+                Saved = True
+            Case vbCancel
+                Cancel = True
+        End Select
+    End If
+    If Not Cancel Then Set mobjApplication = Nothing
+End Sub
+Private Sub Workbook_Open()
+    Set mobjApplication = New clsApplication
+End Sub
+
+Modul1:
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Protokoll(ByVal Ereignis As String, Optional ByVal Sh As Object, Optional ByVal Info As String)
+    Dim wksSheet As Worksheet
+    Dim lngCount As Long
+    On Error GoTo Fin
+    Application.EnableEvents = False
+    Set wksSheet = ThisWorkbook.Worksheets("Protokoll")
+    With wksSheet
+        lngCount = .Cells(.Rows.Count, 1).End(xlUp).Row + 1
+        .Cells(lngCount, 1).Value = Now
+        .Cells(lngCount, 2).Value = Ereignis
+        If Not Sh Is Nothing Then
+            .Cells(lngCount, 3).Value = Sh.Parent.Name
+            .Cells(lngCount, 4).Value = Sh.Name
+        End If
+        .Cells(lngCount, 5).Value = Info
+        .Columns("A:E").AutoFit
+    End With
+Fin:
+    Set wksSheet = Nothing
+    Application.EnableEvents = True
+End Sub
+
+Klassenmodul (Name = clsApplication):
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Private WithEvents mobjApplication As Application
+Private Sub Class_Initialize()
+    Set mobjApplication = Application
+End Sub
+Private Sub Class_Terminate()
+    Set mobjApplication = Nothing
+End Sub
+Private Sub mobjApplication_SheetSelectionChange(ByVal Sh As Object, ByVal Target As Range)
+    Protokoll "Auswahl", Sh, Target.Address
+End Sub
+Private Sub mobjApplication_SheetChange(ByVal Sh As Object, ByVal Target As Range)
+    Protokoll "Änderung", Sh, Target.Address
+End Sub
+Private Sub mobjApplication_SheetActivate(ByVal Sh As Object)
+    Protokoll "Blatt aktiviert", Sh
+End Sub
+Private Sub mobjApplication_WorkbookOpen(ByVal Wb As Workbook)
+    Protokoll "Mappe geöffnet: " & Wb.Name
+End Sub
+Private Sub mobjApplication_WorkbookActivate(ByVal Wb As Workbook)
+    Protokoll "Mappe aktiviert: " & Wb.Name
+End Sub
+Private Sub mobjApplication_WorkbookBeforeSave(ByVal Wb As Workbook, ByVal SaveAsUI As Boolean, Cancel As Boolean)
+    Protokoll "Mappe vor dem Speichern: " & Wb.Name, Info:="Speichern-unter-Dialog: " & CStr(SaveAsUI)
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function
