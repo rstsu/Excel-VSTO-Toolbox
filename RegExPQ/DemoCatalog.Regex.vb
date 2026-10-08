@@ -976,7 +976,7 @@ bereitgestellt werden.
                 .Id = "regex_025",
                 .Category = DemoCategory.Regex,
                 .Title = "String - Treffer, Position und Länge...",
-                .Tags = {"string", "regex", "lambda", "regex", "position"},
+                .Tags = {"string", "regex", "lambda", "länge", "position"},
                 .Description = TextBlock(
     <text>
         <![CDATA[
@@ -1057,6 +1057,49 @@ bereitgestellt werden.
   ));
   VSTAPELN(k;WENNNV(WEGLASSEN(x;1);""))
  ))
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "regex_026",
+                .Category = DemoCategory.Regex,
+                .Title = "Trennstriche am Ende eines Textes entfernen...",
+                .Tags = {"string", "regex", "trennzeichen", "länge", "position"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Ziel: Bindestrich, mathematisches Minus und zwei Gedankenstrich-Varianten am Ende eines Textes entfernen.
+Im eigentlichen Text bleiben die Zeichen erhalten.
+
+Regex_Trennstriche_am_Ende_entfernen.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_26
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Länge";LÄNGE(A2:.A999))
+
+=VSTAPELN(A1;REGEXERSETZEN(A2:.A999;"[-−–—]+$";""))
+
+=VSTAPELN("Länge nach";LÄNGE(A2:.A999)-LÄNGE(D2:.D999))
+
+=VSTAPELN("Unicode letztes Zeichen";UNICODE(RECHTS(A2:.A999;1)))
+
+=VSTAPELN("Daten mit Leerzeichen";REGEXERSETZEN(A2:.A9999;"[-−–—\s]+$";""))
         ]]>
     </code>
         )
