@@ -2224,6 +2224,164 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0026",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Drei Runden/Tabellen zusammenführen...",
+                .Tags = {"pivot", "gruppieren", "join", "unpivot", "outerjoin", "leftjoin"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Variationen mit Datum. In Anlehnung an die Formellösung.
+Erstes Tabellenblatt "Übersicht" mit Erklärungen.
+
+PQ_Gruppe_Join_mit_Uebersicht.xlsx
+
+In den Abfragen werden unterschiedliche Herangehensweisen gezeigt.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\PQ_26
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Runde1"]}[Content]
+in
+    Quelle
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Runde2"]}[Content]
+in
+    Quelle
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="Runde3"]}[Content]
+in
+    Quelle
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Table.Combine({Runde1, Runde2, Runde3}),
+    Gruppe = Table.Group(Quelle, {"Name"}, {{"Runde1", each List.Sum([Runde1]), type number}, {"Runde2", each List.Sum([Runde2]), type number}, {"Runde3", each List.Sum([Runde3]), type number}}),
+    Summe = Table.AddColumn(Gruppe, "Gesamt", each List.Sum({[Runde1], [Runde2], [Runde3]}), type number)
+in
+    Summe
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Table.Combine({Runde1, Runde2, Runde3}),
+    Unpivot = Table.UnpivotOtherColumns(Quelle, {"Name"}, "Attribut", "Wert"),
+    Pivot = Table.Pivot(Unpivot, List.Distinct(Unpivot[Attribut]), "Attribut", "Wert", List.Sum),
+    Summe = Table.AddColumn(Pivot, "Gesamt", each List.Sum({[Runde1], [Runde2], [Runde3]}), type number)
+in
+    Summe
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Join12 = Table.NestedJoin(Runde1, {"Name"}, Runde2, {"Name"}, "R2", JoinKind.FullOuter),
+    Expand12 = Table.ExpandTableColumn(Join12, "R2", {"Name", "Runde2"}, {"Name2", "Runde2"}),
+    Name12 = Table.AddColumn(Expand12, "NameNeu", each List.First(List.RemoveNulls({[Name], [Name2]})), type text),
+    Bereinigt12 = Table.RemoveColumns(Name12, {"Name", "Name2"}),
+    Umbenannt12 = Table.RenameColumns(Bereinigt12, {{"NameNeu", "Name"}}),
+    Join123 = Table.NestedJoin(Umbenannt12, {"Name"}, Runde3, {"Name"}, "R3", JoinKind.FullOuter),
+    Expand123 = Table.ExpandTableColumn(Join123, "R3", {"Name", "Runde3"}, {"Name3", "Runde3"}),
+    Name123 = Table.AddColumn(Expand123, "NameNeu", each List.First(List.RemoveNulls({[Name], [Name3]})), type text),
+    Bereinigt123 = Table.RemoveColumns(Name123, {"Name", "Name3"}),
+    Umbenannt123 = Table.RenameColumns(Bereinigt123, {{"NameNeu", "Name"}}),
+    NullErsetzen = Table.ReplaceValue(Umbenannt123, null, 0, Replacer.ReplaceValue, {"Runde1", "Runde2", "Runde3"}),
+    Summe = Table.AddColumn(NullErsetzen, "Gesamt", each [Runde1] + [Runde2] + [Runde3], type number),
+    Erg = Table.ReorderColumns(Summe, {"Name", "Runde1", "Runde2", "Runde3", "Gesamt"})
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Namen = List.Distinct(List.Combine({Runde1[Name], Runde2[Name], Runde3[Name]})),
+    Basis = Table.FromList(Namen, Splitter.SplitByNothing(), {"Name"}),
+    Join1 = Table.NestedJoin(Basis, {"Name"}, Runde1, {"Name"}, "R1", JoinKind.LeftOuter),
+    Expand1 = Table.ExpandTableColumn(Join1, "R1", {"Runde1"}),
+    Join2 = Table.NestedJoin(Expand1, {"Name"}, Runde2, {"Name"}, "R2", JoinKind.LeftOuter),
+    Expand2 = Table.ExpandTableColumn(Join2, "R2", {"Runde2"}),
+    Join3 = Table.NestedJoin(Expand2, {"Name"}, Runde3, {"Name"}, "R3", JoinKind.LeftOuter),
+    Expand3 = Table.ExpandTableColumn(Join3, "R3", {"Runde3"}),
+    NullErsetzen = Table.ReplaceValue(Expand3, null, 0, Replacer.ReplaceValue, {"Runde1", "Runde2", "Runde3"}),
+    Summe = Table.AddColumn(NullErsetzen, "Gesamt", each [Runde1] + [Runde2] + [Runde3], type number)
+in
+    Summe
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Namen = List.Distinct(List.Combine({Runde1[Name], Runde2[Name], Runde3[Name]})),
+    Basis = Table.FromList(Namen, Splitter.SplitByNothing(), {"Name"}),
+    Join1 = Table.Join(Basis, "Name", Table.RenameColumns(Runde1, {{"Name", "Name1"}}), "Name1", JoinKind.LeftOuter),
+    Entferne1 = Table.RemoveColumns(Join1, {"Name1"}),
+    Join2 = Table.Join(Entferne1, "Name", Table.RenameColumns(Runde2, {{"Name", "Name2"}}), "Name2", JoinKind.LeftOuter),
+    Entferne2 = Table.RemoveColumns(Join2, {"Name2"}),
+    Join3 = Table.Join(Entferne2, "Name", Table.RenameColumns(Runde3, {{"Name", "Name3"}}), "Name3", JoinKind.LeftOuter),
+    Entferne3 = Table.RemoveColumns(Join3, {"Name3"}),
+    NullErsetzen = Table.ReplaceValue(Entferne3, null, 0, Replacer.ReplaceValue, {"Runde1", "Runde2", "Runde3"}),
+    Summe = Table.AddColumn(NullErsetzen, "Gesamt", each [Runde1] + [Runde2] + [Runde3], type number)
+in
+    Summe
+        ]]>
+    </code>
+        )
             }
         }
     End Function
