@@ -2233,7 +2233,8 @@ in
                 .Description = TextBlock(
     <text>
         <![CDATA[
-Variationen mit Datum. In Anlehnung an die Formellösung.
+Drei Tabellen werden zusammengeführt. Es gibt 5 Möglichkeiten.
+Mit Gruppieren und Join.
 Erstes Tabellenblatt "Übersicht" mit Erklärungen.
 
 PQ_Gruppe_Join_mit_Uebersicht.xlsx
