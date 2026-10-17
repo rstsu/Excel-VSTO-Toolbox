@@ -170,6 +170,8 @@ Partial Public Class DemoRunner
                 CreateVBADemo_12()
             Case "vba_0013"
                 CreateVBADemo_13()
+            Case "vba_0014"
+                CreateVBADemo_14()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
@@ -605,6 +607,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo VBA 13",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateVBADemo_14()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_VBA_14.zip",
+                    "VBA_14")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das VBA-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo VBA 14",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try

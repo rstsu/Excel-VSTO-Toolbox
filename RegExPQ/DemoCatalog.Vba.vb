@@ -1352,6 +1352,328 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0014",
+                .Category = DemoCategory.Vba,
+                .Title = "Arbeitsmappendesign, RGB-, HEX- und Long-Farbwerte...",
+                .Tags = {"vba", "farbe", "design", "hex", "farbwerte", "long"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Liest Office- und benutzerdefinierte Farbschemata aus, vergleicht sie mit dem aktuellen Arbeitsmappendesign
+und analysiert RGB-, HEX- und Long-Farbwerte einschließlich ihrer Häufigkeit.
+Getestet unter Windows 11 - Office 365 (beides 64 Bit).
+
+Designfarben_XML_Auswertung_Farbanalyse.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\VBA_14
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+' Modul1
+Option Explicit
+' Excel -VSTO - Toolbox
+' Power Query - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Main()
+    Dim wksSheet As Worksheet
+    Dim varOrigin As Variant
+    Dim varNames As Variant
+    Dim varHead As Variant
+    Dim lngLastRow As Long
+    Dim varPath As Variant
+    Dim lngColor As Long
+    Dim lngCount As Long
+    Dim lngTMP As Long
+    Dim lngRow As Long
+    Dim lngHit As Long
+    Dim lngXML As Long
+    ' Pfade müssen - je nach Officeversion - angepasst werden!!!
+    varPath = Array( _
+        Environ$("ProgramFiles") & _
+        "\Microsoft Office\root\Document Themes 16\Theme Colors\", _
+        Environ$("ProgramFiles(x86)") & _
+        "\Microsoft Office\root\Document Themes 16\Theme Colors\", _
+        Environ$("APPDATA") & _
+        "\Microsoft\Templates\Document Themes\Theme Colors\")
+    varOrigin = Array("Office", "Office", "Benutzerdefiniert")
+    varNames = Array( _
+        "dk1", "lt1", "dk2", "lt2", _
+        "accent1", "accent2", "accent3", _
+        "accent4", "accent5", "accent6", _
+        "hlink", "folHlink")
+    varHead = Array( _
+        "Dunkel 1", "Hell 1", "Dunkel 2", "Hell 2", _
+        "Akzent 1", "Akzent 2", "Akzent 3", _
+        "Akzent 4", "Akzent 5", "Akzent 6", _
+        "Hyperlink", "Hyperlink Klick")
+    Application.ScreenUpdating = False
+    On Error Resume Next
+    Set wksSheet = ThisWorkbook.Worksheets("XML_Farben")
+    On Error GoTo Fin
+    If wksSheet Is Nothing Then
+        Set wksSheet = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
+        wksSheet.Name = "XML_Farben"
+    Else
+        If wksSheet.AutoFilterMode Then wksSheet.AutoFilterMode = False
+        wksSheet.Cells.Clear
+    End If
+    With wksSheet
+        .Cells(1, 1).Value = "Datei"
+        .Cells(1, 2).Value = "Farbschema"
+        .Cells(1, 3).Value = "Herkunft"
+        For lngTMP = 0 To 11
+            .Cells(1, lngTMP + 4).Value = varHead(lngTMP)
+        Next lngTMP
+        .Cells(1, 16).Value = "Übereinstimmungen"
+    lngRow = 2
+    For lngTMP = LBound(varPath) To UBound(varPath)
+        ParseFolder CStr(varPath(lngTMP)), CStr(varOrigin(lngTMP)), wksSheet, lngRow, lngXML, varNames
+    Next lngTMP
+    lngLastRow = lngRow
+    .Cells(lngRow, 1).Value = "(Arbeitsmappe)"
+    .Cells(lngRow, 2).Value = "Aktuelles Arbeitsmappendesign"
+    .Cells(lngRow, 3).Value = "Arbeitsmappe"
+    For lngTMP = 1 To 12
+        lngColor = ThisWorkbook.Theme.ThemeColorScheme.Colors(lngTMP).RGB
+        SchreibeThemeFarbe .Cells(lngRow, lngTMP + 3), lngColor
+    Next lngTMP
+    For lngTMP = 2 To lngLastRow
+        lngHit = 0
+        For lngCount = 4 To 15
+            If Len(.Cells(lngTMP, lngCount).Value2) > 0 Then
+                If .Cells(lngTMP, lngCount).Interior.Color = .Cells(lngLastRow, lngCount).Interior.Color Then
+                    lngHit = lngHit + 1
+                End If
+            End If
+        Next lngCount
+        .Cells(lngTMP, 16).Value = lngHit
+    Next lngTMP
+    .Range("A1:P1").Font.Bold = True
+    .Range("A1:P1").Interior.Color = RGB(220, 220, 220)
+    .Range("A" & lngLastRow & ":C" & lngLastRow).Font.Bold = True
+    .Range("A" & lngLastRow & ":C" & lngLastRow).Font.Italic = True
+    .Range("A" & lngLastRow & ":C" & lngLastRow).Font.Color = vbRed
+    .Range("A1:P" & lngLastRow).AutoFilter
+    .Columns("A:C").AutoFit
+    .Columns("D:O").ColumnWidth = 14
+    .Columns("P").AutoFit
+    .Rows(1).RowHeight = 30
+    Application.ScreenUpdating = True
+    MsgBox lngXML & " XML-Farbschemata eingelesen." & vbCrLf & _
+           "Aktuelles Arbeitsmappendesign ergänzt." & vbCrLf & _
+           "Gesamt: " & lngLastRow - 1 & " Farbschemata.", vbInformation
+    End With
+Fin:
+    Application.ScreenUpdating = True
+    If Err.Number <> 0 Then MsgBox "Error: " & Err.Number & " " & Err.Description
+End Sub
+Private Sub ParseFolder(ByVal strPath As String, ByVal strSource As String, ByVal wksSheet As Worksheet, ByRef lngRow As Long, ByRef lngXML As Long, ByVal varNames As Variant)
+    Dim objSchema As Object
+    Dim strFile As String
+    Dim objNode As Object
+    Dim lngColor As Long
+    Dim strHEX As String
+    Dim objXML As Object
+    Dim lngTMP As Long
+    If Not Len(Dir(strPath, vbDirectory)) = 0 Then
+        Set objXML = CreateObject("MSXML2.DOMDocument.6.0")
+        objXML.async = False
+        objXML.SetProperty "SelectionLanguage", "XPath"
+        objXML.SetProperty "SelectionNamespaces", "xmlns:a='http://schemas.openxmlformats.org/drawingml/2006/main'"
+        strFile = Dir(strPath & "*.xml")
+        Do While Len(strFile) > 0
+            If objXML.Load(strPath & strFile) Then
+                Set objSchema = objXML.SelectSingleNode("//a:clrScheme")
+                If Not objSchema Is Nothing Then
+                    wksSheet.Cells(lngRow, 1).Value = strFile
+                    wksSheet.Cells(lngRow, 2).Value = objSchema.getAttribute("name")
+                    wksSheet.Cells(lngRow, 3).Value = strSource
+                    For lngTMP = 0 To 11
+                        strHEX = ""
+                        Set objNode = objSchema.SelectSingleNode("a:" & varNames(lngTMP) & "/a:srgbClr")
+                        If Not objNode Is Nothing Then
+                            strHEX = objNode.getAttribute("val")
+                        Else
+                            Set objNode = objSchema.SelectSingleNode("a:" & varNames(lngTMP) & "/a:sysClr")
+                            If Not objNode Is Nothing Then
+                                strHEX = objNode.getAttribute("lastClr")
+                            End If
+                        End If
+                        If Len(strHEX) = 6 Then
+                            If strHEX Like "[0-9A-Fa-f][0-9A-Fa-f]" & "[0-9A-Fa-f][0-9A-Fa-f]" & "[0-9A-Fa-f][0-9A-Fa-f]" Then
+                                lngColor = RGB(CLng("&H" & Mid$(strHEX, 1, 2)), CLng("&H" & Mid$(strHEX, 3, 2)), CLng("&H" & Mid$(strHEX, 5, 2)))
+                                SchreibeThemeFarbe wksSheet.Cells(lngRow, lngTMP + 4), lngColor
+                            End If
+                        End If
+                    Next lngTMP
+                    lngRow = lngRow + 1
+                    lngXML = lngXML + 1
+                End If
+            End If
+            strFile = Dir()
+        Loop
+    End If
+End Sub
+Private Sub SchreibeThemeFarbe(ByVal rngCell As Range, ByVal lngColor As Long)
+    Dim lngR As Long
+    Dim lngG As Long
+    Dim lngB As Long
+    lngR = lngColor Mod 256
+    lngG = (lngColor \ 256) Mod 256
+    lngB = (lngColor \ 65536) Mod 256
+    With rngCell
+        .Value = "#" & _
+            Right$("0" & Hex$(lngR), 2) & _
+            Right$("0" & Hex$(lngG), 2) & _
+            Right$("0" & Hex$(lngB), 2)
+        .Interior.Color = lngColor
+        If lngR * 0.299 + lngG * 0.587 + lngB * 0.114 < 128 Then
+            .Font.Color = vbWhite
+        Else
+            .Font.Color = vbBlack
+        End If
+        .HorizontalAlignment = xlCenter
+        If Not .Comment Is Nothing Then .Comment.Delete
+            .AddComment "RGB(" & lngR & ", " & lngG & ", " & lngB & ")" & vbCrLf & "Long: " & lngColor
+            .Comment.Visible = False
+    End With
+End Sub
+
+' Modul2
+Option Explicit
+' Excel -VSTO - Toolbox
+' Power Query - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Main_1()
+    Dim wksSheet As Worksheet
+    Dim strHexColor As String
+    Dim wksErg As Worksheet
+    Dim varKeys As Variant
+    Dim objDict As Object
+    Dim lngColor As Long
+    Dim strKey As String
+    Dim lngMulti As Long
+    Dim lngCount As Long
+    Dim lngGreen As Long
+    Dim lngLast As Long
+    Dim lngBlue As Long
+    Dim lngRow As Long
+    Dim lngAll As Long
+    Dim lngRed As Long
+    Dim lngTMP As Long
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("XML_Farben")
+    Set objDict = CreateObject("Scripting.Dictionary")
+    lngLast = wksSheet.Cells(wksSheet.Rows.Count, 1).End(xlUp).Row
+    For lngTMP = 2 To lngLast
+        For lngCount = 4 To 15
+            If Len(wksSheet.Cells(lngTMP, lngCount).Value2) > 0 Then
+                lngColor = wksSheet.Cells(lngTMP, lngCount).Interior.Color
+                strKey = CStr(lngColor)
+                If objDict.Exists(strKey) Then
+                    objDict(strKey) = objDict(strKey) + 1
+                Else
+                    objDict.Add strKey, 1&
+                End If
+                lngAll = lngAll + 1
+            End If
+        Next lngCount
+    Next lngTMP
+    On Error Resume Next
+    Set wksErg = wksSheet.Parent.Worksheets("Farbanalyse")
+    On Error GoTo Fin
+    If wksErg Is Nothing Then
+        Set wksErg = wksSheet.Parent.Worksheets.Add(After:=wksSheet)
+        wksErg.Name = "Farbanalyse"
+    Else
+        If wksErg.AutoFilterMode Then wksErg.AutoFilterMode = False
+        wksErg.Cells.Clear
+    End If
+    wksErg.Range("A1:H1").Value = Array( _
+        "Long", "HEX", "RGB", "Farbe", _
+        "Anzahl", "Farbschema", "Designfarbe", "Herkunft")
+    lngRow = 2
+    For lngTMP = 2 To lngLast
+        For lngCount = 4 To 15
+            If Len(wksSheet.Cells(lngTMP, lngCount).Value2) > 0 Then
+                lngColor = wksSheet.Cells(lngTMP, lngCount).Interior.Color
+                strKey = CStr(lngColor)
+                lngRed = lngColor Mod 256
+                lngGreen = (lngColor \ 256) Mod 256
+                lngBlue = (lngColor \ 65536) Mod 256
+                strHexColor = "#" & _
+                    Right$("0" & Hex$(lngRed), 2) & _
+                    Right$("0" & Hex$(lngGreen), 2) & _
+                    Right$("0" & Hex$(lngBlue), 2)
+                With wksErg
+                    .Cells(lngRow, 1).Value = lngColor
+                    .Cells(lngRow, 2).Value = strHexColor
+                    .Cells(lngRow, 3).Value = "RGB(" & lngRed & ", " & lngGreen & ", " & lngBlue & ")"
+                    .Cells(lngRow, 4).Interior.Color = lngColor
+                    .Cells(lngRow, 5).Value = objDict(strKey)
+                    .Cells(lngRow, 6).Value = wksSheet.Cells(lngTMP, 2).Value
+                    .Cells(lngRow, 7).Value = wksSheet.Cells(1, lngCount).Value
+                    .Cells(lngRow, 8).Value = wksSheet.Cells(lngTMP, 3).Value
+                End With
+                lngRow = lngRow + 1
+            End If
+        Next lngCount
+    Next lngTMP
+    For Each varKeys In objDict.Keys
+        If objDict(varKeys) > 1 Then
+            lngMulti = lngMulti + 1
+        End If
+    Next varKeys
+    With wksErg
+        .Range("A1:H1").Font.Bold = True
+        .Range("A1:H1").Interior.Color = RGB(220, 220, 220)
+        .Rows(1).RowHeight = 30
+        .Columns("A").ColumnWidth = 15
+        .Columns("B").ColumnWidth = 13
+        .Columns("C").ColumnWidth = 22
+        .Columns("D").ColumnWidth = 14
+        .Columns("E").ColumnWidth = 12
+        .Columns("F").ColumnWidth = 32
+        .Columns("G").ColumnWidth = 24
+        .Columns("H").ColumnWidth = 20
+        .Range("A1:H" & lngRow - 1).AutoFilter
+        .Range("J2").Value = "Auswertung"
+        .Range("J2:K2").Font.Bold = True
+        .Range("J3").Value = "Farbeinträge"
+        .Range("K3").Value = lngAll
+        .Range("J4").Value = "Unterschiedliche Farben"
+        .Range("K4").Value = objDict.Count
+        .Range("J5").Value = "Mehrfach verwendete Farben"
+        .Range("K5").Value = lngMulti
+        .Range("J6").Value = "Zusätzliche Vorkommen"
+        .Range("K6").Value = lngAll - objDict.Count
+        .Columns("J:K").AutoFit
+    End With
+    MsgBox lngAll & " Farbeinträge untersucht." & vbCrLf & _
+        objDict.Count & " unterschiedliche Farben." & vbCrLf & _
+        lngMulti & " Farben mehrfach vorhanden.", vbInformation
+Fin:
+    If Err.Number <> 0 Then MsgBox "Error: " & Err.Number & " " & Err.Description
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function
