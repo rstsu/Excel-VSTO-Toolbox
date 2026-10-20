@@ -1386,7 +1386,7 @@ bereitgestellt werden.
 ' Modul1
 Option Explicit
 ' Excel -VSTO - Toolbox
-' Power Query - Demo
+' VBA - Demo
 ' Ralf Stolzenburg (Case)
 ' https://github.com/rstsu/Excel-VSTO-Toolbox
 Public Sub Main()
@@ -1557,7 +1557,7 @@ End Sub
 ' Modul2
 Option Explicit
 ' Excel -VSTO - Toolbox
-' Power Query - Demo
+' VBA - Demo
 ' Ralf Stolzenburg (Case)
 ' https://github.com/rstsu/Excel-VSTO-Toolbox
 Public Sub Main_1()
@@ -1671,6 +1671,282 @@ Public Sub Main_1()
 Fin:
     If Err.Number <> 0 Then MsgBox "Error: " & Err.Number & " " & Err.Description
 End Sub
+        ]]>
+    </code>
+        )
+            }, New DemoDefinition With {
+                .Id = "vba_0015",
+                .Category = DemoCategory.Vba,
+                .Title = "Zahlenfolgen - Von Fibonacci bis zur eigenen Folge...",
+                .Tags = {"fibonacci", "zahlenfolge", "tribonacci", "power query", "startwerte", "gewichtung"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Von Fibonacci und Lucas bis zu Tribonacci und gewichteten Zahlenfolgen:
+Diese Demo zeigt, wie sich mathematische Zahlenfolgen mit modernen Excel-Formeln (LET/LAMBDA/MAP/REDUCE),
+VBA und Power Query berechnen lassen. Mit frei wählbaren Startwerten, Gewichtungen und interaktiver Auswahl.
+
+Auch in Power Query und Formeln gelöst.
+
+Fibonacci_and_More.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+' VBA aus Tabellenblatt "Power_Query":
+Option Explicit
+Private Sub Worksheet_Change(ByVal Target As Range)
+    Dim blnAktualisieren As Boolean
+    Dim loVorgaben As ListObject
+    Dim loAnzahl As ListObject
+    Dim loStart As ListObject
+    Dim blnGueltig As Boolean
+    Dim rngVorgaben As Range
+    Dim blnEigene As Boolean
+    Dim rngEigene As Range
+    Dim lngAnzahl As Long
+    Dim lngI As Long
+    On Error Resume Next
+    Set loVorgaben = Me.ListObjects("tblVorgaben")
+    Set loStart = Me.ListObjects("tblZahlenfolge")
+    Set loAnzahl = Me.ListObjects("tblStartwerte")
+    If Err.Number = 0 Then
+        blnEigene = loVorgaben.DataBodyRange.Cells(1, 2).Value2 = "Eigene Zahlenfolge"
+        Set rngVorgaben = loVorgaben.DataBodyRange
+        Set rngEigene = Union(loStart.DataBodyRange, loAnzahl.DataBodyRange)
+        blnAktualisieren = Not Intersect(Target, rngVorgaben) Is Nothing
+        If blnEigene Then
+            blnAktualisieren = blnAktualisieren Or Not Intersect(Target, rngEigene) Is Nothing
+        End If
+        blnGueltig = True
+        If blnAktualisieren And blnEigene Then
+            With loAnzahl.DataBodyRange.Cells(1, 1)
+                blnGueltig = IsNumeric(.Value2)
+                If blnGueltig Then
+                    blnGueltig = .Value2 = Fix(.Value2) And .Value2 >= 2 And .Value2 <= 5
+                End If
+                If blnGueltig Then
+                    lngAnzahl = CLng(.Value2)
+                End If
+            End With
+            If blnGueltig Then
+                blnGueltig = loStart.ListRows.Count >= lngAnzahl
+            End If
+            If blnGueltig Then
+                For lngI = 1 To lngAnzahl
+                    With loStart.DataBodyRange
+                        If Len(.Cells(lngI, 1).Value2) = 0 Or Len(.Cells(lngI, 2).Value2) = 0 Then
+                            blnGueltig = False
+                        ElseIf Not IsNumeric(.Cells(lngI, 1).Value2) Or Not IsNumeric(.Cells(lngI, 2).Value2) Then
+                            blnGueltig = False
+                        End If
+                    End With
+                Next lngI
+            End If
+        End If
+        If blnAktualisieren Then
+            If blnGueltig Then
+                ThisWorkbook.RefreshAll
+            Else
+                MsgBox "Bitte die Vorgaben prüfen:" & vbCrLf & _
+                       "Anzahl Startwerte: 2 bis 5" & vbCrLf & _
+                       "Startwerte und Gewichte müssen numerisch sein.", _
+                       vbExclamation, "Zahlenfolge"
+            End If
+        End If
+    End If
+    If Err.Number <> 0 Then
+        MsgBox "Fehler " & Err.Number & vbCrLf & Err.Description, vbCritical, "Zahlenfolge"
+    End If
+    On Error GoTo 0
+End Sub
+
+' VBA aus Modul1:
+Option Explicit
+Public Function Zahlenfolge(ByVal n As Long, Optional ByVal Startwerte As Variant, Optional ByVal Gewichte As Variant, Optional ByVal TitelModus As Long = 0) As Variant
+    Dim arrStart() As Double
+    Dim arrGewicht() As Double
+    Dim arrErgebnis() As Variant
+    Dim varStart As Variant
+    Dim varGewicht As Variant
+    Dim lngM As Long
+    Dim lngI As Long
+    Dim lngJ As Long
+    Dim dblWert As Double
+    Dim lngOffset As Long
+    On Error GoTo Fin
+    If n < 1 Then GoTo Fin
+    If IsMissing(Startwerte) Then
+        varStart = Array(0, 1)
+    Else
+        varStart = Startwerte
+    End If
+    If IsObject(varStart) Then
+        varStart = varStart.Value2
+    End If
+    If Not IsArray(varStart) Then
+        varStart = Array(varStart)
+    End If
+    lngM = AnzahlElemente(varStart)
+    If lngM < 1 Then GoTo Fin
+    ReDim arrStart(1 To lngM)
+    ReDim arrGewicht(1 To lngM)
+    For lngI = 1 To lngM
+        arrStart(lngI) = CDbl(ElementWert(varStart, lngI))
+    Next lngI
+    If IsMissing(Gewichte) Then
+        For lngI = 1 To lngM
+            arrGewicht(lngI) = 1
+        Next lngI
+    Else
+        varGewicht = Gewichte
+        If IsObject(varGewicht) Then
+            varGewicht = varGewicht.Value2
+        End If
+        If Not IsArray(varGewicht) Then
+            varGewicht = Array(varGewicht)
+        End If
+        If AnzahlElemente(varGewicht) <> lngM Then
+            GoTo Fin
+        End If
+        For lngI = 1 To lngM
+            arrGewicht(lngI) = CDbl(ElementWert(varGewicht, lngI))
+        Next lngI
+    End If
+    If TitelModus < 0 Or TitelModus > 2 Then GoTo Fin
+    lngOffset = IIf(TitelModus = 0, 0, 1)
+    ReDim arrErgebnis(1 To n + lngOffset, 1 To 1)
+    If TitelModus > 0 Then
+        arrErgebnis(1, 1) = FolgenName(arrStart, arrGewicht)
+        If TitelModus = 2 Then
+            arrErgebnis(1, 1) = arrErgebnis(1, 1) & _
+                " | dblStart: " & ArrayText(arrStart) & _
+                " | Gewichtung: " & ArrayText(arrGewicht)
+        End If
+    End If
+    For lngI = 1 To WorksheetFunction.Min(n, lngM)
+        arrErgebnis(lngI + lngOffset, 1) = arrStart(lngI)
+    Next lngI
+    For lngI = lngM + 1 To n
+        dblWert = 0
+        For lngJ = 1 To lngM
+            dblWert = dblWert + _
+                CDbl(arrErgebnis(lngI - lngJ + lngOffset, 1)) * arrGewicht(lngJ)
+        Next lngJ
+        arrErgebnis(lngI + lngOffset, 1) = dblWert
+    Next lngI
+    Zahlenfolge = arrErgebnis
+    Exit Function
+Fin:
+    Zahlenfolge = CVErr(xlErrValue)
+End Function
+Private Function AnzahlElemente(ByVal varArr As Variant) As Long
+    Dim lngR As Long
+    Dim lngC As Long
+    On Error GoTo Fin
+    lngR = UBound(varArr, 1) - LBound(varArr, 1) + 1
+    lngC = UBound(varArr, 2) - LBound(varArr, 2) + 1
+    AnzahlElemente = lngR * lngC
+    Exit Function
+Fin:
+    AnzahlElemente = UBound(varArr) - LBound(varArr) + 1
+End Function
+Private Function ElementWert(ByVal varArr As Variant, ByVal lngIndex As Long) As Variant
+    Dim lngCols As Long
+    Dim lngR As Long
+    Dim lngC As Long
+    On Error GoTo Fin
+    lngCols = UBound(varArr, 2) - LBound(varArr, 2) + 1
+    lngR = LBound(varArr, 1) + (lngIndex - 1) \ lngCols
+    lngC = LBound(varArr, 2) + (lngIndex - 1) Mod lngCols
+    ElementWert = varArr(lngR, lngC)
+    Exit Function
+Fin:
+    ElementWert = varArr(LBound(varArr) + lngIndex - 1)
+End Function
+Private Function FolgenName(ByRef dblStart() As Double, ByRef dblGewicht() As Double) As String
+    Dim blnStandard As Boolean
+    Dim lngValue As Long
+    Dim lngTMP As Long
+    lngValue = UBound(dblStart)
+    blnStandard = True
+    For lngTMP = 1 To lngValue
+        If dblGewicht(lngTMP) <> 1 Then
+            blnStandard = False
+            Exit For
+        End If
+    Next lngTMP
+    Select Case lngValue
+        Case 2
+            If blnStandard Then
+                Select Case True
+                    Case dblStart(1) = 0 And dblStart(2) = 1
+                        FolgenName = "Fibonacci 0"
+                    Case dblStart(1) = 1 And dblStart(2) = 1
+                        FolgenName = "Fibonacci 1"
+                    Case dblStart(1) = 2 And dblStart(2) = 1
+                        FolgenName = "Lucas"
+                End Select
+            ElseIf dblStart(1) = 0 And dblStart(2) = 1 Then
+                Select Case True
+                    Case dblGewicht(1) = 2 And dblGewicht(2) = 1
+                        FolgenName = "Pell"
+                    Case dblGewicht(1) = 1 And dblGewicht(2) = 2
+                        FolgenName = "Jacobsthal"
+                End Select
+            End If
+        Case 3
+            If blnStandard Then
+                If dblStart(1) = 0 And dblStart(2) = 1 _
+                   And dblStart(3) = 1 Then
+                    FolgenName = "Tribonacci"
+                End If
+            End If
+        Case 4
+            If blnStandard Then
+                If dblStart(1) = 0 And dblStart(2) = 0 _
+                   And dblStart(3) = 0 And dblStart(4) = 1 Then
+                    FolgenName = "Tetranacci"
+                End If
+            End If
+    End Select
+    If Len(FolgenName) = 0 Then
+        FolgenName = "Eigene Zahlenfolge"
+    End If
+End Function
+Private Function ArrayText(ByRef dblWerte() As Double) As String
+    Dim strTMP As String
+    Dim lngTMP As Long
+    For lngTMP = LBound(dblWerte) To UBound(dblWerte)
+        If lngTMP > LBound(dblWerte) Then
+            strTMP = strTMP & ";"
+        End If
+        strTMP = strTMP & CStr(dblWerte(lngTMP))
+    Next lngTMP
+    ArrayText = "(" & strTMP & ")"
+End Function
+
+'############################
+' Mann kann auch "Evaluieren" - das ist aber abhängig von der Excelversion.
+' Eigene Funktionen funktionieren auch in "älteren" Excel-Versionen.
+' Zum Testan aber immer geeignet. ;-)
+'Function fibonacciEVA(lngTMP As Long) As Variant
+'    fibonacciEVA = Application.Evaluate("=VSTACK(""Fibonacci 0"",LET(n," & lngTMP & ",fib,LAMBDA(selbst,k,IF(k<2,k,selbst(selbst,k-1)+selbst(selbst,k-2))),MAP(SEQUENCE(n,,0),LAMBDA(k,fib(fib,k)))))")
+'End Function
         ]]>
     </code>
         )

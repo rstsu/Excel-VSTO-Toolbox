@@ -635,6 +635,62 @@ Bitte in die Beispieldatei schauen.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0017",
+                .Category = DemoCategory.Formula,
+                .Title = "Zahlenfolgen - Von Fibonacci bis zur eigenen Folge...",
+                .Tags = {"fibonacci", "zahlenfolge", "tribonacci", "formel", "startwerte", "gewichtung"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Von Fibonacci und Lucas bis zu Tribonacci und gewichteten Zahlenfolgen:
+Diese Demo zeigt, wie sich mathematische Zahlenfolgen mit modernen Excel-Formeln (LET/LAMBDA/MAP/REDUCE),
+VBA und Power Query berechnen lassen. Mit frei wählbaren Startwerten, Gewichtungen und interaktiver Auswahl.
+
+Formeln in A1, B1, D1, F1, H1, I1, K1, M1 und O1.
+
+Auch in VBA und Power Query gelöst.
+
+Fibonacci_and_More.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=VSTAPELN("Fibonacci 1";LET(n;15;fib;LAMBDA(selbst;k;WENN(k<=2;1;selbst(selbst;k-1)+selbst(selbst;k-2)));MAP(SEQUENZ(n);LAMBDA(k;fib(fib;k)))))
+
+=VSTAPELN("Fibonacci 0";LET(n;15;fib;LAMBDA(selbst;k;WENN(k<2;k;selbst(selbst;k-1)+selbst(selbst;k-2)));MAP(SEQUENZ(n;;0);LAMBDA(k;fib(fib;k)))))
+
+=VSTAPELN("Lucas Zahlen";LET(n;15;start1;2;start2;1;step;1;folge;LAMBDA(selbst;k;WENN(k=1;start1;WENN(k=2;start2;selbst(selbst;k-step)+selbst(selbst;k-step-1))));MAP(SEQUENZ(n;1;1;step);LAMBDA(k;folge(folge;k)))))
+
+=VSTAPELN("Misc_1";LET(n;15;start1;0;start2;1;start3;2;operation;LAMBDA(a;b;c;a+b+c);folge;LAMBDA(selbst;k;WENN(k=1;start1;WENN(k=2;start2;WENN(k=3;start3;operation(selbst(selbst;k-1);selbst(selbst;k-2);selbst(selbst;k-3))))));MAP(SEQUENZ(n);LAMBDA(k;folge(folge;k)))))
+
+=VSTAPELN("Misc_2";LET(n;15;start;{0;1;1};m;ZEILEN(start);operation;LAMBDA(v;SUMME(v));folge;LAMBDA(selbst;k;WENN(k<=m;INDEX(start;k);operation(MAP(SEQUENZ(m;1;k-1;-1);LAMBDA(i;selbst(selbst;i))))));MAP(SEQUENZ(n);LAMBDA(k;folge(folge;k)))))
+
+=VSTAPELN("Misc_3";LET(n;15;start;{2;1};m;ZEILEN(start);operation;LAMBDA(v;SUMME(v));folge;LAMBDA(selbst;k;WENN(k<=m;INDEX(start;k);operation(MAP(SEQUENZ(m;1;k-1;-1);LAMBDA(i;selbst(selbst;i))))));MAP(SEQUENZ(n);LAMBDA(k;folge(folge;k)))))
+
+=VSTAPELN("Mit Gewichtung";LET(n;15;start;{0;1;1};weights;{1;2;1};m;ZEILEN(start);operation;LAMBDA(v;SUMME(v*weights));folge;LAMBDA(selbst;k;WENN(k<=m;INDEX(start;k);operation(MAP(SEQUENZ(m;1;k-1;-1);LAMBDA(i;selbst(selbst;i))))));MAP(SEQUENZ(n);LAMBDA(k;folge(folge;k)))))
+
+=LET(n;15;start;{0;1;1};weights;{1;1;1};m;ZEILEN(start);trenn;"|";zustand;TEXTVERKETTEN(trenn;WAHR;start);folge;SCAN(zustand;SEQUENZ(n-m);LAMBDA(a;k;LET(v;--TEXTTEILEN(a;;trenn);neu;SUMME(v*weights);TEXTVERKETTEN(trenn;WAHR;VSTAPELN(WEGLASSEN(v;1);neu)))));VSTAPELN("Tribonacci/SCAN/MAP";start;MAP(folge;LAMBDA(x;--TEXTNACH(x;trenn;-1)))))
+
+=LET(n;15;start;{0;1;1};weights;{1;1;1};m;ZEILEN(start);folge;REDUCE(start;SEQUENZ(n-m);LAMBDA(a;k;LET(v;INDEX(a;SEQUENZ(m;1;ZEILEN(a);-1));neu;SUMME(v*weights);VSTAPELN(a;neu))));VSTAPELN("Tribonacci/REDUCE";folge))
+        ]]>
+    </code>
+        )
             }
         }
     End Function

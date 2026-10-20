@@ -2383,6 +2383,156 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0027",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Zahlenfolgen - Von Fibonacci bis zur eigenen Folge...",
+                .Tags = {"fibonacci", "zahlenfolge", "tribonacci", "power query", "startwerte", "gewichtung"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Von Fibonacci und Lucas bis zu Tribonacci und gewichteten Zahlenfolgen:
+Diese Demo zeigt, wie sich mathematische Zahlenfolgen mit modernen Excel-Formeln (LET/LAMBDA/MAP/REDUCE),
+VBA und Power Query berechnen lassen. Mit frei wählbaren Startwerten, Gewichtungen und interaktiver Auswahl.
+
+Auch in VBA und Formeln gelöst.
+
+Fibonacci_and_More.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+(n as number, Start as list, Gewichte as list) as list =>
+let
+    m = List.Count(Start),
+    Pruefung =
+        if n < 1
+            or n <> Number.RoundDown(n)
+            or m = 0
+            or List.Count(Gewichte) <> m
+        then
+            error "Ungültige Vorgaben"
+        else
+            null,
+    Erg =
+        if Pruefung <> null then
+            {}
+        else if n <= m then
+            List.FirstN(Start, n)
+        else
+            List.Accumulate(
+                {m + 1 .. n},
+                Start,
+                (zustand, i) =>
+                    let
+                        Letzte =
+                            List.Reverse(
+                                List.LastN(zustand, m)
+                            ),
+                        Neu =
+                            List.Sum(
+                                List.Transform(
+                                    List.Positions(Gewichte),
+                                    (j) => Letzte{j} * Gewichte{j}
+                                )
+                            )
+                    in
+                        zustand & {Neu}
+            )
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblVorgaben"]}[Content],
+    Folge = Text.From(Quelle{0}[Wert]),
+    Anzahl = Number.From(Quelle{1}[Wert]),
+    Definitionen = [
+        #"Fibonacci 0" = [Start={0,1}, Gewicht={1,1}],
+        #"Fibonacci 1" = [Start={1,1}, Gewicht={1,1}],
+        Lucas = [Start={2,1}, Gewicht={1,1}],
+        #"Tribonacci 0" = [Start={0,0,1}, Gewicht={1,1,1}],
+        #"Tribonacci 1" = [Start={0,1,1}, Gewicht={1,1,1}],
+        Tetranacci = [Start={0,0,0,1}, Gewicht={1,1,1,1}],
+        Pell = [Start={0,1}, Gewicht={2,1}],
+        Jacobsthal = [Start={0,1}, Gewicht={1,2}]
+    ],
+    Parameter =
+        if Folge = "Eigene Zahlenfolge" then
+            let
+                AnzahlStart =
+                    Number.From(
+                        Excel.CurrentWorkbook(){
+                            [Name="tblStartwerte"]
+                        }[Content]{0}[Anzahl Startwerte]
+                    ),
+                EigeneTabelle =
+                    Excel.CurrentWorkbook(){
+                        [Name="tblZahlenfolge"]
+                    }[Content],
+                PruefungAnzahl =
+                    if AnzahlStart < 2
+                        or AnzahlStart > 5
+                        or AnzahlStart <> Number.RoundDown(AnzahlStart)
+                        or Table.RowCount(EigeneTabelle) < AnzahlStart
+                    then
+                        error "Ungültige Anzahl der Startwerte."
+                    else
+                        Table.FirstN(EigeneTabelle, AnzahlStart),
+                Start =
+                    List.Transform(
+                        PruefungAnzahl[Start],
+                        each Number.From(_)
+                    ),
+                Gewicht =
+                    List.Transform(
+                        PruefungAnzahl[Gewicht],
+                        each Number.From(_)
+                    ),
+                Result =
+                    if List.Contains(Start, null)
+                        or List.Contains(Gewicht, null)
+                    then
+                        error "Startwerte und Gewichtungen dürfen nicht leer sein."
+                    else
+                        [Start=Start, Gewicht=Gewicht]
+            in
+                Result
+        else
+            Record.Field(Definitionen, Folge),
+    Werte = fncZahlenfolge(Anzahl, Parameter[Start], Parameter[Gewicht]),
+    Erg = Table.FromColumns({List.Numbers(1, List.Count(Werte)), Werte}, {"Position", "Wert"})
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function
