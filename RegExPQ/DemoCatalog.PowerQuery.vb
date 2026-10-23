@@ -643,7 +643,7 @@ PQ_Geburtstagsliste_Anzahl_Tage_vorgeben.xlsx
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
 in folgenden Ordner entpackt:
 
-%TEMP%\Excel-VSTO-Toolbox\PQ_014
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -702,7 +702,7 @@ PQ_Power_Query_Feiertage_und_Tage_von_Montag_bis_Sonntag_ueber_Kontrollkaestchen
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
 in folgenden Ordner entpackt:
 
-%TEMP%\Excel-VSTO-Toolbox\PQ_015
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -759,7 +759,7 @@ PQ_UND_Formel_immer_auf_5_Stellen_RECHTS_mit_0_Null_auffuellen_Groesser_5_rechts
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
 in folgenden Ordner entpackt:
 
-%TEMP%\Excel-VSTO-Toolbox\PQ_016
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -817,7 +817,7 @@ PQ_Zeitstempel_TT_MM_JJJJ_hh_mm_ss_setzen_wenn_Spalte_C_leer_und_bestimmter_Text
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv
 in folgenden Ordner entpackt:
 
-%TEMP%\Excel-VSTO-Toolbox\PQ_017
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -887,7 +887,7 @@ Diese Daten werden umgewandelt. Auch UTC nach MEZ/MESZ.
 VBA_Power_Query_Formel_Datum_umwandeln.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_VBA_PQ_Formel
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -1021,7 +1021,7 @@ Aktualisiert wird über VBA.
 PQ_Biorhythmus_Worksheet_Change_Diagramm_Chart.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\PQ_019
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -1329,7 +1329,7 @@ Auch mit Formeln gelöst (Formeln in O1, Q1 und S1).
 =LET(x;SEQUENZ(Ende-Start+1;1;Start;1);m;MONAT(DATWERT("1. "&Monat));VSTAPELN("Freitag, der 13te ohne A4";FILTER(x;(x>=DATUM(1900;3;1))*(TAG(x)=13)*(WOCHENTAG(x;2)=5)*(MONAT(x)=m))))
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\PQ_020
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -1409,7 +1409,7 @@ Mit RegEx, Power Query, Formeln und VBA (UDF und Sub).
 RegEx_Power_Query_Formel_VBA_Text_auftrennen.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_PQ_Formel_VBA
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -1557,7 +1557,7 @@ Mit Power Query und Formeln gelöst. Aktualisierung der Power Query Abfragen mit
 PQ_Power_Query_Formeln_mehrere_Spalten_in_EINE_Spalte.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -1677,7 +1677,7 @@ Die Überschrift wird passend zur jeweiligen Monatsauswahl erzeugt.
 Power_Query_Pivot_mit_Formel_Geburtstagsliste_Monate.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_Pivot
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -1900,7 +1900,7 @@ In den Abfragen werden unterschiedliche Herangehensweisen gezeigt.
 Auch mit Formeln gelöst.
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_1
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -2177,7 +2177,7 @@ In den Abfragen werden unterschiedliche Herangehensweisen gezeigt.
 Auch mit Formeln gelöst.
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\PQ_25
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -2242,7 +2242,7 @@ PQ_Gruppe_Join_mit_Uebersicht.xlsx
 In den Abfragen werden unterschiedliche Herangehensweisen gezeigt.
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\PQ_26
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -2401,7 +2401,7 @@ Auch in VBA und Formeln gelöst.
 Fibonacci_and_More.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -2528,6 +2528,430 @@ let
             Record.Field(Definitionen, Folge),
     Werte = fncZahlenfolge(Anzahl, Parameter[Start], Parameter[Gewicht]),
     Erg = Table.FromColumns({List.Numbers(1, List.Count(Werte)), Werte}, {"Position", "Wert"})
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0028",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "CSV-Dateien einlesen - Strukturen vereinheitlichen...",
+                .Tags = {"csv", "einlesen", "anpassen", "power query", "bom", "datentypern"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+CSV-Dateien aus einem Arbeitsmappen-relativen Ordner einlesen, zusammenführen und unterschiedliche Dateistrukturen vereinheitlichen.
+Der Pfad wird automatisch über eine Formel ermittelt.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    BasisPfad = Excel.CurrentWorkbook(){[Name="FolderPath"]}[Content]{0}[Column1],
+    CSVOrdner = BasisPfad & "01_Gleiche_Struktur",
+    Quelle = Folder.Files(CSVOrdner),
+    CDat = Table.SelectRows(Quelle, each Text.Lower([Extension]) = ".csv"),
+    CSVInhalt =
+        Table.AddColumn(
+            CDat,
+            "Daten",
+            each
+                Table.PromoteHeaders(
+                    Csv.Document(
+                        [Content],
+                        [
+                            Delimiter = ";",
+                            Encoding = 65001,
+                            QuoteStyle = QuoteStyle.Csv
+                        ]
+                    ),
+                    [PromoteAllScalars = true]
+                ),
+            type table
+        ),
+    Kombiniert = Table.Combine(CSVInhalt[Daten]),
+    Erg =
+        Table.TransformColumnTypes(
+            Kombiniert,
+            {
+                {"BestellNr", Int64.Type},
+                {"Bestelldatum", type date},
+                {"Kunde", type text},
+                {"Artikel", type text},
+                {"Menge", Int64.Type},
+                {"Einzelpreis", type number},
+                {"Region", type text}
+            },
+            "de-DE"
+        )
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    BasisPfad = Excel.CurrentWorkbook(){[Name="FolderPath"]}[Content]{0}[Column1],
+    CSVOrdner = BasisPfad & "01_Gleiche_Struktur",
+    Quelle = Folder.Files(CSVOrdner),
+    CDat = Table.SelectRows(Quelle, each Text.Lower([Extension]) = ".csv"),
+    CSVInhalt =
+    Table.AddColumn(
+        CDat,
+        "Daten",
+        each
+            let
+                DateiName = [Name],
+                CSV =
+                    Table.PromoteHeaders(
+                        Csv.Document(
+                            [Content],
+                            [
+                                Delimiter = ";",
+                                Encoding = 65001,
+                                QuoteStyle = QuoteStyle.Csv
+                            ]
+                        ),
+                        [PromoteAllScalars = true]
+                    ),
+                MitDateiname =
+                    Table.AddColumn(
+                        CSV,
+                        "Quelldatei",
+                        each DateiName,
+                        type text
+                    )
+            in
+                MitDateiname,
+        type table
+    ),
+    Kombiniert = Table.Combine(CSVInhalt[Daten]),
+    Erg =
+        Table.TransformColumnTypes(
+            Kombiniert,
+            {
+                {"BestellNr", Int64.Type},
+                {"Bestelldatum", type date},
+                {"Kunde", type text},
+                {"Artikel", type text},
+                {"Menge", Int64.Type},
+                {"Einzelpreis", type number},
+                {"Region", type text}
+            },
+            "de-DE"
+        )
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    BasisPfad = Excel.CurrentWorkbook(){[Name="FolderPath"]}[Content]{0}[Column1],
+    CSVOrdner = BasisPfad & "02_Unterschiedliche_Struktur",
+    Quelle = Folder.Files(CSVOrdner),
+    CDat = Table.SelectRows(Quelle, each Text.Lower([Extension]) = ".csv" and [Folder Path] = CSVOrdner & "\"),
+    Spalten = {
+        "BestellNr",
+        "Bestelldatum",
+        "Kunde",
+        "Artikel",
+        "Menge",
+        "Einzelpreis",
+        "Region",
+        "Vertriebskanal"
+    },
+    CSVInhalt =
+        Table.AddColumn(
+            CDat,
+            "Daten",
+            each
+                let
+                    DateiName = [Name],
+                    IstKomma = Text.StartsWith(DateiName, "05_"),
+                    IstANSI = Text.StartsWith(DateiName, "06_"),
+                    Trennzeichen = if IstKomma then "," else ";",
+                    Codierung = if IstANSI then 1252 else 65001,
+                    Kultur = if IstKomma then "en-US" else "de-DE",
+                    CSV =
+                        Table.PromoteHeaders(
+                            Csv.Document(
+                                [Content],
+                                [
+                                    Delimiter = Trennzeichen,
+                                    Encoding = Codierung,
+                                    QuoteStyle = QuoteStyle.Csv
+                                ]
+                            ),
+                            [PromoteAllScalars = true]
+                        ),
+                    Normalisiert = Table.SelectColumns(CSV, Spalten, MissingField.UseNull),
+                    Typisiert =
+                        Table.TransformColumnTypes(
+                            Normalisiert,
+                            {
+                                {"BestellNr", Int64.Type},
+                                {"Bestelldatum", type date},
+                                {"Kunde", type text},
+                                {"Artikel", type text},
+                                {"Menge", Int64.Type},
+                                {"Einzelpreis", type number},
+                                {"Region", type text},
+                                {"Vertriebskanal", type text}
+                            },
+                            Kultur
+                        ),
+                    MitDateiname =
+                        Table.AddColumn(
+                            Typisiert,
+                            "Quelldatei",
+                            each DateiName,
+                            type text
+                        )
+                in
+                    MitDateiname,
+            type table
+        ),
+    Erg = Table.Combine(CSVInhalt[Daten])
+in
+    Erg
+
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    BasisPfad = Excel.CurrentWorkbook(){[Name="FolderPath"]}[Content]{0}[Column1],
+    CSVOrdner = BasisPfad & "02_Unterschiedliche_Struktur",
+    Quelle = Folder.Files(CSVOrdner),
+    CDat = Table.SelectRows(Quelle, each Text.Lower([Extension]) = ".csv" and [Folder Path] = CSVOrdner & "\"),
+    Spalten = {
+        "BestellNr",
+        "Bestelldatum",
+        "Kunde",
+        "Artikel",
+        "Menge",
+        "Einzelpreis",
+        "Region",
+        "Vertriebskanal"
+    },
+    PflichtSpalten = {
+        "BestellNr",
+        "Bestelldatum",
+        "Kunde",
+        "Artikel",
+        "Menge",
+        "Einzelpreis"
+    },
+    fnEncoding = (Inhalt as binary) as number =>
+    let
+        TextUTF8 = Text.FromBinary(Inhalt, TextEncoding.Utf8),
+        BinaryUTF8 = Text.ToBinary(TextUTF8, TextEncoding.Utf8, false),
+        OhneBOM =
+            if Binary.Length(Inhalt) >= 3
+                and Binary.ToList(Binary.Range(Inhalt, 0, 3))
+                    = {239, 187, 191}
+            then
+                Binary.Range(Inhalt, 3)
+            else
+        Inhalt,
+        IstUTF8 = Binary.ToList(OhneBOM) = Binary.ToList(BinaryUTF8),
+        Result = if IstUTF8 then 65001 else 1252
+    in
+        Result,
+    fnDelimiter = (Inhalt as binary, pEncoding as number) as text =>
+        let
+            Kandidaten = {";", ",", "#(tab)", "|"},
+            Bewertung =
+                List.Transform(
+                    Kandidaten,
+                    (Trenner) =>
+                        let
+                            Vorschau =
+                                Csv.Document(
+                                    Inhalt,
+                                    [
+                                        Delimiter = Trenner,
+                                        Encoding = pEncoding,
+                                        QuoteStyle = QuoteStyle.Csv
+                                    ]
+                                ),
+                            Kopf =
+                                if Table.RowCount(Vorschau) > 0 then
+                                    List.Transform(
+                                        Record.FieldValues(Vorschau{0}),
+                                        each Text.Trim(Text.From(_))
+                                    )
+                                else
+                                    {},
+                            Treffer =
+                                List.Count(
+                                    List.Intersect({
+                                        Kopf,
+                                        PflichtSpalten
+                                    })
+                                )
+                        in
+                            [
+                                Delimiter = Trenner,
+                                Treffer = Treffer
+                            ]
+                ),
+            Sortiert =
+                List.Sort(
+                    Bewertung,
+                    (a, b) =>
+                        Value.Compare(
+                            b[Treffer],
+                            a[Treffer]
+                        )
+                ),
+            Ergebnis =
+                if Sortiert{0}[Treffer] = 0 then
+                    error "Trennzeichen konnte nicht erkannt werden."
+                else
+                    Sortiert{0}[Delimiter]
+        in
+            Ergebnis,
+    CSVInhalt =
+        Table.AddColumn(
+            CDat,
+            "Daten",
+            each
+                let
+                    DateiName = [Name],
+                    Inhalt = [Content],
+                    DateiEncoding = fnEncoding(Inhalt),
+                    DateiDelimiter = fnDelimiter(Inhalt, DateiEncoding),
+                    CSV =
+                        Table.PromoteHeaders(
+                            Csv.Document(
+                                Inhalt,
+                                [
+                                    Delimiter = DateiDelimiter,
+                                    Encoding = DateiEncoding,
+                                    QuoteStyle = QuoteStyle.Csv
+                                ]
+                            ),
+                            [PromoteAllScalars = true]
+                        ),
+                    Normalisiert =
+                        Table.SelectColumns(
+                            CSV,
+                            Spalten,
+                            MissingField.UseNull
+                        ),
+                    Typisiert =
+                        Table.TransformColumns(
+                            Normalisiert,
+                            {
+                                {
+                                    "BestellNr",
+                                    each Int64.From(_),
+                                    Int64.Type
+                                },
+                                {
+                                    "Bestelldatum",
+                                    each
+                                        try Date.FromText(
+                                            _,
+                                            [Culture = "de-DE"]
+                                        )
+                                        otherwise
+                                            Date.FromText(
+                                                _,
+                                                [Culture = "en-US"]
+                                            ),
+                                    type date
+                                },
+                                {
+                                    "Menge",
+                                    each Int64.From(_),
+                                    Int64.Type
+                                },
+                                {
+                                    "Einzelpreis",
+                                    each
+                                        if _ = null then
+                                            null
+                                        else if
+                                            Text.Contains(
+                                                Text.From(_), ","
+                                            )
+                                        then
+                                            Number.FromText(
+                                                Text.From(_),
+                                                "de-DE"
+                                            )
+                                        else
+                                            Number.FromText(
+                                                Text.From(_),
+                                                "en-US"
+                                            ),
+                                    type number
+                                }
+                            }
+                        ),
+                    MitDateiname =
+                        Table.AddColumn(
+                            Typisiert,
+                            "Quelldatei",
+                            each DateiName,
+                            type text
+                        ),
+                    MitDelimiter =
+                        Table.AddColumn(
+                            MitDateiname,
+                            "Trennzeichen",
+                            each
+                                if DateiDelimiter = "#(tab)" then
+                                    "TAB"
+                                else
+                                    DateiDelimiter,
+                            type text
+                        ),
+                    MitEncoding =
+                        Table.AddColumn(
+                            MitDelimiter,
+                            "Encoding",
+                            each DateiEncoding,
+                            Int64.Type
+                        )
+                in
+                    MitEncoding,
+            type table
+        ),
+    Erg = Table.Combine(CSVInhalt[Daten])
 in
     Erg
         ]]>

@@ -186,7 +186,7 @@ Aus einer Liste (A2:C368 - Geburtstagsliste) werden vorgegebene Tage aufgelistet
 Formel_aus_einer_Geburtstagsliste_oder_anderen_Listen_mit_Datum_bestimmte_Tage_ausgeben_FILTER.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Formel_07
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -242,7 +242,7 @@ KW 34 - 17.08.2026 - 23.08.2026
 Formel_KW_Jahr_Datum_Woche_Von_Bis_in_einer_Zelle_ausgeben_mit_KW_am_Anfang.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Formel_08
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -280,7 +280,7 @@ Spalte A (Kundennummer) und Spalte B (Produktnummer) werden in eine Spalte zusam
 Aus_zwei_Spalten_mit_Ueberschrift_EINE_Spalte_Namen_und_Produkte_untereinander.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Formel_09
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -370,7 +370,7 @@ Mit RegEx, Power Query, Formeln und VBA (UDF und Sub).
 RegEx_Power_Query_Formel_VBA_Text_auftrennen.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_PQ_Formel_VBA
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -416,7 +416,7 @@ Mit Power Query und Formeln gelöst. Aktualisierung der Power Query Abfragen mit
 PQ_Power_Query_Formeln_mehrere_Spalten_in_EINE_Spalte.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -481,7 +481,7 @@ Anschließend mit einer Pivot und einem Datenschnitt (Mehrfachauswahl möglich) 
 Power_Query_Pivot_mit_Formel_Geburtstagsliste_Monate.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_Pivot
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -525,7 +525,7 @@ Die Formeln in B11:Bx und D10 sind über LAMBDA - siehe Namens-Manager.
 String_aufteilen_Zahlen_vervollstaendigen.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_Formel_14
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -573,7 +573,7 @@ Formeln in C5, F5, J5 und P5.
 Auch mit Power Query gelöst.
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_1
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -614,7 +614,7 @@ Erstes Tabellenblatt "Übersicht" mit Erklärungen.
 Formel_Variationen_mit_Datum.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_Formel_16
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -655,7 +655,7 @@ Auch in VBA und Power Query gelöst.
 Fibonacci_and_More.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.

@@ -530,7 +530,7 @@ Mehrere Telefonnummern in zwei Formaten werden aus Spalte A extrahiert.
 REGEXEXTRAHIEREN_Telefonnummern_mehrere_aus_Zelle_zu_extrahieren.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Regex_14
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -568,7 +568,7 @@ Materialnummern (Spalte B) werden im Text in Spalte A gesucht und wenn vorhanden
 REGEXEXTRAHIEREN_Zahl_Materialnummer_nur_extrahieren_wenn_in_Liste_vorhanden_Vergleich.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Regex_15
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -607,7 +607,7 @@ Aus Texten in Spalte A werden nur die Großbuchstaben ausgelesen. Auch Umlaute u
 Formel_REGEXERSETZEN_Nur_Grossbuchstaben_ausgeben_Rest_mit_Nichts_ersetzen.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Regex_16
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -643,7 +643,7 @@ Aus Texten in Spalte A werden nur die letzten Zahlen - die in mehreren Variation
 REGEXEXTRAHIEREN_und_andere_Formeln_letzte_Zahl_mit_oder ohne_Punkt_davor_Optional_in_Klammern.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Regex_17
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -683,7 +683,7 @@ Aus Daten in Spalte A (UTC) werden die Daten und Zeiten ausgelesen.
 UTC_MEZ_MESZ_REGEXEXTRAHIEREN_und_mehr.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Regex_18
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -724,7 +724,7 @@ Aus Daten in Spalte A (z. B. Bruno Graf (von) Bayern (72) - Abwesend) werden Nam
 REGEXEXTRAHIEREN_Name_Alter_Status_auslesen.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Regex_19
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -776,7 +776,7 @@ Mit Minus (-) wenn S (Soll) am Ende steht.
 REGEXEXTRAHIEREN_Zahlen_mit_Punkt_und_Text_am_Ende_auslesen_bearbeiten.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Regex_19
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -816,7 +816,7 @@ Mit RegEx, Power Query, Formeln und VBA (UDF und Sub).
 RegEx_Power_Query_Formel_VBA_Text_auftrennen.xlsb
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_PQ_Formel_VBA
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -858,7 +858,7 @@ Unvollständige Ergebnisse werden automatisch durch eine bedingte Formatierung h
 Regex_zwischen_zwei_Zeichen_String_auslesen.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_22
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -895,7 +895,7 @@ Länge 31 bei Tabellenblattname, 255 bei Ordner- und Dateiname und die reservier
 Ordner_Datei_Tabellenblattneme_mit_RegEx_pruefen.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_23
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -943,7 +943,7 @@ Mit und ohne Leerzeichen zwischen den Zahlen. Auch mit LAMBDA.
 Telefonnummern_in_bestimmtes_Format_bringen_0049.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_24
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -986,7 +986,7 @@ Die Formeln geben zu jedem Treffer die Startposition, die Länge und den gefunde
 REGEXP_String_bestimmte_Zeichen_zerlegen_Ausgabe_Positionen_und_Laenge.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_25
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
@@ -1075,7 +1075,7 @@ Im eigentlichen Text bleiben die Zeichen erhalten.
 Regex_Trennstriche_am_Ende_entfernen.xlsx
 
 Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
-%TEMP%\Excel-VSTO-Toolbox\Demo_RegEx_26
+%TEMP%\Excel-VSTO-Toolbox\
 
 Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
 Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
