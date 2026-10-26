@@ -26,7 +26,7 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ✔ **26** RegEx-Beispiele
 
-✔ **28** Power Query-Beispiele
+✔ **29** Power Query-Beispiele
 
 ✔ **17** Formel-Beispiele
 

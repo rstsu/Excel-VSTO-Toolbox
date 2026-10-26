@@ -2957,6 +2957,41 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0029",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "PDF-Dateien einlesen - Strukturen erkennen...",
+                .Tags = {"pdf", "einlesen", "anpassen", "power query", "tabelle", "datentypern"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+PDF-Dateien aus einem Arbeitsmappen-relativen Ordner einlesen.
+Sechs praxisnahe Beispiele - vollständig fiktive Daten - Möglichkeiten und Grenzen des PDF-Connectors.
+Der Pfad wird automatisch über eine Formel ermittelt.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+Es sind 17 Abfragen.
+M-Code bitte in Beispieldatei anschauen.
+        ]]>
+    </code>
+        )
             }
         }
     End Function
