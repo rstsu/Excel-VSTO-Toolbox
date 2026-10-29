@@ -2992,6 +2992,161 @@ M-Code bitte in Beispieldatei anschauen.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0030",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Variable Amerikanische Datumsangaben umwandeln...",
+                .Tags = {"datum", "amerikanisch", "umwandeln", "power query", "regex", "daten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Amerikanische Datumsangaben mit numerischem Monat oder englischer Monatsabkürzung werden in deutsche Datums- und Zeitangaben umgewandelt.
+Optional entsteht ein echter Excel-Datumswert statt einer Textdarstellung.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/ Abfrage tblErg
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblUSDatum"]}[Content],
+    Monate = {
+        "Jan", "Feb", "Mar", "Apr",
+        "May", "Jun", "Jul", "Aug",
+        "Sep", "Oct", "Nov", "Dec"
+    },
+    fnUSDatum = (Eingabe as nullable text) as nullable datetime =>
+        let
+            Text = if Eingabe = null then "" else Text.Trim(Eingabe),
+            Teile = List.Select(
+                Text.SplitAny(Text, " /-:"),
+                each _ <> ""
+            ),
+            MonatsText = Teile{0},
+            MonatsIndex = List.PositionOf(
+                List.Transform(Monate, Text.Upper),
+                Text.Upper(MonatsText)
+            ),
+            Monat =
+                if MonatsIndex >= 0
+                then MonatsIndex + 1
+                else Number.FromText(MonatsText),
+            Tag = Number.FromText(Teile{1}),
+            JahrRoh = Number.FromText(Teile{2}),
+            Jahr = if JahrRoh < 100 then 2000 + JahrRoh else JahrRoh,
+            HatZeit = List.Count(Teile) > 3,
+            StundeRoh = if HatZeit then Number.FromText(Teile{3}) else 0,
+            Minute = if HatZeit then Number.FromText(Text.Select(Teile{4}, {"0".."9"})) else 0,
+            IstPM = Text.EndsWith(Text.Upper(Text), "PM"),
+            IstAM = Text.EndsWith(Text.Upper(Text), "AM"),
+            Stunde =
+                if IstPM then Number.Mod(StundeRoh, 12) + 12
+                else if IstAM then Number.Mod(StundeRoh, 12)
+                else StundeRoh,
+            Ergebnis = #datetime(Jahr, Monat, Tag, Stunde, Minute, 0)
+        in
+            if Text = "" then null else Ergebnis,
+    MitDatum = Table.AddColumn(Quelle, "Deutsches Datum", each fnUSDatum(Text.From([Daten])), type datetime),
+    Erg = Table.AddColumn(
+        MitDatum,
+        "Formatiert",
+        each
+            DateTime.ToText(
+                [Deutsches Datum],
+                if Text.Contains([Daten], ":")
+                then "dd.MM.yyyy HH:mm"
+                else "dd.MM.yyyy",
+                "de-DE"
+            ),
+        type text
+    )
+in
+    Erg
+
+/ Funktion fncUSDatum
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+(Eingabe as nullable text) as nullable datetime =>
+let
+    t = if Eingabe = null then "" else Text.Trim(Eingabe),
+    Monate = {
+        "Jan", "Feb", "Mar", "Apr",
+        "May", "Jun", "Jul", "Aug",
+        "Sep", "Oct", "Nov", "Dec"
+    },
+    Teile = List.Select(Text.SplitAny(t, " /-:"), each _ <> ""),
+    MonatsText = Teile{0},
+    MonatsIndex = List.PositionOf(List.Transform(Monate, Text.Upper), Text.Upper(MonatsText)),
+    Monat = if MonatsIndex >= 0 then MonatsIndex + 1 else Number.FromText(MonatsText),
+    Tag = Number.FromText(Teile{1}),
+    JahrRoh = Number.FromText(Teile{2}),
+    Jahr = if JahrRoh < 100 then 2000 + JahrRoh else JahrRoh,
+    HatZeit = List.Count(Teile) > 3,
+    StundeRoh = if HatZeit then Number.FromText(Teile{3}) else 0,
+    Minute = if HatZeit then Number.FromText(Text.Select(Teile{4}, {"0".."9"})) else 0,
+    IstPM = Text.EndsWith(Text.Upper(t), "PM"),
+    IstAM = Text.EndsWith(Text.Upper(t), "AM"),
+    Stunde = if IstPM then Number.Mod(StundeRoh, 12) + 12 else if IstAM then Number.Mod(StundeRoh, 12) else StundeRoh,
+    Erg = if t = "" then null else #datetime(Jahr, Monat, Tag, Stunde, Minute, 0)
+in
+    Erg
+
+/ Abfrage US_DE_Ergebnis basierend auf der Funktion fncUSDatum
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblUSDatum"]}[Content],
+    Datentyp = Table.TransformColumnTypes(Quelle, {{"Daten", type text}}),
+    MitDatum = Table.AddColumn(Datentyp, "Deutsches Datum", each fncUSDatum([Daten]), type datetime),
+    Erg =
+        Table.AddColumn(
+            MitDatum,
+            "Formatiert",
+            each
+                if [Deutsches Datum] = null then null
+                else
+                    DateTime.ToText(
+                        [Deutsches Datum],
+                        if Text.Contains([Daten], ":")
+                        then "dd.MM.yyyy HH:mm"
+                        else "dd.MM.yyyy",
+                        "de-DE"
+                    ),
+            type text
+        )
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function

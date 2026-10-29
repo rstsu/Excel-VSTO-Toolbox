@@ -1103,6 +1103,71 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_027",
+                .Category = DemoCategory.Regex,
+                .Title = "Variable Amerikanische Datumsangaben umwandeln...",
+                .Tags = {"datum", "amerikanisch", "umwandeln", "power query", "regex", "daten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Amerikanische Datumsangaben mit numerischem Monat oder englischer Monatsabkürzung werden in deutsche Datums- und Zeitangaben umgewandelt.
+Optional entsteht ein echter Excel-Datumswert statt einer Textdarstellung.
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(quellwerte;FILTER(A2:.A999;A2:.A999<>"");ergebnisse;MAP(quellwerte;LAMBDA(eingabe;LET(t;GLÄTTEN(eingabe);monate;{"Jan";"Feb";"Mar";"Apr";"May";"Jun";"Jul";"Aug";"Sep";"Oct";"Nov";"Dec"};textMonat;REGEXTESTEN(t;"(?i)^[a-z]{3}");teile;REGEXEXTRAHIEREN(t;"[A-Za-z]+|\d+";1);m;WENN(textMonat;XVERGLEICH(INDEX(teile;1);monate;0);--INDEX(teile;1));d;--INDEX(teile;2);j;--INDEX(teile;3);jahr;WENN(j<100;2000+j;j);uhrzeit;WENNFEHLER(REGEXEXTRAHIEREN(t;"\d{1,2}:\d{2}");"");ampm;WENNFEHLER(GROSS(REGEXEXTRAHIEREN(t;"(?i)AM|PM"));"");zeit;WENN(uhrzeit="";0;ZEIT(REST(--TEXTVOR(uhrzeit;":");12)+WENN(ampm="PM";12;0);--TEXTNACH(uhrzeit;":");0));datum;DATUM(jahr;m;d);TEXT(datum+zeit;WENN(uhrzeit="";"TT.MM.JJJJ";"TT.MM.JJJJ hh:mm")))));VSTAPELN(A1;ergebnisse))
+
+=VSTAPELN(A1;MAP(FILTER(A2:.A999;A2:.A999<>"");US_DATUM))
+
+=VSTAPELN(A1;US_DATUM(A2))
+
+=VSTAPELN(A1;US_DATUM(A6))
+
+=LET(US_DATUM;LAMBDA(eingabe;LET(t;GLÄTTEN(eingabe);monate;{"Jan";"Feb";"Mar";"Apr";"May";"Jun";"Jul";"Aug";"Sep";"Oct";"Nov";"Dec"};teile;REGEXEXTRAHIEREN(t;"[A-Za-z]+|\d+";1);m;WENN(REGEXTESTEN(t;"(?i)^[a-z]{3}");XVERGLEICH(INDEX(teile;1);monate);--INDEX(teile;1));d;--INDEX(teile;2);j;--INDEX(teile;3);u;WENNFEHLER(REGEXEXTRAHIEREN(t;"\d{1,2}:\d{2}");"");ap;WENNFEHLER(GROSS(REGEXEXTRAHIEREN(t;"(?i)AM|PM"));"");z;WENN(u="";0;ZEIT(REST(--TEXTVOR(u;":");12)+12*(ap="PM");--TEXTNACH(u;":");0));dt;DATUM(WENN(j<100;2000+j;j);m;d);TEXT(dt+z;WENN(u="";"TT.MM.JJJJ";"TT.MM.JJJJ hh:mm"))));VSTAPELN(A1;MAP(FILTER(A2:.A999;A2:.A999<>"");US_DATUM)))
+
+=LET(quellwerte;FILTER(A2:.A999;A2:.A999<>"");ergebnisse;MAP(quellwerte;LAMBDA(eingabe;LET(t;GLÄTTEN(eingabe);monate;{"Jan";"Feb";"Mar";"Apr";"May";"Jun";"Jul";"Aug";"Sep";"Oct";"Nov";"Dec"};textMonat;REGEXTESTEN(t;"(?i)^[a-z]{3}");teile;REGEXEXTRAHIEREN(t;"[A-Za-z]+|\d+";1);m;WENN(textMonat;XVERGLEICH(INDEX(teile;1);monate;0);--INDEX(teile;1));d;--INDEX(teile;2);j;--INDEX(teile;3);jahr;WENN(j<100;2000+j;j);uhrzeit;WENNFEHLER(REGEXEXTRAHIEREN(t;"\d{1,2}:\d{2}");"");ampm;WENNFEHLER(GROSS(REGEXEXTRAHIEREN(t;"(?i)AM|PM"));"");zeit;WENN(uhrzeit="";0;ZEIT(REST(--TEXTVOR(uhrzeit;":");12)+WENN(ampm="PM";12;0);--TEXTNACH(uhrzeit;":");0));datum;DATUM(jahr;m;d);datum+zeit)));VSTAPELN(A1&" - im Zahlenformat";ergebnisse))
+
+=GLÄTTEN(A2)
+
+=REGEXTESTEN(A2;"(?i)^[a-z]{3}")
+
+=REGEXEXTRAHIEREN(A2;"[A-Za-z]+|\d+")
+
+=LET(t;GLÄTTEN(A2);monate;{"Jan";"Feb";"Mar";"Apr";"May";"Jun";"Jul";"Aug";"Sep";"Oct";"Nov";"Dec"};m;REGEXEXTRAHIEREN(t;"^[A-Za-z]{3}|\d{1,2}");WENN(REGEXTESTEN(t;"(?i)^[a-z]{3}");XVERGLEICH(m;monate);--m))
+
+=--INDEX(REGEXEXTRAHIEREN(A2;"[A-Za-z]+|\d+";1);2)
+
+=LET(j;--INDEX(REGEXEXTRAHIEREN(A2;"[A-Za-z]+|\d+";1);3);WENN(j<100;2000+j;j))
+
+=WENNFEHLER(REGEXEXTRAHIEREN(A2;"\d{1,2}:\d{2}");"")
+
+=WENNFEHLER(GROSS(REGEXEXTRAHIEREN(A2;"(?i)AM|PM"));"")
+
+=LET(u;WENNFEHLER(REGEXEXTRAHIEREN(A2;"\d{1,2}:\d{2}");"");ap;WENNFEHLER(GROSS(REGEXEXTRAHIEREN(A2;"(?i)AM|PM"));"");WENN(u="";"";TEXT(ZEIT(REST(--TEXTVOR(u;":");12)+12*(ap="PM");--TEXTNACH(u;":");0);"hh:mm")))
+
+=LET(t;GLÄTTEN(A2);monate;{"Jan";"Feb";"Mar";"Apr";"May";"Jun";"Jul";"Aug";"Sep";"Oct";"Nov";"Dec"};teile;REGEXEXTRAHIEREN(t;"[A-Za-z]+|\d+";1);m;WENN(REGEXTESTEN(t;"(?i)^[a-z]{3}");XVERGLEICH(INDEX(teile;1);monate);--INDEX(teile;1));d;--INDEX(teile;2);j;--INDEX(teile;3);TEXT(DATUM(WENN(j<100;2000+j;j);m;d);"TT.MM.JJJJ"))
+
+=US_DATUM(A2)
+        ]]>
+    </code>
+        )
             }
         }
     End Function

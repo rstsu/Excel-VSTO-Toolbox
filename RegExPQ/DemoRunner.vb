@@ -60,6 +60,8 @@ Partial Public Class DemoRunner
                 CreateRegexDemo_25()
             Case "regex_026"
                 CreateRegexDemo_26()
+            Case "regex_027"
+                CreatePQ_Regex_Demo()
             Case "pq_001"
                 CreatePowerQueryDemo_1()
             Case "pq_002"
@@ -118,6 +120,8 @@ Partial Public Class DemoRunner
                 CreatePowerQueryDemo_28()
             Case "pq_0029"
                 CreatePowerQueryDemo_29()
+            Case "pq_0030"
+                CreatePQ_Regex_Demo()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
@@ -1111,6 +1115,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo_PQ_Formel_Pivot",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreatePQ_Regex_Demo()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_PQ_Regex.zip",
+                    "Demo_PQ_Regex")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo_PQ_Regex",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
