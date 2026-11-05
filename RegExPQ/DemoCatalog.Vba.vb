@@ -1950,6 +1950,699 @@ End Function
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0016",
+                .Category = DemoCategory.Vba,
+                .Title = "Access Datenbank erstellen - die Dritte...",
+                .Tags = {"vba", "access", "adox", "ace", "oledb"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Praxisdemo: Access-Datenbank aus Excel erstellen, Daten ergänzen und Ergebnisse direkt in Excel auswerten.
+
+VBA_Access_dritte_Demo.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+' Modul Buttons
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Access_ButtonsAktualisieren()
+    Dim dblImportiert As Boolean
+    Dim dblVorhanden As Boolean
+    Dim varProvider As Variant
+    Dim dblTabellen As Boolean
+    Dim wksSheet As Worksheet
+    Dim lngAnzahl As Long
+    Dim strPfad As String
+    Dim objCN As Object
+    Dim objRS As Object
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("Steuerung")
+    strPfad = Environ$("TEMP") & "\VBA_Demo_9.accdb"
+    With wksSheet
+        .Shapes("btnErstellen").Visible = msoTrue
+        .Shapes("btnSchreiben").Visible = msoFalse
+        .Shapes("btnLesen").Visible = msoFalse
+    End With
+    dblVorhanden = (Len(Dir$(strPfad)) > 0)
+    If Not dblVorhanden Then GoTo Ende
+    Set objCN = CreateObject("ADODB.Connection")
+    For Each varProvider In Array("Microsoft.ACE.OLEDB.16.0", "Microsoft.ACE.OLEDB.12.0")
+        On Error Resume Next
+        Err.Clear
+        objCN.Open "Provider=" & varProvider & ";Data Source=" & strPfad & ";"
+        On Error GoTo Fin
+        If objCN.State = 1 Then Exit For
+    Next varProvider
+    If objCN.State <> 1 Then
+        Err.Raise vbObjectError + 400, , "Die vorhandene Datenbank konnte nicht geöffnet werden."
+    End If
+    Set objRS = objCN.OpenSchema(20)
+    Do Until objRS.EOF
+        Select Case CStr(objRS.Fields("TABLE_NAME").Value)
+            Case "Kunden", "Artikel", "Bestellungen", "Bestellpositionen"
+                lngAnzahl = lngAnzahl + 1
+        End Select
+        objRS.MoveNext
+    Loop
+    Set objRS = Nothing
+    dblTabellen = (lngAnzahl = 4)
+    If dblTabellen Then
+        wksSheet.Shapes("btnSchreiben").Visible = msoTrue
+        Set objRS = objCN.Execute("SELECT COUNT(*) FROM DemoImportLog")
+        dblImportiert = (CLng(objRS.Fields(0).Value) > 0)
+        objRS.Close
+        Set objRS = Nothing
+    End If
+    If dblImportiert Then
+        wksSheet.Shapes("btnLesen").Visible = msoTrue
+    End If
+Ende:
+    On Error Resume Next
+    If Not objRS Is Nothing Then
+        If objRS.State = 1 Then objRS.Close
+    End If
+    If Not objCN Is Nothing Then
+        If objCN.State = 1 Then objCN.Close
+    End If
+    Exit Sub
+Fin:
+    MsgBox "Fehler bei der Buttonsteuerung:" & vbCrLf & Err.Number & " - " & Err.Description, vbExclamation, "Access-Demo 3"
+    Resume Ende
+End Sub
+
+' Modul Datenbank
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Main_Access_3()
+    Dim strDescription As String
+    Dim varProvider As Variant
+    Dim strFileName As String
+    Dim strProvider As String
+    Dim catCatalog As Object
+    Dim objTable As Object
+    Dim objIndex As Object
+    Dim objConn As Object
+    Dim lngError As Long
+    strFileName = Environ$("TEMP") & "\VBA_Demo_9.accdb"
+    On Error GoTo Fin
+    If Len(Dir$(strFileName)) > 0 Then
+        If MsgBox("Die Datenbank existiert bereits." & vbCrLf & _
+              "Soll sie neu erstellt werden?" & vbCrLf & _
+              "Alle vorhandenen Daten gehen verloren!", _
+              vbYesNo + vbExclamation, "Access-Demo 3") = vbNo Then Exit Sub
+        Kill strFileName
+    End If
+    Set catCatalog = CreateObject("ADOX.Catalog")
+    For Each varProvider In Array("Microsoft.ACE.OLEDB.16.0", "Microsoft.ACE.OLEDB.12.0")
+        Err.Clear
+        On Error Resume Next
+        catCatalog.Create "Provider=" & CStr(varProvider) & ";Data Source=" & strFileName & ";"
+        If Err.Number = 0 Then
+            strProvider = CStr(varProvider)
+            On Error GoTo Fin
+            Exit For
+        End If
+        lngError = Err.Number
+        strDescription = Err.Description
+        On Error GoTo Fin
+    Next varProvider
+    If Len(strProvider) = 0 Then
+        Err.Raise vbObjectError + 1000, _
+            "CreateDataBase_1", _
+            "Es wurde kein geeigneter ACE-OLEDB-Provider gefunden." & _
+            vbCrLf & vbCrLf & _
+            "Letzter Fehler: " & lngError & _
+            vbCrLf & strDescription
+    End If
+    Set objConn = CreateObject("ADODB.Connection")
+    With objConn
+        .CursorLocation = 3
+        .Open "Provider=" & strProvider & ";Data Source=" & strFileName & ";"
+        .Execute _
+            "CREATE TABLE Kunden (" & _
+            "KundenID AUTOINCREMENT CONSTRAINT PK_Kunden PRIMARY KEY, " & _
+            "Firma VARCHAR(100), " & _
+            "Ansprechpartner VARCHAR(100), " & _
+            "Ort VARCHAR(50), " & _
+            "Land VARCHAR(50))"
+        .Execute _
+            "CREATE TABLE Artikel (" & _
+            "ArtikelID AUTOINCREMENT CONSTRAINT PK_Artikel PRIMARY KEY, " & _
+            "Bezeichnung VARCHAR(100), " & _
+            "Preis CURRENCY, " & _
+            "Bestand INTEGER)"
+        .Execute _
+            "CREATE TABLE Bestellungen (" & _
+            "BestellID AUTOINCREMENT CONSTRAINT PK_Bestellungen PRIMARY KEY, " & _
+            "KundenID LONG, " & _
+            "Bestelldatum DATETIME)"
+        .Execute _
+            "CREATE TABLE Bestellpositionen (" & _
+            "PositionsID AUTOINCREMENT CONSTRAINT PK_Bestellpositionen PRIMARY KEY, " & _
+            "BestellID LONG, " & _
+            "ArtikelID LONG, " & _
+            "Menge INTEGER, " & _
+            "Einzelpreis CURRENCY)"
+        .Execute _
+            "ALTER TABLE Bestellungen " & _
+            "ADD CONSTRAINT FK_Bestellungen_Kunden " & _
+            "FOREIGN KEY (KundenID) REFERENCES Kunden (KundenID)"
+        .Execute _
+            "ALTER TABLE Bestellpositionen " & _
+            "ADD CONSTRAINT FK_Positionen_Bestellungen " & _
+            "FOREIGN KEY (BestellID) REFERENCES Bestellungen (BestellID)"
+        .Execute _
+            "ALTER TABLE Bestellpositionen " & _
+            "ADD CONSTRAINT FK_Positionen_Artikel " & _
+            "FOREIGN KEY (ArtikelID) REFERENCES Artikel (ArtikelID)"
+        .Execute "CREATE TABLE DemoImportLog (" & "Importdatum DATETIME)"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Nordstern GmbH', 'Anna Berger', 'Hamburg', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Rheinblick AG', 'Michael Weber', 'Köln', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Alpenhandel KG', 'Sabine Keller', 'München', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Spree Büroservice', 'Thomas Richter', 'Berlin', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('MainTech GmbH', 'Julia Hartmann', 'Frankfurt', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Elbe Logistik', 'Martin Schulze', 'Dresden', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Westfalen Bürobedarf', 'Petra König', 'Dortmund', 'Deutschland')"
+        .Execute "INSERT INTO Kunden (Firma, Ansprechpartner, Ort, Land) VALUES ('Donau Consulting', 'Daniel Fischer', 'Ulm', 'Deutschland')"
+        .Execute "INSERT INTO Kunden " & "(Firma, Ansprechpartner, Ort, Land) " & "VALUES ('Muster & Partner GmbH', " & "'Thomas Berger', 'Ulm', 'Deutschland')"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Notebookständer', 29.9, 35)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('USB-C Hub', 39.5, 28)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Funkmaus', 24.9, 42)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Tastatur', 49.9, 21)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Webcam', 59.0, 17)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Headset', 69.9, 14)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Monitorarm', 84.5, 9)"
+        .Execute "INSERT INTO Artikel (Bezeichnung, Preis, Bestand) VALUES ('Laptop-Tasche', 44.0, 31)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (1, #01/12/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (2, #01/18/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (1, #02/03/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (4, #02/15/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (5, #03/02/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (3, #03/21/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (6, #04/09/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (2, #04/28/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (7, #05/10/2026#)"
+        .Execute "INSERT INTO Bestellungen (KundenID, Bestelldatum) VALUES (8, #05/23/2026#)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (1, 1, 2, 29.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (1, 3, 2, 24.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (2, 2, 3, 39.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (2, 4, 1, 49.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (3, 5, 2, 59)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (3, 6, 1, 69.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (4, 3, 4, 24.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (4, 8, 2, 44)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (5, 7, 2, 84.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (5, 2, 2, 39.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (6, 4, 3, 49.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (7, 6, 2, 69.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (8, 1, 5, 29.9)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (8, 5, 2, 59)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (9, 8, 3, 44)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (10, 2, 1, 39.5)"
+        .Execute "INSERT INTO Bestellpositionen (BestellID, ArtikelID, Menge, Einzelpreis) VALUES (10, 3, 2, 24.9)"
+        If .State = 1 Then .Close
+        Access_ButtonsAktualisieren
+        MsgBox "Datenbank wurde erstellt:" & vbCrLf & _
+            strFileName & vbCrLf & vbCrLf & _
+            "Provider: " & strProvider, vbInformation
+    End With
+Fin:
+    If Err.Number <> 0 Then MsgBox "Fehler: " & Err.Number & vbCrLf & Err.Description, vbExclamation
+    If Not objConn Is Nothing Then
+        If objConn.State = 1 Then objConn.Close
+    End If
+    Set objIndex = Nothing
+    Set objTable = Nothing
+    Set catCatalog = Nothing
+    Set objConn = Nothing
+End Sub
+
+' Modul Lesen
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Access_DatenLesen()
+    Dim lngLetzteSpalte As Long
+    Dim varProvider As Variant
+    Dim lngLetzteZeile As Long
+    Dim wksSheet As Worksheet
+    Dim strAuswahl As String
+    Dim strMeldung As String
+    Dim strPfad As String
+    Dim lngAnzahl As Long
+    Dim strSQL As String
+    Dim lngCount As Long
+    Dim objCN As Object
+    Dim objRS As Object
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("Auswertung")
+    strAuswahl = Trim$(CStr(wksSheet.Range("B2").Value))
+    Select Case strAuswahl
+        Case "Alle Kunden"
+            strSQL = "SELECT KundenID, Firma, Ansprechpartner, " & _
+                  "Ort, Land FROM Kunden ORDER BY Firma"
+        Case "Kunden nach Ort"
+            strSQL = "SELECT KundenID, Firma, Ansprechpartner, " & _
+                  "Ort, Land FROM Kunden " & _
+                  "WHERE Ort LIKE " & _
+                  SQLText(wksSheet.Range("D2").Value & "%") & _
+                  " ORDER BY Firma"
+        Case "Alle Bestellungen"
+            strSQL = "SELECT B.BestellID, B.Bestelldatum, " & _
+                  "K.Firma, K.Ort " & _
+                  "FROM Kunden AS K INNER JOIN Bestellungen AS B " & _
+                  "ON K.KundenID = B.KundenID " & _
+                  "ORDER BY B.Bestelldatum"
+        Case "Bestelldetails"
+            strSQL = "SELECT B.BestellID, K.Firma, " & _
+                  "B.Bestelldatum, A.Bezeichnung, " & _
+                  "P.Menge, P.Einzelpreis, " & _
+                  "(P.Menge * P.Einzelpreis) AS Gesamtpreis " & _
+                  "FROM ((Kunden AS K " & _
+                  "INNER JOIN Bestellungen AS B " & _
+                  "ON K.KundenID = B.KundenID) " & _
+                  "INNER JOIN Bestellpositionen AS P " & _
+                  "ON B.BestellID = P.BestellID) " & _
+                  "INNER JOIN Artikel AS A " & _
+                  "ON P.ArtikelID = A.ArtikelID " & _
+                  "ORDER BY B.BestellID, P.PositionsID"
+        Case "Umsatz je Kunde"
+            strSQL = "SELECT K.Firma, " & _
+                  "SUM(P.Menge * P.Einzelpreis) AS Umsatz " & _
+                  "FROM (Kunden AS K " & _
+                  "INNER JOIN Bestellungen AS B " & _
+                  "ON K.KundenID = B.KundenID) " & _
+                  "INNER JOIN Bestellpositionen AS P " & _
+                  "ON B.BestellID = P.BestellID " & _
+                  "GROUP BY K.KundenID, K.Firma ORDER BY " & _
+                  "SUM(P.Menge * P.Einzelpreis) DESC"
+        Case "Umsatz je Artikel"
+            strSQL = "SELECT A.Bezeichnung, " & _
+                  "SUM(P.Menge) AS Gesamtmenge, " & _
+                  "SUM(P.Menge * P.Einzelpreis) AS Umsatz " & _
+                  "FROM Artikel AS A " & _
+                  "INNER JOIN Bestellpositionen AS P " & _
+                  "ON A.ArtikelID = P.ArtikelID " & _
+                  "GROUP BY A.Bezeichnung ORDER BY " & _
+                  "SUM(P.Menge * P.Einzelpreis) DESC"
+        Case "Kunden ohne Bestellung"
+            strSQL = "SELECT K.KundenID, K.Firma, K.Ort " & _
+                  "FROM Kunden AS K LEFT JOIN Bestellungen AS B " & _
+                  "ON K.KundenID = B.KundenID " & _
+                  "WHERE B.BestellID IS NULL ORDER BY K.Firma"
+        Case "Artikel mit geringem Bestand"
+            strSQL = "SELECT ArtikelID, Bezeichnung, Preis, Bestand " & _
+                  "FROM Artikel WHERE Bestand < " & CLng(wksSheet.Range("F2").Value) & _
+                  " ORDER BY Bestand"
+        Case Else
+            MsgBox "Bitte eine gültige Abfrage in B2 auswählen.", _
+                   vbExclamation
+            Exit Sub
+    End Select
+    strPfad = Environ$("TEMP") & "\VBA_Demo_9.accdb"
+    If Len(Dir$(strPfad)) = 0 Then
+        MsgBox "Datenbank nicht gefunden:" & vbCrLf & strPfad, vbExclamation
+        Exit Sub
+    End If
+    Set objCN = CreateObject("ADODB.Connection")
+    For Each varProvider In Array("Microsoft.ACE.OLEDB.16.0", "Microsoft.ACE.OLEDB.12.0")
+        On Error Resume Next
+        Err.Clear
+        objCN.Open "Provider=" & varProvider & ";Data Source=" & strPfad & ";"
+        On Error GoTo Fin
+        If objCN.State = 1 Then Exit For
+    Next varProvider
+    If objCN.State <> 1 Then
+        Err.Raise vbObjectError + 200, , "Kein geeigneter ACE-Provider gefunden."
+    End If
+    Set objRS = CreateObject("ADODB.Recordset")
+    objRS.Open strSQL, objCN, 3, 1
+    lngAnzahl = objRS.RecordCount
+    With wksSheet
+        lngLetzteZeile = .Cells(.Rows.Count, 1).End(xlUp).Row
+        lngLetzteSpalte = .Cells(5, .Columns.Count).End(xlToLeft).Column
+        .Range(.Cells(5, 1), .Cells(Application.Max(5, lngLetzteZeile), Application.Max(8, lngLetzteSpalte))).Clear
+        .Range("J2").Value = strSQL
+        For lngCount = 0 To objRS.Fields.Count - 1
+            .Cells(5, lngCount + 1).Value = objRS.Fields(lngCount).Name
+        Next lngCount
+        If lngAnzahl > 0 Then
+            .Range("A6").CopyFromRecordset objRS
+        End If
+        Access_ErgebnisFormatieren wksSheet, objRS, lngAnzahl
+        With .Range(.Cells(5, 1), .Cells(5, objRS.Fields.Count))
+            .Font.Bold = True
+            .Interior.Color = RGB(47, 85, 151)
+            .Font.Color = vbWhite
+        End With
+        .Range(.Cells(5, 1), .Cells(5, objRS.Fields.Count)).EntireColumn.AutoFit
+    End With
+    MsgBox "Abfrage: " & strAuswahl & vbCrLf & "Gefundene Datensätze: " & lngAnzahl, vbInformation
+Ende:
+    On Error Resume Next
+    If Not objRS Is Nothing Then
+        If objRS.State = 1 Then objRS.Close
+    End If
+    If Not objCN Is Nothing Then
+        If objCN.State = 1 Then objCN.Close
+    End If
+    Exit Sub
+Fin:
+    strMeldung = "Fehler " & Err.Number & vbCrLf & Err.Description
+    MsgBox strMeldung, vbCritical, "Access-Demo 3"
+    Resume Ende
+End Sub
+Private Function SQLText(ByVal varWert As Variant) As String
+    SQLText = "'" & Replace(CStr(varWert), "'", "''") & "'"
+End Function
+Private Sub Access_ErgebnisFormatieren(ByVal wksSheet As Worksheet, ByVal objRS As Object, ByVal lngAnzahl As Long)
+    Dim strFeldname As String
+    Dim lngCount As Long
+    Dim rngRange As Range
+    If lngAnzahl <= 0 Then Exit Sub
+    For lngCount = 0 To objRS.Fields.Count - 1
+        strFeldname = LCase$(objRS.Fields(lngCount).Name)
+        Set rngRange = wksSheet.Range(wksSheet.Cells(6, lngCount + 1), wksSheet.Cells(5 + lngAnzahl, lngCount + 1))
+        Select Case strFeldname
+            Case "bestelldatum", "importdatum"
+                rngRange.NumberFormat = "dd.mm.yyyy"
+            Case "preis", "einzelpreis", "gesamtpreis", "umsatz"
+                rngRange.NumberFormat = "#,##0.00 ""€"""
+            Case "bestand", "menge", "gesamtmenge"
+                rngRange.NumberFormat = "0"
+        End Select
+    Next lngCount
+End Sub
+
+' Modul Orteauslesen
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub Access_Ortsliste()
+    Dim varProvider As Variant
+    Dim lngLetzteZeile As Long
+    Dim wksSheet As Worksheet
+    Dim strMeldung As String
+    Dim strPfad As String
+    Dim lngAnzahl As Long
+    Dim objCN As Object
+    Dim objRS As Object
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("Auswertung")
+    strPfad = Environ$("TEMP") & "\VBA_Demo_9.accdb"
+    If Len(Dir$(strPfad)) = 0 Then
+        MsgBox "Datenbank nicht gefunden:" & vbCrLf & strPfad, vbExclamation
+        Exit Sub
+    End If
+    Set objCN = CreateObject("ADODB.Connection")
+    For Each varProvider In Array("Microsoft.ACE.OLEDB.16.0", "Microsoft.ACE.OLEDB.12.0")
+        On Error Resume Next
+        Err.Clear
+        objCN.Open "Provider=" & varProvider & ";Data Source=" & strPfad & ";"
+        On Error GoTo Fin
+        If objCN.State = 1 Then Exit For
+    Next varProvider
+    If objCN.State <> 1 Then
+        Err.Raise vbObjectError + 300, , "Kein geeigneter ACE-Provider gefunden."
+    End If
+    Set objRS = objCN.Execute( _
+        "SELECT DISTINCT Ort FROM Kunden " & _
+        "WHERE Ort IS NOT NULL AND Ort <> '' " & _
+        "ORDER BY Ort")
+    wksSheet.Range("AA2:AA" & wksSheet.Rows.Count).ClearContents
+    If Not objRS.EOF Then
+        wksSheet.Range("AA2").CopyFromRecordset objRS
+    End If
+    lngLetzteZeile = wksSheet.Cells(wksSheet.Rows.Count, "AA").End(xlUp).Row
+    If lngLetzteZeile < 2 Then
+        Err.Raise vbObjectError + 301, , "Keine Orte in der Datenbank vorhanden."
+    End If
+    lngAnzahl = lngLetzteZeile - 1
+    With wksSheet.Range("D2").Validation
+        .Delete
+        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:=xlBetween, Formula1:="=$AA$2:$AA$" & lngLetzteZeile
+        .IgnoreBlank = True
+        .InCellDropdown = True
+        .ShowError = True
+        .ErrorTitle = "Ungültiger Ort"
+        .ErrorMessage = "Bitte einen Ort aus der Liste auswählen."
+    End With
+    If Application.CountIf( _
+        wksSheet.Range("AA2:AA" & lngLetzteZeile), _
+        wksSheet.Range("D2").Value) = 0 Then
+        wksSheet.Range("D2").Value = wksSheet.Range("AA2").Value
+    End If
+    wksSheet.Columns("AA").Hidden = True
+    MsgBox lngAnzahl & " Orte aus Access übernommen.", vbInformation
+Ende:
+    On Error Resume Next
+    If Not objRS Is Nothing Then
+        If objRS.State = 1 Then objRS.Close
+    End If
+    If Not objCN Is Nothing Then
+        If objCN.State = 1 Then objCN.Close
+    End If
+    Exit Sub
+Fin:
+    strMeldung = "Fehler " & Err.Number & vbCrLf & Err.Description
+    MsgBox strMeldung, vbCritical, "Access-Ortsliste"
+    Resume Ende
+End Sub
+
+' Modul Schreiben
+Option Explicit
+' Excel-VSTO-Toolbox
+' VBA-Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Private Const DB_DATEI As String = "VBA_Demo_9.accdb"
+Public Sub Access_DatenSchreiben()
+    Dim lngZaehler(1 To 4) As Long
+    Dim blnTransaktion As Boolean
+    Dim objBestellungen As Object
+    Dim blnImportiert As Boolean
+    Dim varProvider As Variant
+    Dim wksSheet As Worksheet
+    Dim strMeldung As String
+    Dim lngArtikelID As Long
+    Dim lngBestellID As Long
+    Dim objArtikel As Object
+    Dim objKunden As Object
+    Dim lngKundenID As Long
+    Dim strPfad As String
+    Dim strSQL As String
+    Dim lngCount As Long
+    Dim strRef As String
+    Dim objCN As Object
+    Dim objRS As Object
+    On Error GoTo Fin
+    strPfad = Environ$("TEMP") & "\" & DB_DATEI
+    If Len(Dir$(strPfad)) = 0 Then
+        MsgBox "Datenbank nicht gefunden:" & vbCrLf & strPfad, vbExclamation
+        Exit Sub
+    End If
+    Set objCN = CreateObject("ADODB.Connection")
+    For Each varProvider In Array("Microsoft.ACE.OLEDB.16.0", "Microsoft.ACE.OLEDB.12.0")
+        On Error Resume Next
+        Err.Clear
+        objCN.Open "Provider=" & varProvider & ";Data Source=" & strPfad & ";"
+        On Error GoTo Fin
+        If objCN.State = 1 Then Exit For
+    Next varProvider
+    If objCN.State <> 1 Then
+        Err.Raise vbObjectError + 100, , "Kein geeigneter ACE-Provider gefunden."
+    End If
+    Set objRS = objCN.OpenSchema(20)
+    Set objRS = objCN.Execute("SELECT COUNT(*) FROM DemoImportLog")
+    blnImportiert = (CLng(objRS.Fields(0).Value) > 0)
+    objRS.Close
+    Set objRS = Nothing
+    If blnImportiert Then
+        MsgBox "Die zusätzlichen Daten wurden bereits importiert.", vbInformation
+        ThisWorkbook.Worksheets("Steuerung") _
+            .Shapes("btnLesen").Visible = msoTrue
+        GoTo Ende
+    End If
+    Set objKunden = CreateObject("Scripting.Dictionary")
+    Set objArtikel = CreateObject("Scripting.Dictionary")
+    Set objBestellungen = CreateObject("Scripting.Dictionary")
+    objKunden.CompareMode = vbTextCompare
+    objArtikel.CompareMode = vbTextCompare
+    objBestellungen.CompareMode = vbTextCompare
+    objCN.BeginTrans
+    blnTransaktion = True
+    Set wksSheet = ThisWorkbook.Worksheets("Neue_Kunden")
+    For lngCount = 2 To lngLetzteZeile(wksSheet)
+        strRef = Trim$(CStr(wksSheet.Cells(lngCount, 1).Value))
+        If Len(strRef) = 0 Or objKunden.Exists(strRef) Then
+            Err.Raise vbObjectError + 101, , "Ungültige Kundenreferenz in Zeile " & lngCount
+        End If
+        strSQL = "INSERT INTO Kunden " & _
+            "(Firma, Ansprechpartner, Ort, Land) VALUES (" & _
+            SQLText(wksSheet.Cells(lngCount, 2).Value) & "," & _
+            SQLText(wksSheet.Cells(lngCount, 3).Value) & "," & _
+            SQLText(wksSheet.Cells(lngCount, 4).Value) & "," & _
+            SQLText(wksSheet.Cells(lngCount, 5).Value) & ")"
+        objCN.Execute strSQL
+        objKunden.Add strRef, NeueID(objCN)
+        lngZaehler(1) = lngZaehler(1) + 1
+    Next lngCount
+    Set wksSheet = ThisWorkbook.Worksheets("Neue_Artikel")
+    For lngCount = 2 To lngLetzteZeile(wksSheet)
+        strRef = Trim$(CStr(wksSheet.Cells(lngCount, 1).Value))
+        If Len(strRef) = 0 Or objArtikel.Exists(strRef) Then
+            Err.Raise vbObjectError + 102, , "Ungültige Artikelreferenz in Zeile " & lngCount
+        End If
+        strSQL = "INSERT INTO Artikel " & _
+            "(Bezeichnung, Preis, Bestand) VALUES (" & _
+            SQLText(wksSheet.Cells(lngCount, 2).Value) & "," & _
+            SQLZahl(wksSheet.Cells(lngCount, 3).Value) & "," & _
+            CLng(wksSheet.Cells(lngCount, 4).Value) & ")"
+        objCN.Execute strSQL
+        objArtikel.Add strRef, NeueID(objCN)
+        lngZaehler(2) = lngZaehler(2) + 1
+    Next lngCount
+    Set wksSheet = ThisWorkbook.Worksheets("Neue_Bestellungen")
+    For lngCount = 2 To lngLetzteZeile(wksSheet)
+        strRef = Trim$(CStr(wksSheet.Cells(lngCount, 1).Value))
+        If Len(strRef) = 0 Or objBestellungen.Exists(strRef) Then
+            Err.Raise vbObjectError + 103, , "Ungültige Bestellreferenz in Zeile " & lngCount
+        End If
+        lngKundenID = ReferenzID(objCN, objKunden, wksSheet.Cells(lngCount, 2).Value, "Kunden", "KundenID")
+        If Not IsDate(wksSheet.Cells(lngCount, 3).Value) Then
+            Err.Raise vbObjectError + 104, , "Ungültiges Datum in Zeile " & lngCount
+        End If
+        strSQL = "INSERT INTO Bestellungen " & _
+            "(KundenID, Bestelldatum) VALUES (" & _
+            lngKundenID & ",#" & Format$(CDate(wksSheet.Cells(lngCount, 3).Value), "mm\/dd\/yyyy") & "#)"
+        objCN.Execute strSQL
+        objBestellungen.Add strRef, NeueID(objCN)
+        lngZaehler(3) = lngZaehler(3) + 1
+    Next lngCount
+    Set wksSheet = ThisWorkbook.Worksheets("Neue_Positionen")
+    For lngCount = 2 To lngLetzteZeile(wksSheet)
+        lngBestellID = ReferenzID(objCN, objBestellungen, wksSheet.Cells(lngCount, 1).Value, "Bestellungen", "BestellID")
+        lngArtikelID = ReferenzID(objCN, objArtikel, wksSheet.Cells(lngCount, 2).Value, "Artikel", "ArtikelID")
+        If Not IsNumeric(wksSheet.Cells(lngCount, 3).Value) Then
+            Err.Raise vbObjectError + 105, , "Ungültige Menge in Zeile " & lngCount
+        End If
+        If CLng(wksSheet.Cells(lngCount, 3).Value) <= 0 Then
+            Err.Raise vbObjectError + 106, , "Menge muss positiv sein. Zeile " & lngCount
+        End If
+        strSQL = "INSERT INTO Bestellpositionen " & _
+            "(BestellID, ArtikelID, Menge, Einzelpreis) VALUES (" & _
+            lngBestellID & "," & lngArtikelID & "," & _
+            CLng(wksSheet.Cells(lngCount, 3).Value) & "," & _
+            SQLZahl(wksSheet.Cells(lngCount, 4).Value) & ")"
+        objCN.Execute strSQL
+        lngZaehler(4) = lngZaehler(4) + 1
+    Next lngCount
+    objCN.Execute "INSERT INTO DemoImportLog (Importdatum) " & "VALUES (Now())"
+    objCN.CommitTrans
+    blnTransaktion = False
+    Access_ButtonsAktualisieren
+    MsgBox "Daten erfolgreich übertragen!" & vbCrLf & vbCrLf & _
+       lngZaehler(1) & " Kunden" & vbCrLf & _
+       lngZaehler(2) & " Artikel" & vbCrLf & _
+       lngZaehler(3) & " Bestellungen" & vbCrLf & _
+       lngZaehler(4) & " Bestellpositionen", vbInformation
+Ende:
+    On Error Resume Next
+    If Not objRS Is Nothing Then
+        If objRS.State = 1 Then objRS.Close
+    End If
+    If Not objCN Is Nothing Then
+        If objCN.State = 1 Then objCN.Close
+    End If
+    Exit Sub
+Fin:
+    strMeldung = "Fehler " & Err.Number & vbCrLf & Err.Description
+    On Error Resume Next
+    If blnTransaktion Then objCN.RollbackTrans
+    MsgBox strMeldung, vbCritical, "Access-Demo 3"
+    Resume Ende
+End Sub
+Private Function lngLetzteZeile(ByVal wksSheet As Worksheet) As Long
+    lngLetzteZeile = wksSheet.Cells(wksSheet.Rows.Count, 1).End(xlUp).Row
+End Function
+Private Function SQLText(ByVal varWert As Variant) As String
+    SQLText = "'" & Replace(CStr(varWert), "'", "''") & "'"
+End Function
+Private Function SQLZahl(ByVal varWert As Variant) As String
+    If Not IsNumeric(varWert) Then
+        Err.Raise vbObjectError + 110, , "Ungültiger Zahlenwert: " & CStr(varWert)
+    End If
+    SQLZahl = Trim$(Str$(CDbl(varWert)))
+End Function
+Private Function NeueID(ByVal objCN As Object) As Long
+    Dim objRS As Object
+    Set objRS = objCN.Execute("SELECT @@IDENTITY")
+    NeueID = CLng(objRS.Fields(0).Value)
+    objRS.Close
+End Function
+Private Function ReferenzID( _
+    ByVal objCN As Object, _
+    ByVal objZuordnung As Object, _
+    ByVal varWert As Variant, _
+    ByVal strTabellenname As String, _
+    ByVal strIDFeld As String) As Long
+    Dim strRef As String
+    Dim objRS As Object
+    Dim lngID As Long
+    strRef = Trim$(CStr(varWert))
+    If UCase$(Left$(strRef, 4)) = "ALT:" Then
+        If Not IsNumeric(Mid$(strRef, 5)) Then
+            Err.Raise vbObjectError + 120, , "Ungültige ALT-Referenz: " & strRef
+        End If
+        lngID = CLng(Mid$(strRef, 5))
+        If lngID <= 0 Then
+            Err.Raise vbObjectError + 121, , "Ungültige ID: " & strRef
+        End If
+        Set objRS = objCN.Execute( _
+            "SELECT COUNT(*) FROM [" & strTabellenname & "] " & _
+            "WHERE [" & strIDFeld & "]=" & lngID)
+        If CLng(objRS.Fields(0).Value) = 0 Then
+            objRS.Close
+            Err.Raise vbObjectError + 122, , "Datensatz nicht vorhanden: " & strRef
+        End If
+        objRS.Close
+        ReferenzID = lngID
+    ElseIf objZuordnung.Exists(strRef) Then
+        ReferenzID = CLng(objZuordnung(strRef))
+    Else
+        Err.Raise vbObjectError + 123, , "Unbekannte Referenz: " & strRef
+    End If
+End Function
+        ]]>
+    </code>
+        )
             }
         }
     End Function
