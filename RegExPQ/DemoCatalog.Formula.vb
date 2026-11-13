@@ -691,6 +691,129 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0018",
+                .Category = DemoCategory.Formula,
+                .Title = "Kalender - lang und quer - erstellen...",
+                .Tags = {"kalender", "formeln", "let", "sequenz", "bundesland", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Jahreskalender für alle 16 Bundesländer mit gesetzlichen Feiertagen, ISO-Kalenderwochen, Schaltjahren und zwei Ansichten.
+Gelöst mit Formeln, VBA und Power Query.
+
+Kalender_Formel_VBA_Power_Query.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+"=LET(
+ j;Vorgaben!$A$2;
+ land;Vorgaben!$B$2;
+ a;REST(j;19);
+ b;GANZZAHL(j/100);
+ c;REST(j;100);
+ d;GANZZAHL(b/4);
+ e;REST(b;4);
+ f;GANZZAHL((b+8)/25);
+ g;GANZZAHL((b-f+1)/3);
+ h;REST(19*a+b-d-g+15;30);
+ i;GANZZAHL(c/4);
+ k;REST(c;4);
+ l;REST(32+2*e+2*i-h-k;7);
+ m;GANZZAHL((a+11*h+22*l)/451);
+ om;GANZZAHL((h+l-7*m+114)/31);
+ ot;REST(h+l-7*m+114;31)+1;
+ ostern;DATUM(j;om;ot);
+ namen;$H$2:$H$21;
+ daten;VSTAPELN(
+  DATUM(j;1;1);
+  DATUM(j;1;6);
+  DATUM(j;3;8);
+  ostern-2;
+  ostern;
+  ostern+1;
+  DATUM(j;5;1);
+  ostern+39;
+  ostern+49;
+  ostern+50;
+  ostern+60;
+  DATUM(j;8;8);
+  DATUM(j;8;15);
+  DATUM(j;9;20);
+  DATUM(j;10;3);
+  DATUM(j;10;31);
+  DATUM(j;11;1);
+  DATUM(j;11;22)-REST(WOCHENTAG(DATUM(j;11;22);2)-3;7);
+  DATUM(j;12;25);
+  DATUM(j;12;26)
+ );
+ nr;SEQUENZ(20);
+ art;WENN(ISTZAHL(XVERGLEICH(nr;{4;5;6;8;9;10;11;18}));""Beweglich"";""Fest"");
+ matrix;$I$2:$X$21;
+ gueltig;MAP(nr;LAMBDA(z;
+  LET(anz;SUMME(INDEX(matrix;z;0));
+   WENN(anz=16;""Bundesweit"";
+    WENN(anz=0;""Regionaler Sonderfall"";""Regional""))
+  )
+ ));
+ gesetzlich;INDEX(matrix;0;XVERGLEICH(land;$I$1:$X$1));
+ HSTAPELN(
+  namen;
+  daten;
+  TEXT(daten;""TTTT"");
+  art;
+  gueltig;
+  gesetzlich
+ )
+)"
+
+"=LET(
+ j;Vorgaben!$A$2;
+ tage;DATUM(j+1;1;1)-DATUM(j;1;1);
+ datum;SEQUENZ(tage;;DATUM(j;1;1));
+ wt;WOCHENTAG(datum;2);
+ kw;WENN(Vorgaben!$D$2;ISOKALENDERWOCHE(datum);WENN(datum;"""";""""));
+ ftDatum;Feiertage!$B$2:$B$21;
+ ftName;Feiertage!$A$2:$A$21;
+ ftGilt;Feiertage!$F$2:$F$21;
+ feiertag;MAP(datum;LAMBDA(d;
+  WENNFEHLER(
+   INDEX(ftName;XVERGLEICH(1;(ftDatum=d)*(ftGilt=1);0));
+   """"
+  )
+ ));
+ typ;WENN(feiertag<>"""";""Feiertag"";
+     WENN(wt=6;""Samstag"";
+      WENN(wt=7;""Sonntag"";""Werktag"")));
+ HSTAPELN(
+  datum;
+  TEXT(datum;""TTTT"");
+  kw;
+  feiertag;
+  typ
+ )
+)"
+
+=MTRANS(Formel_Kalender_Lang!A2#)
+        ]]>
+    </code>
+        )
             }
         }
     End Function

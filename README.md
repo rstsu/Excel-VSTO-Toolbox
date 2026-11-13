@@ -26,11 +26,11 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ✔ **27** RegEx-Beispiele
 
-✔ **30** Power Query-Beispiele
+✔ **31** Power Query-Beispiele
 
-✔ **17** Formel-Beispiele
+✔ **18** Formel-Beispiele
 
-✔ **16** VBA-Beispiele
+✔ **17** VBA-Beispiele
 
 ## Voraussetzungen
 

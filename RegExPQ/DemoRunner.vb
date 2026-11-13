@@ -122,6 +122,8 @@ Partial Public Class DemoRunner
                 CreatePowerQueryDemo_29()
             Case "pq_0030"
                 CreatePQ_Regex_Demo()
+            Case "pq_0031"
+                CreateFormel_VBA_PQ_Demo()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
@@ -156,6 +158,8 @@ Partial Public Class DemoRunner
                 CreateFormelDemo_16()
             Case "formula_0017"
                 CreatePQ_Formel_VBADemo()
+            Case "formula_0018"
+                CreateFormel_VBA_PQ_Demo()
             Case "vba_001"
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_002"
@@ -188,6 +192,8 @@ Partial Public Class DemoRunner
                 CreatePQ_Formel_VBADemo()
             Case "vba_0016"
                 CreateVBADemo_16()
+            Case "vba_0017"
+                CreateFormel_VBA_PQ_Demo()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
@@ -1136,6 +1142,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo_PQ_Formel_Pivot",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateFormel_VBA_PQ_Demo()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_Formel_VBA_PQ.zip",
+                    "Demo_Formel_VBA_PQ")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo_Formel_VBA_PQ",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try

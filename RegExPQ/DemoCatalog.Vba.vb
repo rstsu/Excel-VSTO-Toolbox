@@ -2643,6 +2643,579 @@ End Function
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0017",
+                .Category = DemoCategory.Vba,
+                .Title = "Kalender - lang und quer - erstellen...",
+                .Tags = {"kalender", "vba", "funktion", "function", "bundesland", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Jahreskalender für alle 16 Bundesländer mit gesetzlichen Feiertagen, ISO-Kalenderwochen, Schaltjahren und zwei Ansichten.
+Gelöst mit Formeln, VBA und Power Query.
+
+Kalender_Formel_VBA_Power_Query.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+' modKalender
+Option Explicit
+' Excel -VSTO - Toolbox
+' Power Query, VBA und Formel - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Public Sub VBA_Kalender_Erstellen()
+    Dim xlBerechnung As XlCalculation
+    Dim wksVorgaben As Worksheet
+    Dim varDatenLang As Variant
+    Dim varDatenQuer As Variant
+    Dim blnxlAnzeige As Boolean
+    Dim strFehlerText As String
+    Dim blnxlEvents As Boolean
+    Dim blnMitHeute As Boolean
+    Dim objFeiertage As Object
+    Dim blnMitKW As Boolean
+    Dim blnMitFT As Boolean
+    Dim strLand As String
+    Dim lngJahr As Long
+    On Error GoTo Fin
+    Set wksVorgaben = ThisWorkbook.Worksheets("Vorgaben")
+    If Not IsNumeric(wksVorgaben.Range("A2").Value2) Then
+        MsgBox "Bitte ein gültiges Kalenderjahr eingeben.", vbExclamation
+        Exit Sub
+    End If
+    lngJahr = CLng(wksVorgaben.Range("A2").Value2)
+    If lngJahr < 1900 Or lngJahr > 9998 Then
+        MsgBox "Das Jahr muss zwischen 1900 und 9998 liegen.", vbExclamation
+        Exit Sub
+    End If
+    strLand = Trim$(CStr(wksVorgaben.Range("B2").Value2))
+    blnMitKW = CBool(wksVorgaben.Range("D2").Value)
+    blnMitFT = CBool(wksVorgaben.Range("E2").Value)
+    blnMitHeute = CBool(wksVorgaben.Range("F2").Value)
+    xlBerechnung = Application.Calculation
+    blnxlEvents = Application.EnableEvents
+    blnxlAnzeige = Application.ScreenUpdating
+    Application.ScreenUpdating = False
+    Application.EnableEvents = False
+    Application.Calculation = xlCalculationManual
+    Set objFeiertage = FeiertageBerechnen(lngJahr, strLand)
+    KalenderDatenErstellen lngJahr, objFeiertage, blnMitKW, varDatenLang, varDatenQuer
+    KalenderLangErstellen varDatenLang, blnMitFT, blnMitHeute
+    KalenderQuerErstellen varDatenQuer, blnMitFT, blnMitHeute
+Result:
+    Application.Calculation = xlBerechnung
+    Application.EnableEvents = blnxlEvents
+    Application.ScreenUpdating = blnxlAnzeige
+    If Len(strFehlerText) > 0 Then
+        MsgBox strFehlerText, vbExclamation, "Kalender-Demo"
+    Else
+        MsgBox "Beide VBA-Kalender für " & lngJahr & " wurden erstellt.", vbInformation
+    End If
+    Exit Sub
+Fin:
+    strFehlerText = "Fehler " & Err.Number & ": " & Err.Description
+    Resume Result
+End Sub
+Private Function OsterSonntag(ByVal lngJahr As Long) As Date
+    Dim lngMonat As Long
+    Dim lngTag As Long
+    Dim lngA As Long
+    Dim lngB As Long
+    Dim lngC As Long
+    Dim lngD As Long
+    Dim lngE As Long
+    Dim lngF As Long
+    Dim lngG As Long
+    Dim lngH As Long
+    Dim lngI As Long
+    Dim lngJ As Long
+    Dim lngK As Long
+    Dim lngL As Long
+    lngA = lngJahr Mod 19
+    lngB = lngJahr \ 100
+    lngC = lngJahr Mod 100
+    lngD = lngB \ 4
+    lngE = lngB Mod 4
+    lngF = (lngB + 8) \ 25
+    lngG = (lngB - lngF + 1) \ 3
+    lngH = (19 * lngA + lngB - lngD - lngG + 15) Mod 30
+    lngI = lngC \ 4
+    lngJ = lngC Mod 4
+    lngK = (32 + 2 * lngE + 2 * lngI - lngH - lngJ) Mod 7
+    lngL = (lngA + 11 * lngH + 22 * lngK) \ 451
+    lngMonat = (lngH + lngK - 7 * lngL + 114) \ 31
+    lngTag = ((lngH + lngK - 7 * lngL + 114) Mod 31) + 1
+    OsterSonntag = DateSerial(lngJahr, lngMonat, lngTag)
+End Function
+Private Function FeiertageBerechnen(ByVal lngJahr As Long, ByVal strLand As String) As Object
+    Dim datDaten(1 To 20) As Date
+    Dim wksSheet As Worksheet
+    Dim lngDatumKey As Long
+    Dim strName As String
+    Dim objDict As Object
+    Dim datOstern As Date
+    Dim varCol As Variant
+    Dim lngTMP1 As Long
+    Set wksSheet = ThisWorkbook.Worksheets("Feiertage")
+    Set objDict = CreateObject("Scripting.Dictionary")
+    varCol = Application.Match(strLand, wksSheet.Range("I1:X1"), 0)
+    If IsError(varCol) Then
+        Err.Raise vbObjectError + 100, , "Bundesland nicht in der Matrix gefunden: " & strLand
+    End If
+    datOstern = OsterSonntag(lngJahr)
+    datDaten(1) = DateSerial(lngJahr, 1, 1)
+    datDaten(2) = DateSerial(lngJahr, 1, 6)
+    datDaten(3) = DateSerial(lngJahr, 3, 8)
+    datDaten(4) = datOstern - 2
+    datDaten(5) = datOstern
+    datDaten(6) = datOstern + 1
+    datDaten(7) = DateSerial(lngJahr, 5, 1)
+    datDaten(8) = datOstern + 39
+    datDaten(9) = datOstern + 49
+    datDaten(10) = datOstern + 50
+    datDaten(11) = datOstern + 60
+    datDaten(12) = DateSerial(lngJahr, 8, 8)
+    datDaten(13) = DateSerial(lngJahr, 8, 15)
+    datDaten(14) = DateSerial(lngJahr, 9, 20)
+    datDaten(15) = DateSerial(lngJahr, 10, 3)
+    datDaten(16) = DateSerial(lngJahr, 10, 31)
+    datDaten(17) = DateSerial(lngJahr, 11, 1)
+    datDaten(18) = DateSerial(lngJahr, 11, 22) - ((Weekday(DateSerial(lngJahr, 11, 22), vbMonday) - 3 + 7) Mod 7)
+    datDaten(19) = DateSerial(lngJahr, 12, 25)
+    datDaten(20) = DateSerial(lngJahr, 12, 26)
+    For lngTMP1 = 1 To 20
+        If Val(wksSheet.Cells(lngTMP1 + 1, CLng(varCol) + 8).Value2) = 1 Then
+            strName = CStr(wksSheet.Cells(lngTMP1 + 1, "H").Value2)
+            lngDatumKey = CLng(datDaten(lngTMP1))
+            objDict(lngDatumKey) = strName
+        End If
+    Next lngTMP1
+    Set FeiertageBerechnen = objDict
+End Function
+Private Sub KalenderDatenErstellen(ByVal lngJahr As Long, ByVal objFeiertage As Object, ByVal blnMitKW As Boolean, ByRef varLang As Variant, ByRef varQuer As Variant)
+    Dim varZeilen() As Variant
+    Dim lngTage() As Variant
+    Dim strName As String
+    Dim datDatum As Date
+    Dim strTyp As String
+    Dim varKW As Variant
+    Dim lngTMP1 As Long
+    Dim lngTMP2 As Long
+    Dim lngTMP3 As Long
+    Dim lngWT As Long
+    lngTMP1 = CLng(DateSerial(lngJahr + 1, 1, 1) - DateSerial(lngJahr, 1, 1))
+    ReDim lngTage(1 To lngTMP1, 1 To 5)
+    ReDim varZeilen(1 To 5, 1 To lngTMP1)
+    For lngTMP2 = 1 To lngTMP1
+        datDatum = DateSerial(lngJahr, 1, lngTMP2)
+        lngWT = Weekday(datDatum, vbMonday)
+        strName = vbNullString
+        If objFeiertage.Exists(CLng(datDatum)) Then
+            strName = objFeiertage(CLng(datDatum))
+        End If
+        Select Case True
+            Case Len(strName) > 0
+                strTyp = "Feiertag"
+            Case lngWT = 6
+                strTyp = "Samstag"
+            Case lngWT = 7
+                strTyp = "Sonntag"
+            Case Else
+                strTyp = "Werktag"
+        End Select
+        varKW = vbNullString
+        If blnMitKW Then varKW = ISO_KW(datDatum)
+        lngTage(lngTMP2, 1) = datDatum
+        lngTage(lngTMP2, 2) = Format$(datDatum, "dddd")
+        lngTage(lngTMP2, 3) = varKW
+        lngTage(lngTMP2, 4) = strName
+        lngTage(lngTMP2, 5) = strTyp
+        For lngTMP3 = 1 To 5
+            varZeilen(lngTMP3, lngTMP2) = lngTage(lngTMP2, lngTMP3)
+        Next lngTMP3
+    Next lngTMP2
+    varLang = lngTage
+    varQuer = varZeilen
+End Sub
+Private Function ISO_KW(ByVal datDatum As Date) As Long
+    Dim datVierterJanuar As Date
+    Dim datErsterMontag As Date
+    Dim datDonnerstag As Date
+    datDonnerstag = datDatum + 4 - Weekday(datDatum, vbMonday)
+    datVierterJanuar = DateSerial(Year(datDonnerstag), 1, 4)
+    datErsterMontag = datVierterJanuar - Weekday(datVierterJanuar, vbMonday) + 1
+    ISO_KW = (CLng(datDonnerstag - datErsterMontag) \ 7) + 1
+End Function
+Private Function KalenderBlatt(ByVal strTabName As String) As Worksheet
+    Dim wksSheet As Worksheet
+    On Error Resume Next
+    Set wksSheet = ThisWorkbook.Worksheets(strTabName)
+    On Error GoTo 0
+    If wksSheet Is Nothing Then
+        Set wksSheet = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
+        wksSheet.Name = strTabName
+    Else
+        With wksSheet
+            .Rows("1:5").Clear
+            .Columns("A:E").Clear
+        End With
+    End If
+    Set KalenderBlatt = wksSheet
+End Function
+Private Sub KalenderLangErstellen(ByRef varDaten As Variant, ByVal blnMitFT As Boolean, ByVal blnMitHeute As Boolean)
+    Dim wksSheet As Worksheet
+    Dim rngBereich As Range
+    Dim datDatum As Date
+    Dim strTyp As String
+    Dim lngTMP1 As Long
+    Dim lngTMP2 As Long
+    Set wksSheet = KalenderBlatt("VBA_Kalender_Lang")
+    wksSheet.Range("A1:E1").Value = Array("Datum", "Wochentag", "ISO-KW", "Feiertag", "Tagestyp")
+    lngTMP1 = UBound(varDaten, 1)
+    Set rngBereich = wksSheet.Range("A2").Resize(lngTMP1, 5)
+    rngBereich.Value = varDaten
+    wksSheet.Columns("A").NumberFormat = "dd.mm.yyyy"
+    wksSheet.Columns("A:E").AutoFit
+    With wksSheet.Range("A1:E1")
+        .Font.Bold = True
+        .Interior.Color = RGB(35, 65, 100)
+        .Font.Color = vbWhite
+    End With
+    For lngTMP2 = 1 To lngTMP1
+        datDatum = varDaten(lngTMP2, 1)
+        strTyp = CStr(varDaten(lngTMP2, 5))
+        With wksSheet.Range("A" & lngTMP2 + 1 & ":E" & lngTMP2 + 1)
+            Select Case strTyp
+                Case "Feiertag"
+                    If blnMitFT Then .Interior.Color = RGB(255, 210, 210)
+                Case "Samstag"
+                    .Interior.Color = RGB(220, 235, 250)
+                Case "Sonntag"
+                    .Interior.Color = RGB(255, 235, 235)
+            End Select
+            If blnMitHeute And datDatum = Date Then
+                HeuteRahmen .Cells
+            End If
+        End With
+    Next lngTMP2
+    wksSheet.Activate
+    wksSheet.Range("A2").Activate
+    ActiveWindow.FreezePanes = False
+    ActiveWindow.FreezePanes = True
+End Sub
+Private Sub KalenderQuerErstellen(ByRef varDaten As Variant, ByVal blnMitFT As Boolean, ByVal blnMitHeute As Boolean)
+    Dim wksSheet As Worksheet
+    Dim strTyp As String
+    Dim datDatum As Date
+    Dim lngTMP1 As Long
+    Dim lngTMP2 As Long
+    Dim rngCol As Range
+    Set wksSheet = KalenderBlatt("VBA_Kalender_Quer")
+    wksSheet.Range("A1:A5").Value = Application.Transpose(Array("Datum", "Wochentag", "ISO-KW", "Feiertag", "Tagestyp"))
+    lngTMP1 = UBound(varDaten, 2)
+    wksSheet.Range("B1").Resize(5, lngTMP1).Value = varDaten
+    wksSheet.Range("B1").Resize(1, lngTMP1).NumberFormat = "dd.mm.yyyy"
+    wksSheet.Columns("A").ColumnWidth = 17
+    With wksSheet.Range("A1:A5")
+        .Font.Bold = True
+        .Interior.Color = RGB(35, 65, 100)
+        .Font.Color = vbWhite
+    End With
+    For lngTMP2 = 1 To lngTMP1
+        datDatum = varDaten(1, lngTMP2)
+        strTyp = CStr(varDaten(5, lngTMP2))
+        Set rngCol = wksSheet.Cells(1, lngTMP2 + 1).Resize(5, 1)
+        rngCol.EntireColumn.AutoFit
+        If rngCol.ColumnWidth < 13 Then rngCol.ColumnWidth = 13
+        If rngCol.ColumnWidth > 24 Then rngCol.ColumnWidth = 24
+        Select Case strTyp
+            Case "Feiertag"
+                If blnMitFT Then rngCol.Interior.Color = RGB(255, 210, 210)
+            Case "Samstag"
+                rngCol.Interior.Color = RGB(220, 235, 250)
+                WochenendRahmen rngCol, True
+            Case "Sonntag"
+                rngCol.Interior.Color = RGB(255, 235, 235)
+                WochenendRahmen rngCol, False
+        End Select
+        If blnMitHeute And datDatum = Date Then
+            HeuteRahmen rngCol
+        End If
+    Next lngTMP2
+    wksSheet.Activate
+    wksSheet.Range("B2").Activate
+    ActiveWindow.FreezePanes = False
+    ActiveWindow.FreezePanes = True
+End Sub
+Private Sub WochenendRahmen(ByVal rngBereich As Range, ByVal blnSamstag As Boolean)
+    Dim xlKante As XlBordersIndex
+    If blnSamstag Then
+        xlKante = xlEdgeLeft
+    Else
+        xlKante = xlEdgeRight
+    End If
+    With rngBereich.Borders(xlKante)
+        .LineStyle = xlContinuous
+        .Weight = xlMedium
+        .Color = RGB(90, 120, 150)
+    End With
+End Sub
+Private Sub HeuteRahmen(ByVal rngBereich As Range)
+    Dim varKante As Variant
+    rngBereich.Font.Bold = True
+    For Each varKante In Array(xlEdgeLeft, xlEdgeRight, xlEdgeTop, xlEdgeBottom)
+        With rngBereich.Borders(CLng(varKante))
+            .LineStyle = xlContinuous
+            .Weight = xlMedium
+            .Color = RGB(0, 140, 80)
+        End With
+    Next varKante
+End Sub
+
+
+' modKalenderPruefung
+Option Explicit
+' Excel -VSTO - Toolbox
+' Power Query, VBA und Formel - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Private Const MAX_TAGE As Long = 366
+Public Sub Kalender_Pruefen()
+    Dim wksBlatt(1 To 6) As Worksheet
+    Dim varDaten(1 To 6) As Variant
+    Dim varProtokoll() As Variant
+    Dim blnErfolgreich As Boolean
+    Dim blnAltAnzeige As Boolean
+    Dim wksVorgaben As Worksheet
+    Dim wkbWorkBook As Workbook
+    Dim strTestZelle As String
+    Dim wksSheet As Worksheet
+    Dim strTestWert As String
+    Dim strRefZelle As String
+    Dim lngFehlerzahl As Long
+    Dim lngMaxFehler As Long
+    Dim Ausgabe() As Variant
+    Dim varFelder As Variant
+    Dim strRefWert As String
+    Dim varNamen As Variant
+    Dim lngTestNr As Long
+    Dim datDatum As Date
+    Dim lngTMP1 As Long
+    Dim lngTMP2 As Long
+    Dim lngTMP3 As Long
+    Dim lngTMP4 As Long
+    Dim lngTMP5 As Long
+    Dim lngJahr As Long
+    Dim lngTage As Long
+    On Error GoTo Fin
+    Set wkbWorkBook = ThisWorkbook
+    Set wksVorgaben = wkbWorkBook.Worksheets("Vorgaben")
+    lngJahr = CLng(wksVorgaben.Range("A2").Value2)
+    If lngJahr < 1900 Or lngJahr > 9998 Then
+        Err.Raise vbObjectError + 101, , "Ungültiges Kalenderjahr."
+    End If
+    lngTage = DateDiff("d", DateSerial(lngJahr, 1, 1), DateSerial(lngJahr + 1, 1, 1))
+    varNamen = Array("Formel_Kalender_Lang", "VBA_Kalender_Lang", "PQ_Kalender_Lang", "Formel_Kalender_Quer", "VBA_Kalender_Quer", "PQ_Kalender_Quer")
+    varFelder = Array("Datum", "Wochentag", "KW", "Feiertag", "Tagestyp")
+    blnAltAnzeige = Application.ScreenUpdating
+    Application.ScreenUpdating = False
+    For lngTMP1 = 1 To 6
+        Set wksBlatt(lngTMP1) = wkbWorkBook.Worksheets(varNamen(lngTMP1 - 1))
+    Next lngTMP1
+    varDaten(1) = wksBlatt(1).Range("A2:E367").Value2
+    varDaten(2) = wksBlatt(2).Range("A2:E367").Value2
+    varDaten(3) = wksBlatt(3).Range("A2:E367").Value2
+    varDaten(4) = wksBlatt(4).Range("B1:NC5").Value2
+    varDaten(5) = wksBlatt(5).Range("B1:NC5").Value2
+    varDaten(6) = wksBlatt(6).Range("B2:NC6").Value2
+    lngMaxFehler = MAX_TAGE * 5 * 4
+    ReDim varProtokoll(1 To lngMaxFehler, 1 To 8)
+    For lngTMP2 = 1 To MAX_TAGE
+        If lngTMP2 <= lngTage Then
+            datDatum = DateSerial(lngJahr, 1, lngTMP2)
+        End If
+        For lngTMP3 = 1 To 5
+            For lngTestNr = 2 To 3
+                strRefWert = Normalwert(varDaten(1)(lngTMP2, lngTMP3), lngTMP3)
+                strTestWert = Normalwert(varDaten(lngTestNr)(lngTMP2, lngTMP3), lngTMP3)
+                strRefZelle = wksBlatt(1).Cells(lngTMP2 + 1, lngTMP3).Address(False, False)
+                strTestZelle = wksBlatt(lngTestNr).Cells(lngTMP2 + 1, lngTMP3).Address(False, False)
+                PruefeEintrag varProtokoll, lngFehlerzahl, _
+                    "Lang: Formel / " & IIf(lngTestNr = 2, "VBA", "PQ"), _
+                    IIf(lngTMP2 <= lngTage, datDatum, 0), _
+                    varFelder(lngTMP3 - 1), _
+                    strRefZelle, strRefWert, strTestZelle, strTestWert, _
+                    lngTMP2 > lngTage
+            Next lngTestNr
+            For lngTestNr = 5 To 6
+                strRefWert = Normalwert(varDaten(4)(lngTMP3, lngTMP2), lngTMP3)
+                strTestWert = Normalwert(varDaten(lngTestNr)(lngTMP3, lngTMP2), lngTMP3)
+                strRefZelle = wksBlatt(4).Cells(lngTMP3, lngTMP2 + 1).Address(False, False)
+                If lngTestNr = 6 Then
+                    strTestZelle = wksBlatt(lngTestNr).Cells(lngTMP3 + 1, lngTMP2 + 1).Address(False, False)
+                Else
+                    strTestZelle = wksBlatt(lngTestNr).Cells(lngTMP3, lngTMP2 + 1).Address(False, False)
+                End If
+                PruefeEintrag varProtokoll, lngFehlerzahl, _
+                    "Quer: Formel / " & IIf(lngTestNr = 5, "VBA", "PQ"), _
+                    IIf(lngTMP2 <= lngTage, datDatum, 0), _
+                    varFelder(lngTMP3 - 1), _
+                    strRefZelle, strRefWert, strTestZelle, strTestWert, _
+                    lngTMP2 > lngTage
+            Next lngTestNr
+        Next lngTMP3
+    Next lngTMP2
+    Set wksSheet = PruefblattHolen(wkbWorkBook)
+    wksSheet.Cells.Clear
+    wksSheet.Range("A1:H1").Value = Array( _
+        "Vergleich", "Datum", "Feld", _
+        "Formelzelle", "Formelwert", _
+        "Vergleichszelle", "Vergleichswert", "Hinweis")
+    If lngFehlerzahl > 0 Then
+        ReDim Ausgabe(1 To lngFehlerzahl, 1 To 8)
+        For lngTMP4 = 1 To lngFehlerzahl
+            For lngTMP5 = 1 To 8
+                Ausgabe(lngTMP4, lngTMP5) = varProtokoll(lngTMP4, lngTMP5)
+            Next lngTMP5
+        Next lngTMP4
+        wksSheet.Range("A2").Resize(lngFehlerzahl, 8).Value = Ausgabe
+    End If
+    With wksSheet
+        .Range("J1").Value = "Prüfergebnis"
+        .Range("J2").Value = "Kalenderjahr"
+        .Range("K2").Value = lngJahr
+        .Range("J3").Value = "Geprüfte lngTage"
+        .Range("K3").Value = lngTage
+        .Range("J4").Value = "Vergleiche"
+        .Range("K4").Value = MAX_TAGE * 5 * 4
+        .Range("J5").Value = "Abweichungen"
+        .Range("K5").Value = lngFehlerzahl
+        .Range("J6").Value = "Prüfzeitpunkt"
+        .Range("K6").Value = Now
+        .Range("K6").NumberFormat = "dd.mm.yyyy hh:mm:ss"
+        .Range("A1:H1").Font.Bold = True
+        .Range("A1:H1").Interior.Color = RGB(35, 65, 100)
+        .Range("A1:H1").Font.Color = vbWhite
+        .Range("J1:K1").Interior.Color = RGB(35, 65, 100)
+        .Range("J1:K1").Font.Color = vbWhite
+        .Columns("B").NumberFormat = "dd.mm.yyyy"
+        .Columns("A:K").AutoFit
+        If lngFehlerzahl = 0 Then
+            .Range("K5").Interior.Color = RGB(198, 239, 206)
+        Else
+            .Range("K5").Interior.Color = RGB(255, 199, 206)
+        End If
+    End With
+    blnErfolgreich = True
+Result:
+    Application.ScreenUpdating = blnAltAnzeige
+    If blnErfolgreich Then
+        wksSheet.Activate
+        wksSheet.Range("A1").Select
+        If lngFehlerzahl = 0 Then
+            MsgBox "Alle sechs Kalender stimmen überein!" & vbCrLf & "Keine Abweichungen gefunden.", vbInformation
+        Else
+            MsgBox lngFehlerzahl & " Abweichungen gefunden." & vbCrLf & "Siehe Blatt 'Pruefprotokoll'.", vbExclamation
+        End If
+    End If
+    Exit Sub
+Fin:
+    MsgBox "Prüfung abgebrochen: " & Err.Description, vbCritical
+    Resume Result
+End Sub
+Private Function Normalwert(ByVal varWert As Variant, ByVal lngFeldNr As Long) As String
+    Dim strWert As String
+    Dim datDatum As Date
+    If IsError(varWert) Then
+        Normalwert = "#EXCEL-FEHLER"
+        Exit Function
+    End If
+    If IsEmpty(varWert) Or IsNull(varWert) Then
+        Normalwert = ""
+        Exit Function
+    End If
+    strWert = Trim$(CStr(varWert))
+    If Len(strWert) = 0 Then
+        Normalwert = ""
+        Exit Function
+    End If
+    If lngFeldNr = 1 Then
+        If IsNumeric(varWert) Then
+            If CDbl(varWert) = 0 Then
+                Normalwert = ""
+            Else
+                Normalwert = Format$(CDate(varWert), "yyyymmdd")
+            End If
+        ElseIf IsDate(strWert) Then
+            datDatum = CDate(strWert)
+            Normalwert = Format$(datDatum, "yyyymmdd")
+        Else
+            Normalwert = "#DATUM:" & strWert
+        End If
+    Else
+        Normalwert = strWert
+    End If
+End Function
+Private Sub PruefeEintrag( _
+    ByRef varProtokoll As Variant, _
+    ByRef lngFehlerzahl As Long, _
+    ByVal strVergleich As String, _
+    ByVal varDatum As Variant, _
+    ByVal strFeld As String, _
+    ByVal strRefZelle As String, _
+    ByVal strRefWert As String, _
+    ByVal strTestZelle As String, _
+    ByVal strTestWert As String, _
+    ByVal blnAusserhalb As Boolean)
+    If strRefWert = strTestWert Then
+        If Left$(strRefWert, 1) <> "#" Then Exit Sub
+    End If
+    lngFehlerzahl = lngFehlerzahl + 1
+    varProtokoll(lngFehlerzahl, 1) = strVergleich
+    If Not blnAusserhalb Then
+        varProtokoll(lngFehlerzahl, 2) = varDatum
+    End If
+    varProtokoll(lngFehlerzahl, 3) = strFeld
+    varProtokoll(lngFehlerzahl, 4) = strRefZelle
+    varProtokoll(lngFehlerzahl, 5) = strRefWert
+    varProtokoll(lngFehlerzahl, 6) = strTestZelle
+    varProtokoll(lngFehlerzahl, 7) = strTestWert
+    If blnAusserhalb Then
+        varProtokoll(lngFehlerzahl, 8) = "Wert außerhalb des Kalenderjahres"
+    ElseIf Left$(strRefWert, 1) = "#" Or Left$(strTestWert, 1) = "#" Then
+        varProtokoll(lngFehlerzahl, 8) = "Fehlerwert"
+    Else
+        varProtokoll(lngFehlerzahl, 8) = "Werte unterschiedlich"
+    End If
+End Sub
+Private Function PruefblattHolen(ByVal wkbWorkBook As Workbook) As Worksheet
+    On Error Resume Next
+    Set PruefblattHolen = wkbWorkBook.Worksheets("Pruefprotokoll")
+    On Error GoTo 0
+    If PruefblattHolen Is Nothing Then
+        Set PruefblattHolen = wkbWorkBook.Worksheets.Add(After:=wkbWorkBook.Worksheets(wkbWorkBook.Worksheets.Count))
+        PruefblattHolen.Name = "Pruefprotokoll"
+    End If
+End Function
+        ]]>
+    </code>
+        )
             }
         }
     End Function

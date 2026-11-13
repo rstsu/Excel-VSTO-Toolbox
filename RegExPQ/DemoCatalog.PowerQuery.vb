@@ -3021,7 +3021,7 @@ bereitgestellt werden.
 .CodeText = TextBlock(
     <code>
         <![CDATA[
-/ Abfrage tblErg
+// Abfrage tblErg
 /*
 Excel-VSTO-Toolbox
 Power Query-Demo
@@ -3083,7 +3083,7 @@ let
 in
     Erg
 
-/ Funktion fncUSDatum
+// Funktion fncUSDatum
 /*
 Excel-VSTO-Toolbox
 Power Query-Demo
@@ -3115,7 +3115,7 @@ let
 in
     Erg
 
-/ Abfrage US_DE_Ergebnis basierend auf der Funktion fncUSDatum
+// Abfrage US_DE_Ergebnis basierend auf der Funktion fncUSDatum
 /*
 Excel-VSTO-Toolbox
 Power Query-Demo
@@ -3142,6 +3142,263 @@ let
                     ),
             type text
         )
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0031",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Kalender - lang und quer - erstellen...",
+                .Tags = {"kalender", "Power query", "table.fromlist", "nestedjoin", "bundesland", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Jahreskalender für alle 16 Bundesländer mit gesetzlichen Feiertagen, ISO-Kalenderwochen, Schaltjahren und zwei Ansichten.
+Gelöst mit Formeln, VBA und Power Query.
+
+Kalender_Formel_VBA_Power_Query.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+// PQ_Vorgaben
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(),
+    Wert = (Name as text) as any => Quelle{[Name = Name]}[Content]{0}[Column1],
+    Jahr = Int64.From(Wert("pJahr")),
+    Bundesland = Text.From(Wert("pBundesland")),
+    KW = Logical.From(Wert("pKW")),
+    Feiertage = Logical.From(Wert("pFeiertage")),
+    Heute = Logical.From(Wert("pHeute")),
+    Erg = [Jahr = Jahr, Bundesland = Bundesland, KW = KW, Feiertage = Feiertage, Heute = Heute]
+in
+    Erg
+
+// PQ_Feiertage
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook() {[Name="pFeiertagsmatrix"]}[Content],
+    Erg = Table.PromoteHeaders(Quelle, [PromoteAllScalars=true])
+in
+    Erg
+
+// PQ_Feiertage_Berechnet
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Jahr = PQ_Vorgaben[Jahr],
+    Bundesland = PQ_Vorgaben[Bundesland],
+    Matrix = PQ_Feiertage,
+    LandesSpalten = List.RemoveItems(Table.ColumnNames(Matrix), {"Feiertag"}),
+    a = Number.Mod(Jahr, 19),
+    b = Number.IntegerDivide(Jahr, 100),
+    c = Number.Mod(Jahr, 100),
+    d = Number.IntegerDivide(b, 4),
+    e = Number.Mod(b, 4),
+    f = Number.IntegerDivide(b + 8, 25),
+    g = Number.IntegerDivide(b - f + 1, 3),
+    h = Number.Mod(19*a + b - d - g + 15, 30),
+    i = Number.IntegerDivide(c, 4),
+    k = Number.Mod(c, 4),
+    l = Number.Mod(32 + 2*e + 2*i - h - k, 7),
+    m = Number.IntegerDivide(a + 11*h + 22*l, 451),
+    OsterMonat = Number.IntegerDivide(h + l - 7*m + 114, 31),
+    OsterTag = Number.Mod(h + l - 7*m + 114, 31) + 1,
+    Ostern = #date(Jahr, OsterMonat, OsterTag),
+    November22 = #date(Jahr, 11, 22),
+    BussUndBettag = Date.AddDays(November22, -Number.Mod(Date.DayOfWeek(November22, Day.Monday) - 2 + 7, 7)),
+    Definitionen = [
+        #"Neujahr" = [Datum = #date(Jahr, 1, 1), Art = "Fest"],
+        #"Heilige Drei Könige" = [Datum = #date(Jahr, 1, 6), Art = "Fest"],
+        #"Internationaler Frauentag" = [Datum = #date(Jahr, 3, 8), Art = "Fest"],
+        #"Karfreitag" = [Datum = Date.AddDays(Ostern, -2), Art = "Beweglich"],
+        #"Ostersonntag" = [Datum = Ostern, Art = "Beweglich"],
+        #"Ostermontag" = [Datum = Date.AddDays(Ostern, 1), Art = "Beweglich"],
+        #"Tag der Arbeit" = [Datum = #date(Jahr, 5, 1), Art = "Fest"],
+        #"Christi Himmelfahrt" = [Datum = Date.AddDays(Ostern, 39), Art = "Beweglich"],
+        #"Pfingstsonntag" = [Datum = Date.AddDays(Ostern, 49), Art = "Beweglich"],
+        #"Pfingstmontag" = [Datum = Date.AddDays(Ostern, 50), Art = "Beweglich"],
+        #"Fronleichnam" = [Datum = Date.AddDays(Ostern, 60), Art = "Beweglich"],
+        #"Augsburger Friedensfest" = [Datum = #date(Jahr, 8, 8), Art = "Fest"],
+        #"Mariä Himmelfahrt" = [Datum = #date(Jahr, 8, 15), Art = "Fest"],
+        #"Weltkindertag" = [Datum = #date(Jahr, 9, 20), Art = "Fest"],
+        #"Tag der Deutschen Einheit" = [Datum = #date(Jahr, 10, 3), Art = "Fest"],
+        #"Reformationstag" = [Datum = #date(Jahr, 10, 31), Art = "Fest"],
+        #"Allerheiligen" = [Datum = #date(Jahr, 11, 1), Art = "Fest"],
+        #"Buß- und Bettag" = [Datum = BussUndBettag, Art = "Beweglich"],
+        #"1. Weihnachtstag" = [Datum = #date(Jahr, 12, 25), Art = "Fest"],
+        #"2. Weihnachtstag" = [Datum = #date(Jahr, 12, 26), Art = "Fest"]
+    ],
+    MitGueltigkeit = Table.AddColumn(
+        Matrix,
+        "Gültigkeit",
+        each
+            let
+                Werte = Record.ToList(
+                    Record.SelectFields(_, LandesSpalten)
+                ),
+                Anzahl = List.Sum(
+                    List.Transform(Werte, each Number.From(_))
+                )
+            in
+                if Anzahl = List.Count(LandesSpalten) then
+                    "Bundesweit"
+                else if Anzahl = 0 then
+                    "Regionaler Sonderfall"
+                else
+                    "Regional",
+        type text
+    ),
+    Auswahl = Table.SelectColumns(MitGueltigkeit, {"Feiertag", Bundesland, "Gültigkeit"}),
+    MitDefinition = Table.AddColumn(
+        Auswahl,
+        "Definition",
+        each
+            let
+                Name = [Feiertag]
+            in
+                if Name = null then
+                    error Error.Record(
+                        "Feiertagszuordnung",
+                        "In der Matrix fehlt ein Feiertagsname.",
+                        null
+                    )
+                else if Record.HasFields(Definitionen, Name) then
+                    Record.Field(Definitionen, Name)
+                else
+                    error Error.Record(
+                        "Feiertagszuordnung",
+                        "Für diesen Feiertag fehlt eine Berechnungsregel.",
+                        [Feiertag = Name]
+                    ),
+        type record
+    ),
+    MitDatumUndArt = Table.ExpandRecordColumn(MitDefinition, "Definition", {"Datum", "Art"}, {"Datum", "Art"}),
+    TypDatum = Table.TransformColumnTypes(MitDatumUndArt, {{"Datum", type date}, {"Art", type text}}),
+    MitWochentag = Table.AddColumn(TypDatum, "Wochentag", each Date.DayOfWeekName([Datum], "de-DE"), type text),
+    Umbenannt = Table.RenameColumns(MitWochentag, {{Bundesland, "Gesetzlich"}}),
+    Spalten = Table.SelectColumns(
+        Umbenannt,
+        {
+            "Feiertag",
+            "Datum",
+            "Wochentag",
+            "Art",
+            "Gültigkeit",
+            "Gesetzlich"
+        }
+    ),
+    Typen = Table.TransformColumnTypes(Spalten, {{"Gesetzlich", Int64.Type}}),
+    Erg = Table.Sort(Typen, {{"Datum", Order.Ascending}})
+in
+    Erg
+
+// PQ_Kalender_Lang
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Jahr = PQ_Vorgaben[Jahr],
+    MitKW = PQ_Vorgaben[KW],
+    Jahresbeginn = #date(Jahr, 1, 1),
+    Jahresende = #date(Jahr + 1, 1, 1),
+    AnzahlTage = Duration.Days(Jahresende - Jahresbeginn),
+    DatumsListe = List.Dates(Jahresbeginn, AnzahlTage, #duration(1, 0, 0, 0)),
+    Kalender = Table.FromList(DatumsListe, Splitter.SplitByNothing(), {"Datum"}),
+    TypDatum = Table.TransformColumnTypes(Kalender, {{"Datum", type date}}),
+    MitWochentag = Table.AddColumn(TypDatum, "Wochentag", each Date.DayOfWeekName([Datum], "de-DE"), type text),
+    ISO_KW = (Datum as date) as number =>
+        let
+            Donnerstag = Date.AddDays(
+                Datum,
+                3 - Date.DayOfWeek(Datum, Day.Monday)
+            ),
+            ISOJahr = Date.Year(Donnerstag),
+            VierterJanuar = #date(ISOJahr, 1, 4),
+            ErsterMontag = Date.StartOfWeek(
+                VierterJanuar, Day.Monday
+            ),
+            KW = Number.IntegerDivide(
+                Duration.Days(Donnerstag - ErsterMontag),
+                7
+            ) + 1
+        in
+            KW,
+    MitKWSpalte = Table.AddColumn(MitWochentag, "KW", each if MitKW then ISO_KW([Datum]) else null, Int64.Type),
+    GesetzlicheFeiertage = Table.SelectRows(PQ_Feiertage_Berechnet, each [Gesetzlich] = 1),
+    FeiertagsAuswahl = Table.SelectColumns(GesetzlicheFeiertage, {"Datum", "Feiertag"}),
+    Verbunden = Table.NestedJoin(MitKWSpalte, {"Datum"}, FeiertagsAuswahl, {"Datum"}, "FT", JoinKind.LeftOuter),
+    MitFeiertag = Table.ExpandTableColumn(Verbunden, "FT", {"Feiertag"}, {"Feiertag"}),
+    MitTagestyp = Table.AddColumn(
+        MitFeiertag,
+        "Tagestyp",
+        each
+            if [Feiertag] <> null then "Feiertag"
+            else if Date.DayOfWeek([Datum], Day.Monday) = 5
+                then "Samstag"
+            else if Date.DayOfWeek([Datum], Day.Monday) = 6
+                then "Sonntag"
+            else "Werktag",
+        type text
+    ),
+    Erg = Table.ReorderColumns(MitTagestyp, {"Datum", "Wochentag", "KW", "Feiertag", "Tagestyp"})
+in
+    Erg
+
+// PQ_Kalender_Quer
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = PQ_Kalender_Lang,
+    Auswahl = Table.SelectColumns(Quelle, {"Datum", "Wochentag", "KW", "Feiertag", "Tagestyp"}),
+    DatumAlsText = Table.TransformColumns(Auswahl, {{"Datum", each Date.ToText(_, "dd.MM.yyyy", "de-DE"), type text}}),
+    //OhneNull = Table.ReplaceValue(DatumAlsText, null, "", Replacer.ReplaceValue, {"KW", "Feiertag"}),
+    AlsText = Table.TransformColumns(DatumAlsText, {{"KW", each Text.From(_, "de-DE"), type text}}),
+    Gedreht = Table.Transpose(AlsText),
+    Bezeichnungen = {"Datum", "Wochentag", "KW", "Feiertag", "Tagestyp"},
+    MitIndex = Table.AddIndexColumn(Gedreht, "Index", 0, 1, Int64.Type),
+    MitBezeichnung = Table.AddColumn(MitIndex, "Bezeichnung", each Bezeichnungen{[Index]}, type text),
+    OhneIndex = Table.RemoveColumns(MitBezeichnung, {"Index"}),
+    Erg = Table.ReorderColumns(OhneIndex, {"Bezeichnung"} & List.RemoveItems(Table.ColumnNames(OhneIndex), {"Bezeichnung"}))
 in
     Erg
         ]]>
