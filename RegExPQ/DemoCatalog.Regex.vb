@@ -1168,6 +1168,128 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "regex_028",
+                .Category = DemoCategory.Regex,
+                .Title = "Freitext - PNR-Nummern auslesen...",
+                .Tags = {"text", "regex", "let", "sequenz", "formel", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Freitext sollen unterschiedlich viele PNR-Nummern in dynamische Spalten PNR1, PNR2, … ausgegeben werden.
+Gelöst mit Formeln, Regex, VBA und Power Query.
+
+Demo_Regex_Formel_PQ_VBA.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=WEGLASSEN(REDUCE("";A2:.A999;LAMBDA(x;y;WENNFEHLER(VSTAPELN(x;WEGLASSEN(TEXTTEILEN(y;",");;-1));"")));1)
+
+=WEGLASSEN(REDUCE("";FILTER(A2:.A999;A2:.A999<>"");LAMBDA(x;y;VSTAPELN(x;TEXTTEILEN(REGEXERSETZEN(y;", [^,]+$";"");", ";;1))));1)
+
+=WEGLASSEN(REDUCE("";A2:.A999;LAMBDA(x;y;VSTAPELN(x;TEXTTEILEN(REGEXERSETZEN(y;", [^,]+$";"");", ";;1))));1)
+
+=WEGLASSEN(REDUCE("";FILTER(A2:.A999;A2:.A999<>"");LAMBDA(x;y;VSTAPELN(x;TEXTTEILEN(TEXTVOR(y;", ";-1);", ";;1))));1)
+
+=TEXTTEILEN(TEXTVERKETTEN(ZEICHEN(10);WAHR;TEXTVOR(FILTER(A2:.A999;A2:.A999<>"");", ";-1));", ";ZEICHEN(10);WAHR)
+
+=LET(
+ d;FILTER(A2:A999;A2:A999<>"");
+ muster;"(?i)PNRNummer_\d+";
+ z;MAP(d;LAMBDA(x;WENNFEHLER(TEXTVERKETTEN("♦";WAHR;REGEXEXTRAHIEREN(x;muster;1));"")));
+ b;MAX(MAP(z;LAMBDA(x;WENN(x="";0;SPALTEN(TEXTTEILEN(x;"♦"))))));
+ WENN(b=0;"Keine Treffer";
+  VSTAPELN(
+   "PNR"&SEQUENZ(1;b);
+   MATRIXERSTELLEN(ZEILEN(d);b;
+    LAMBDA(r;s;
+     WENNFEHLER(
+      TEXTVOR(TEXTNACH("♦"&ZEILENWAHL(z;r)&"♦";"♦";s);"♦");
+      ""
+     )
+    )
+   )
+  )
+ )
+)
+
+=LET(
+ d;FILTER(A2:A999;A2:A999<>"");
+ z;MAP(d;LAMBDA(x;
+  LET(
+   t;TEXTTEILEN(x;",");
+   WENN(SPALTEN(t)>1;
+    TEXTVERKETTEN("♦";FALSCH;GLÄTTEN(WEGLASSEN(t;;-1)));
+    ""
+   )
+  )
+ ));
+ b;MAX(MAP(z;LAMBDA(x;
+  WENN(x="";0;SPALTEN(TEXTTEILEN(x;"♦")))
+ )));
+ WENN(b=0;"Keine Werte";
+  VSTAPELN(
+   "PNR"&SEQUENZ(1;b);
+   MATRIXERSTELLEN(ZEILEN(d);b;
+    LAMBDA(r;s;
+     WENNFEHLER(
+      TEXTVOR(TEXTNACH("♦"&ZEILENWAHL(z;r)&"♦";"♦";s);"♦");
+      ""
+     )
+    )
+   )
+  )
+ )
+)
+
+=LET(
+ d;FILTER(A2:A999;A2:A999<>"");
+ muster;"(?i)^\s*PNRNummer_\d+(?:\s*,\s*PNRNummer_\d+)*";
+ z;MAP(d;LAMBDA(x;
+  WENNFEHLER(
+   TEXTVERKETTEN("♦";WAHR;
+    REGEXEXTRAHIEREN(
+     REGEXEXTRAHIEREN(x;muster);
+     "(?i)PNRNummer_\d+";1
+    )
+   );"")
+ ));
+ b;MAX(MAP(z;LAMBDA(x;
+  WENN(x="";0;SPALTEN(TEXTTEILEN(x;"♦")))
+ )));
+ WENN(b=0;"Keine Treffer";
+  VSTAPELN(
+   "PNR"&SEQUENZ(1;b);
+   MATRIXERSTELLEN(ZEILEN(d);b;
+    LAMBDA(r;s;
+     WENNFEHLER(
+      TEXTVOR(TEXTNACH("♦"&ZEILENWAHL(z;r)&"♦";"♦";s);"♦");
+      ""
+     )
+    )
+   )
+  )
+ )
+)
+        ]]>
+    </code>
+        )
             }
         }
     End Function

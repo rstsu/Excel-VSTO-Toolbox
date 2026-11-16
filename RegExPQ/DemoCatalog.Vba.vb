@@ -3216,6 +3216,160 @@ End Function
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0018",
+                .Category = DemoCategory.Vba,
+                .Title = "Freitext - PNR-Nummern auslesen...",
+                .Tags = {"text", "vba", "let", "sequenz", "regex", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Freitext sollen unterschiedlich viele PNR-Nummern in dynamische Spalten PNR1, PNR2, … ausgegeben werden.
+Gelöst mit Formeln, Regex, VBA und Power Query.
+
+Demo_Regex_Formel_PQ_VBA.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+' modRegexArray
+' Excel -VSTO - Toolbox
+' Power Query, VBA und Formel - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Option Explicit
+Public Sub VBA_Variante1()
+    PNR_Auswerten 1
+End Sub
+Public Sub VBA_Variante2()
+    PNR_Auswerten 2
+End Sub
+Public Sub VBA_Variante3()
+    PNR_Auswerten 3
+End Sub
+Private Sub PNR_Auswerten(ByVal Variante As Long)
+    Dim lngLetzteSpalte As Long
+    Dim lobjListO As ListObject
+    Dim varResult() As Variant
+    Dim varListen() As Variant
+    Dim lngStartSpalte As Long
+    Dim lngLetzteZeile As Long
+    Dim lngMaxSpalten As Long
+    Dim wksSheet As Worksheet
+    Dim objTreffer As Object
+    Dim objTeile As Variant
+    Dim varDaten As Variant
+    Dim varWerte As Variant
+    Dim objRegEx As Object
+    Dim lngAnzahl As Long
+    Dim strTXT As String
+    Dim lngTMP1 As Long
+    Dim lngTMP2 As Long
+    Dim lngTMP3 As Long
+    Set lobjListO = ThisWorkbook.Worksheets("Power_Query").ListObjects("tblDaten")
+    Set wksSheet = ThisWorkbook.Worksheets("VBA")
+    If lobjListO.DataBodyRange Is Nothing Then Exit Sub
+    varDaten = lobjListO.ListColumns("Daten").DataBodyRange.Value2
+    lngTMP3 = lobjListO.ListRows.Count
+    ReDim varListen(1 To lngTMP3)
+    Set objRegEx = CreateObject("VBScript.RegExp")
+    objRegEx.Global = True
+    objRegEx.IgnoreCase = True
+    objRegEx.Pattern = "PNRNummer_[0-9]+"
+    For lngTMP1 = 1 To lngTMP3
+        strTXT = CStr(varDaten(lngTMP1, 1))
+        Select Case Variante
+            Case 1
+                Set objTreffer = objRegEx.Execute(strTXT)
+                If objTreffer.Count > 0 Then
+                    ReDim varWerte(0 To objTreffer.Count - 1)
+                    For lngTMP2 = 0 To objTreffer.Count - 1
+                        varWerte(lngTMP2) = objTreffer(lngTMP2).Value
+                    Next lngTMP2
+                Else
+                    varWerte = Array()
+                End If
+            Case 2
+                objTeile = Split(strTXT, ",")
+                If UBound(objTeile) > 0 Then
+                    ReDim varWerte(0 To UBound(objTeile) - 1)
+
+                    For lngTMP2 = 0 To UBound(objTeile) - 1
+                        varWerte(lngTMP2) = Trim$(objTeile(lngTMP2))
+                    Next lngTMP2
+                Else
+                    varWerte = Array()
+                End If
+            Case 3
+                objTeile = Split(strTXT, ",")
+                objRegEx.Pattern = "^PNRNummer_[0-9]+$"
+                lngAnzahl = 0
+                For lngTMP2 = LBound(objTeile) To UBound(objTeile)
+                    If Not objRegEx.Test(Trim$(objTeile(lngTMP2))) Then Exit For
+                    lngAnzahl = lngAnzahl + 1
+                Next lngTMP2
+                If lngAnzahl > 0 Then
+                    ReDim varWerte(0 To lngAnzahl - 1)
+                    For lngTMP2 = 0 To lngAnzahl - 1
+                        varWerte(lngTMP2) = Trim$(objTeile(lngTMP2))
+                    Next lngTMP2
+                Else
+                    varWerte = Array()
+                End If
+                objRegEx.Pattern = "PNRNummer_[0-9]+"
+        End Select
+        varListen(lngTMP1) = varWerte
+        lngAnzahl = ArrayAnzahl(varWerte)
+        If lngAnzahl > lngMaxSpalten Then lngMaxSpalten = lngAnzahl
+    Next lngTMP1
+    If lngMaxSpalten = 0 Then
+        MsgBox "Keine passenden Werte gefunden.", vbInformation
+        Exit Sub
+    End If
+    ReDim varResult(1 To lngTMP3 + 1, 1 To lngMaxSpalten)
+    For lngTMP2 = 1 To lngMaxSpalten
+        varResult(1, lngTMP2) = "PNR" & lngTMP2
+    Next lngTMP2
+    For lngTMP1 = 1 To lngTMP3
+        varWerte = varListen(lngTMP1)
+        For lngTMP2 = 0 To ArrayAnzahl(varWerte) - 1
+            varResult(lngTMP1 + 1, lngTMP2 + 1) = varWerte(lngTMP2)
+        Next lngTMP2
+    Next lngTMP1
+    Select Case Variante
+        Case 1: lngStartSpalte = 3
+        Case 2: lngStartSpalte = 10
+        Case 3: lngStartSpalte = 17
+    End Select
+    lngLetzteZeile = wksSheet.Cells(wksSheet.Rows.Count, lngStartSpalte).End(xlUp).Row
+    lngLetzteSpalte = lngStartSpalte + 6
+    wksSheet.Range(wksSheet.Cells(1, lngStartSpalte), wksSheet.Cells(Application.Max(1, lngLetzteZeile), lngLetzteSpalte)).ClearContents
+    wksSheet.Cells(1, lngStartSpalte).Resize(lngTMP3 + 1, lngMaxSpalten).Value = varResult
+    wksSheet.Cells(1, lngStartSpalte).Resize(1, lngMaxSpalten).Font.Bold = True
+    wksSheet.Range(wksSheet.Cells(1, lngStartSpalte), wksSheet.Cells(1, lngStartSpalte + lngMaxSpalten - 1)).EntireColumn.AutoFit
+End Sub
+Private Function ArrayAnzahl(ByVal varArr As Variant) As Long
+    On Error Resume Next
+    ArrayAnzahl = UBound(varArr) - LBound(varArr) + 1
+    On Error GoTo 0
+End Function
+        ]]>
+    </code>
+        )
             }
         }
     End Function

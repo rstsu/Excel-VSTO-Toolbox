@@ -62,6 +62,8 @@ Partial Public Class DemoRunner
                 CreateRegexDemo_26()
             Case "regex_027"
                 CreatePQ_Regex_Demo()
+            Case "regex_028"
+                CreateRegex_Formel_PQ_VBA_Demo()
             Case "pq_001"
                 CreatePowerQueryDemo_1()
             Case "pq_002"
@@ -124,6 +126,8 @@ Partial Public Class DemoRunner
                 CreatePQ_Regex_Demo()
             Case "pq_0031"
                 CreateFormel_VBA_PQ_Demo()
+            Case "pq_0032"
+                CreateRegex_Formel_PQ_VBA_Demo()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
@@ -160,6 +164,8 @@ Partial Public Class DemoRunner
                 CreatePQ_Formel_VBADemo()
             Case "formula_0018"
                 CreateFormel_VBA_PQ_Demo()
+            Case "formula_0019"
+                CreateRegex_Formel_PQ_VBA_Demo()
             Case "vba_001"
                 MessageBox.Show("Dieses VBA-Beispiel bitte über 'Code kopieren' im VBA-Editor in das vorgegebene Modul einfügen.", "VBA Beispiel")
             Case "vba_002"
@@ -194,6 +200,8 @@ Partial Public Class DemoRunner
                 CreateVBADemo_16()
             Case "vba_0017"
                 CreateFormel_VBA_PQ_Demo()
+            Case "vba_0018"
+                CreateRegex_Formel_PQ_VBA_Demo()
         End Select
     End Sub
     Public Sub DeleteDemoSheets()
@@ -1042,7 +1050,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -1061,7 +1069,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -1080,7 +1088,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -1099,7 +1107,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -1118,7 +1126,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -1137,7 +1145,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -1156,7 +1164,7 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
@@ -1175,11 +1183,30 @@ Partial Public Class DemoRunner
             workbook.Activate()
         Catch ex As Exception
             MessageBox.Show(
-                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                "Das Beispiel konnte nicht geöffnet werden." &
                 Environment.NewLine &
                 Environment.NewLine &
                 ex.Message,
                 "Demo_PQ_Regex",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreateRegex_Formel_PQ_VBA_Demo()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_Regex_Formel_PQ_VBA.zip",
+                    "Demo_Regex_Formel_PQ_VBA")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo_Regex_Formel_PQ_VBA",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try

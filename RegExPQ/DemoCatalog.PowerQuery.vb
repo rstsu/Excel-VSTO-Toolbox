@@ -3404,6 +3404,131 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0032",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Freitext - PNR-Nummern auslesen...",
+                .Tags = {"text", "power query", "let", "sequenz", "regex", "varianten"}, .Description = TextBlock(
+    <text>
+        <![CDATA[
+Aus Freitext sollen unterschiedlich viele PNR-Nummern in dynamische Spalten PNR1, PNR2, … ausgegeben werden.
+Gelöst mit Formeln, Regex, VBA und Power Query.
+
+Demo_Regex_Formel_PQ_VBA.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+// tblErg_1
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblDaten"]}[Content],
+    Daten = Table.SelectRows(Quelle, each [Daten] <> null and Text.Trim([Daten]) <> ""),
+    fnPNR = (txt as text) as list =>
+        let
+            Teile = Text.SplitAny(txt, " ,;"),
+            Treffer = List.Select(Teile, each
+                let
+                    p = Text.Upper(Text.Trim(_)),
+                    n = if Text.StartsWith(p, "PNRNUMMER_")
+                        then Text.Range(p, 10)
+                        else "",
+                    gueltig = n <> "" and
+                        Text.Select(n, {"0".."9"}) = n
+                in
+                    gueltig
+            )
+        in
+            Treffer,
+    Listen = List.Transform(Daten[Daten], each fnPNR(_)),
+    Breite = List.Max({0} & List.Transform(Listen, List.Count)),
+    Spalten = if Breite = 0 then {} else List.Transform({1..Breite}, each "PNR" & Text.From(_)),
+    Zeilen = List.Transform(Listen, each _ & List.Repeat({null}, Breite - List.Count(_))),
+    Erg = Table.FromRows(Zeilen, Spalten)
+in
+    Erg
+
+// tblErg_2
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblDaten"]}[Content],
+    Daten = Table.SelectRows(Quelle, each [Daten] <> null and Text.Trim([Daten]) <> ""),
+    Listen = List.Transform(Daten[Daten], each
+        let
+            Teile = Text.Split(_, ","),
+            Werte = if List.Count(Teile) > 1
+                then List.RemoveLastN(Teile, 1)
+                else {},
+            Bereinigt = List.Transform(Werte, Text.Trim)
+        in
+            Bereinigt
+    ),
+    Breite = List.Max({0} & List.Transform(Listen, List.Count)),
+    Spalten = if Breite = 0 then {} else List.Transform({1..Breite}, each "PNR" & Text.From(_)),
+    Zeilen = List.Transform(Listen, each _ & List.Repeat({null}, Breite - List.Count(_))),
+    Erg = Table.FromRows(Zeilen, Spalten)
+in
+    Erg
+
+// tblErg_3
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblDaten"]}[Content],
+    Daten = Table.SelectRows(Quelle, each [Daten] <> null and Text.Trim([Daten]) <> ""),
+    fnGueltig = (wert as text) as logical =>
+        let
+            t = Text.Upper(Text.Trim(wert)),
+            n = if Text.StartsWith(t, "PNRNUMMER_")
+                then Text.Range(t, 10)
+                else "",
+            ok = n <> "" and Text.Select(n, {"0".."9"}) = n
+        in
+            ok,
+    Listen = List.Transform(Daten[Daten], each
+        List.FirstN(
+            List.Transform(Text.Split(_, ","), Text.Trim),
+            each fnGueltig(_)
+        )
+    ),
+    Breite = List.Max({0} & List.Transform(Listen, List.Count)),
+    Spalten = if Breite = 0 then {} else List.Transform({1..Breite}, each "PNR" & Text.From(_)),
+    Zeilen = List.Transform(Listen, each _ & List.Repeat({null}, Breite - List.Count(_))),
+    Erg = Table.FromRows(Zeilen, Spalten)
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function
