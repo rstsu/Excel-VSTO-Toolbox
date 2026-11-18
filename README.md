@@ -30,7 +30,7 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ✔ **19** Formel-Beispiele
 
-✔ **18** VBA-Beispiele
+✔ **19** VBA-Beispiele
 
 ## Voraussetzungen
 

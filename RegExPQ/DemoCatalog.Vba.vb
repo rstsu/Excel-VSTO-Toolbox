@@ -3370,6 +3370,584 @@ End Function
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0019",
+                .Category = DemoCategory.Vba,
+                .Title = "Access - Datum - ADO - DAO...",
+                .Tags = {"access", "vba", "datum", "ado", "dao", "datenbank"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Die Demo vergleicht die Speicherung und Abfrage von Datumsangaben in Access über ADO und DAO.
+Identische SQL-Texte können je nach Datenformat, regionalen Einstellungen oder Zugriffsweg verschiedene Ergebnisse liefern.
+
+Demo_VBA_Access_Datum.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+' modDatenbank
+' Excel -VSTO - Toolbox
+' VBA - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Option Explicit
+Public Sub DatenbankErstellen()
+    Dim strFehlerText As String
+    Dim lngFehlerNr As Long
+    Dim strDbPfad As String
+    Dim objCat As Object
+    Dim objCn As Object
+    On Error GoTo Fin
+    If Len(ThisWorkbook.Path) = 0 Then
+        MsgBox "Bitte Arbeitsmappe zuerst speichern.", vbExclamation
+        Exit Sub
+    End If
+    strDbPfad = ThisWorkbook.Path & "\DemoDatum.accdb"
+    If Len(Dir$(strDbPfad)) > 0 Then
+        If MsgBox("Datenbank existiert bereits." & vbCrLf & "Soll sie neu erstellt werden?", vbYesNo + vbQuestion) <> vbYes Then Exit Sub
+        Kill strDbPfad
+    End If
+    Set objCat = CreateObject("ADOX.Catalog")
+    objCat.Create "Provider=Microsoft.ACE.OLEDB.12.0;" & "Data Source=" & strDbPfad & ";"
+    Set objCat = Nothing
+    Set objCn = CreateObject("ADODB.Connection")
+    objCn.Open "Provider=Microsoft.ACE.OLEDB.12.0;" & "Data Source=" & strDbPfad & ";"
+    TabelleErstellen objCn
+    objCn.Close
+    Set objCn = Nothing
+    MsgBox "Datenbank und Tabelle wurden erstellt.", vbInformation
+    Exit Sub
+Fin:
+    lngFehlerNr = Err.Number
+    strFehlerText = Err.Description
+    On Error Resume Next
+    If Not objCn Is Nothing Then
+        If objCn.State = 1 Then objCn.Close
+    End If
+    Set objCn = Nothing
+    Set objCat = Nothing
+    MsgBox "Fehler beim Erstellen der Datenbank!" & _
+           vbCrLf & vbCrLf & _
+           "Fehler " & lngFehlerNr & vbCrLf & _
+           strFehlerText, vbCritical
+End Sub
+Public Sub TabelleErstellen(ByVal objCn As Object)
+    Dim strSQL As String
+    strSQL = "CREATE TABLE TestDatum (" & _
+          "ID COUNTER CONSTRAINT PK_TestDatum PRIMARY KEY, " & _
+          "DatumKurz DATETIME, " & _
+          "DatumZeit DATETIME, " & _
+          "DatumTextDE TEXT(30), " & _
+          "DatumTextUS TEXT(30), " & _
+          "DatumTextISO TEXT(30), " & _
+          "DatumZahl DOUBLE, " & _
+          "DatumNurZahl LONG, " & _
+          "Bemerkung TEXT(255))"
+    objCn.Execute strSQL
+End Sub
+
+' modLesen
+' Excel -VSTO - Toolbox
+' VBA - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Option Explicit
+Public Sub DatenAuslesen()
+    Dim wksSheet As Worksheet
+    Dim strAuswahl As String
+    Dim lisTBL As ListObject
+    Dim wksSQL As Worksheet
+    Dim strDbPfad As String
+    Dim rngTreffer As Range
+    Dim lngAnzahl As Long
+    Dim strSQL As String
+    Dim lngTMP1 As Long
+    Dim objCn As Object
+    Dim objRs As Object
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("Steuerung")
+    Set wksSQL = ThisWorkbook.Worksheets("SQL_Befehle")
+    Set lisTBL = wksSQL.ListObjects("tblSQL")
+    With wksSheet
+        strAuswahl = Trim$(.Range("B2").Value)
+        If Len(strAuswahl) = 0 Then
+            MsgBox "Bitte eine SQL-Abfrage auswählen.", vbExclamation
+            Exit Sub
+        End If
+        Set rngTreffer = lisTBL.ListColumns("Bezeichnung").DataBodyRange.Find(What:=strAuswahl, LookIn:=xlValues, LookAt:=xlWhole)
+        If rngTreffer Is Nothing Then
+            MsgBox "SQL-Abfrage nicht gefunden.", vbExclamation
+            Exit Sub
+        End If
+        strSQL = CStr(wksSQL.Cells(rngTreffer.Row, lisTBL.ListColumns("SQL_Vorlage").Range.Column).Value)
+        strSQL = SQLMitParametern(strSQL, wksSheet)
+        If UCase$(Left$(Trim$(strSQL), 7)) <> "SELECT " Then
+            MsgBox "Bitte eine SELECT-Abfrage auswählen!" & vbCrLf & _
+                   "Die gewählte SQL-Anweisung ist nicht zum Auslesen geeignet.", _
+                   vbExclamation, "Falscher SQL-Befehl"
+            Exit Sub
+        End If
+        strDbPfad = ThisWorkbook.Path & "\DemoDatum.accdb"
+        If Len(Dir$(strDbPfad)) = 0 Then
+            MsgBox "Access-Datenbank nicht gefunden.", vbExclamation
+            Exit Sub
+        End If
+        .Range("C12:K" & .Cells(.Rows.Count, 3).End(xlUp).Row).ClearContents
+        .Range("B8").ClearContents
+        .Range("B10").ClearContents
+        .Range("B8").Value = strSQL
+        Set objCn = CreateObject("ADODB.Connection")
+        objCn.Open "Provider=Microsoft.ACE.OLEDB.12.0;" & "Data Source=" & strDbPfad & ";"
+        Set objRs = CreateObject("ADODB.Recordset")
+        objRs.Open strSQL, objCn, 3, 1  ' adOpenStatic, adLockReadOnly
+        For lngTMP1 = 0 To objRs.Fields.Count - 1
+            .Cells(12, lngTMP1 + 3).Value = objRs.Fields(lngTMP1).Name
+        Next lngTMP1
+        lngAnzahl = objRs.RecordCount
+        If Not objRs.EOF Then
+            .Range("C13").CopyFromRecordset objRs
+            lngAnzahl = .Cells(.Rows.Count, 3).End(xlUp).Row - 12
+        End If
+        .Range("B10").Value = lngAnzahl
+        With .Range(.Cells(12, 3), .Cells(12, objRs.Fields.Count + 2))
+            .Font.Bold = True
+            .Interior.Color = RGB(31, 78, 121)
+            .Font.Color = vbWhite
+        End With
+        .Range("D13:D" & .Cells(.Rows.Count, 4).End(xlUp).Row).NumberFormat = "dd.mm.yyyy"
+        .Range("E13:E" & .Cells(.Rows.Count, 5).End(xlUp).Row).NumberFormat = "dd.mm.yyyy hh:mm:ss"
+        .Range("I13:I" & .Cells(.Rows.Count, 9).End(xlUp).Row).NumberFormat = "0.0000000000"
+        .Columns("C:K").AutoFit
+    End With
+    objRs.Close
+    objCn.Close
+    Set objRs = Nothing
+    Set objCn = Nothing
+    MsgBox lngAnzahl & " Datensätze ausgelesen.", vbInformation
+    Exit Sub
+Fin:
+    MsgBox "Fehler " & Err.Number & vbCrLf & Err.Description, vbCritical
+    On Error Resume Next
+    If Not objRs Is Nothing Then
+        If objRs.State = 1 Then objRs.Close
+    End If
+    If Not objCn Is Nothing Then
+        If objCn.State = 1 Then objCn.Close
+    End If
+End Sub
+Public Sub DatenAuslesenDAO()
+    Dim wksSheet As Worksheet
+    Dim strDbPfad As String
+    Dim lngAnzahl As Long
+    Dim strSQL As String
+    Dim lngTMP1 As Long
+    Dim objDB As Object
+    Dim objRs As Object
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("Steuerung")
+    strSQL = CStr(wksSheet.Range("B5").Value)
+    strSQL = SQLMitParametern(strSQL, wksSheet)
+    If UCase$(Left$(Trim$(strSQL), 7)) <> "SELECT " Then
+        MsgBox "Bitte eine SELECT-Abfrage auswählen!" & vbCrLf & _
+               "Die gewählte SQL-Anweisung ist nicht zum Auslesen geeignet.", _
+               vbExclamation, "Falscher SQL-Befehl"
+        Exit Sub
+    End If
+    strDbPfad = ThisWorkbook.Path & "\DemoDatum.accdb"
+    If Len(Dir$(strDbPfad)) = 0 Then
+        MsgBox "Access-Datenbank nicht gefunden.", vbExclamation
+        Exit Sub
+    End If
+    With wksSheet
+        .Range("C12:K" & .Cells(.Rows.Count, 3).End(xlUp).Row).ClearContents
+        .Range("B8").ClearContents
+        .Range("B10").ClearContents
+        .Range("B8").Value = strSQL
+        Set objDB = CreateObject("DAO.DBEngine.120").OpenDatabase(strDbPfad)
+        Set objRs = objDB.OpenRecordset(strSQL, 4)  ' dbOpenSnapshot
+        If Not (objRs.BOF And objRs.EOF) Then
+            objRs.MoveLast
+            lngAnzahl = objRs.RecordCount
+            objRs.MoveFirst
+        End If
+        For lngTMP1 = 0 To objRs.Fields.Count - 1
+            .Cells(12, lngTMP1 + 3).Value = objRs.Fields(lngTMP1).Name
+        Next lngTMP1
+        If lngAnzahl > 0 Then
+            .Range("C13").CopyFromRecordset objRs
+        End If
+        .Range("B10").Value = lngAnzahl
+        With .Range(.Cells(12, 3), .Cells(12, objRs.Fields.Count + 2))
+            .Font.Bold = True
+            .Interior.Color = RGB(31, 78, 121)
+            .Font.Color = vbWhite
+        End With
+        .Range("D13:D" & .Cells(.Rows.Count, 4).End(xlUp).Row).NumberFormat = "dd.mm.yyyy"
+        .Range("E13:E" & .Cells(.Rows.Count, 5).End(xlUp).Row).NumberFormat = "dd.mm.yyyy hh:mm:ss"
+        .Range("I13:I" & .Cells(.Rows.Count, 9).End(xlUp).Row).NumberFormat = "0.0000000000"
+        .Columns("C:K").AutoFit
+    End With
+    objRs.Close
+    objDB.Close
+    Set objRs = Nothing
+    Set objDB = Nothing
+    MsgBox lngAnzahl & " Datensätze ausgelesen.", vbInformation
+    Exit Sub
+Fin:
+    MsgBox "DAO-Fehler " & Err.Number & vbCrLf & Err.Description, vbCritical
+    On Error Resume Next
+    If Not objRs Is Nothing Then objRs.Close
+    If Not objDB Is Nothing Then objDB.Close
+End Sub
+Public Function SQLMitParametern(ByVal strVorlage As String, ByVal wksSheet As Worksheet) As String
+    Dim datDatum1 As Date
+    Dim datDatum2 As Date
+    Dim strTXT As String
+    Dim strSQL As String
+    strSQL = strVorlage
+    If InStr(strSQL, "{Datum1}") > 0 Then
+        If Not IsDate(wksSheet.Range("B3").Value) Then
+            Err.Raise vbObjectError + 1001, , "B3 enthält kein gültiges Datum."
+        End If
+        datDatum1 = CDate(wksSheet.Range("B3").Value)
+        strSQL = Replace(strSQL, "{Datum1}", "#" & Format$(datDatum1, "yyyy-mm-dd") & "#")
+    End If
+    If InStr(strSQL, "{Datum2}") > 0 Then
+        If Not IsDate(wksSheet.Range("B4").Value) Then
+            Err.Raise vbObjectError + 1002, , "B4 enthält kein gültiges Datum."
+        End If
+        datDatum2 = CDate(wksSheet.Range("B4").Value)
+        strSQL = Replace(strSQL, "{Datum2}", "#" & Format$(datDatum2, "yyyy-mm-dd") & "#")
+    End If
+    If InStr(strSQL, "{Text1}") > 0 Then
+        If Not IsDate(wksSheet.Range("B3").Value) Then
+            Err.Raise vbObjectError + 1003, , "B3 enthält kein gültiges Datum."
+        End If
+        strTXT = Format$(CDate(wksSheet.Range("B3").Value), "dd.mm.yyyy")
+        strTXT = Replace(strTXT, "'", "''")
+        strSQL = Replace(strSQL, "{Text1}", "'" & strTXT & "'")
+    End If
+    If InStr(strSQL, "{") > 0 Or InStr(strSQL, "}") > 0 Then
+        Err.Raise vbObjectError + 1004, , "Unbekannter oder nicht ersetzter Platzhalter."
+    End If
+    SQLMitParametern = strSQL
+End Function
+
+' modLoeschen
+' Excel -VSTO - Toolbox
+' VBA - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Option Explicit
+Public Sub DatenLoeschen()
+    Dim strSQLVorschau As String
+    Dim strSQLPruefung As String
+    Dim objRSVorschau As Object
+    Dim wksSheet As Worksheet
+    Dim lngBetroffen As Long
+    Dim lngGeloescht As Long
+    Dim blnAktiv As Boolean
+    Dim strDbPfad As String
+    Dim strSQL As String
+    Dim objRs As Object
+    Dim objCn As Object
+    Dim lngTMP1 As Long
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("Steuerung")
+    strSQL = SQLMitParametern(CStr(wksSheet.Range("B5").Value), wksSheet)
+    If UCase$(Left$(Trim$(strSQL), 22)) <> "DELETE FROM TESTDATUM " Then
+        MsgBox "Keine zulässige DELETE-Abfrage.", vbExclamation
+        Exit Sub
+    End If
+    If InStr(1, strSQL, " WHERE ", vbTextCompare) = 0 Then
+        MsgBox "DELETE ohne WHERE ist nicht erlaubt.", vbCritical
+        Exit Sub
+    End If
+    strDbPfad = ThisWorkbook.Path & "\DemoDatum.accdb"
+    If Len(Dir$(strDbPfad)) = 0 Then
+        MsgBox "Datenbank nicht gefunden.", vbExclamation
+        Exit Sub
+    End If
+    Set objCn = CreateObject("ADODB.Connection")
+    objCn.Open "Provider=Microsoft.ACE.OLEDB.12.0;" & "Data Source=" & strDbPfad & ";"
+    strSQLPruefung = "SELECT COUNT(*) " & Mid$(strSQL, 7)
+    Set objRs = objCn.Execute(strSQLPruefung)
+    lngBetroffen = CLng(objRs.Fields(0).Value)
+    strSQLVorschau = "SELECT * " & Mid$(strSQL, 7)
+    With wksSheet
+        .Range("C12:K" & .Cells(.Rows.Count, 3).End(xlUp).Row).ClearContents
+        Set objRSVorschau = objCn.Execute(strSQLVorschau)
+        For lngTMP1 = 0 To objRSVorschau.Fields.Count - 1
+            .Cells(12, lngTMP1 + 3).Value = objRSVorschau.Fields(lngTMP1).Name
+        Next lngTMP1
+        If Not objRSVorschau.EOF Then
+            .Range("C13").CopyFromRecordset objRSVorschau
+        End If
+        objRSVorschau.Close
+        Set objRSVorschau = Nothing
+        objRs.Close
+        Set objRs = Nothing
+        .Range("B8").Value = strSQL
+        .Range("B10").Value = lngBetroffen
+        If lngBetroffen = 0 Then
+            MsgBox "Keine passenden Datensätze gefunden.", vbInformation
+            GoTo Ende
+        End If
+        If MsgBox(lngBetroffen & " Datensätze werden gelöscht!" & _
+                  vbCrLf & vbCrLf & _
+                  "Löschen wirklich ausführen?", vbYesNo + vbQuestion + vbDefaultButton2) <> vbYes Then
+            GoTo Ende
+        End If
+        objCn.BeginTrans
+        blnAktiv = True
+        objCn.Execute strSQL, lngGeloescht, 128  ' adExecuteNoRecords
+        ' Nur zum Testen!
+        'Err.Raise vbObjectError + 1000, , "ADO-Rollback-Test"
+        objCn.CommitTrans
+        blnAktiv = False
+        .Range("B10").Value = lngGeloescht
+        MsgBox lngGeloescht & " Datensätze gelöscht.", vbInformation
+    End With
+Ende:
+    If Not objCn Is Nothing Then objCn.Close
+    Set objCn = Nothing
+    Exit Sub
+Fin:
+    Dim strFehlerText As String
+    Dim lngFehlerNr As Long
+    lngFehlerNr = Err.Number
+    strFehlerText = Err.Description
+    On Error Resume Next
+    If blnAktiv Then
+        objCn.RollbackTrans
+        blnAktiv = False
+    End If
+    If Not objRSVorschau Is Nothing Then
+        If objRSVorschau.State = 1 Then objRSVorschau.Close
+    End If
+    If Not objRs Is Nothing Then objRs.Close
+    If Not objCn Is Nothing Then objCn.Close
+    MsgBox "ADO-Fehler " & lngFehlerNr & vbCrLf & strFehlerText & vbCrLf & vbCrLf & "Eine laufende Transaktion wurde zurückgesetzt.", vbCritical
+End Sub
+Public Sub DatenLoeschenDAO()
+    Dim strSQLVorschau As String
+    Dim wksSheet As Worksheet
+    Dim lngBetroffen As Long
+    Dim lngGeloescht As Long
+    Dim strDbPfad As String
+    Dim lngPosition As Long
+    Dim blnAktiv As Boolean
+    Dim objWRK As Object
+    Dim strSQL As String
+    Dim objDB As Object
+    Dim objRs As Object
+    Dim lngTMP1 As Long
+    On Error GoTo Fin
+    Set wksSheet = ThisWorkbook.Worksheets("Steuerung")
+    strSQL = SQLMitParametern(CStr(wksSheet.Range("B5").Value), wksSheet)
+    If UCase$(Left$(Trim$(strSQL), 22)) <> "DELETE FROM TESTDATUM " Then
+        MsgBox "Keine zulässige DELETE-Abfrage.", vbExclamation
+        Exit Sub
+    End If
+    lngPosition = InStr(1, strSQL, " WHERE ", vbTextCompare)
+    If lngPosition = 0 Then
+        MsgBox "DELETE ohne WHERE ist nicht erlaubt.", vbCritical
+        Exit Sub
+    End If
+    strDbPfad = ThisWorkbook.Path & "\DemoDatum.accdb"
+    If Len(Dir$(strDbPfad)) = 0 Then
+        MsgBox "Datenbank nicht gefunden.", vbExclamation
+        Exit Sub
+    End If
+    Set objWRK = CreateObject("DAO.DBEngine.120").Workspaces(0)
+    Set objDB = objWRK.OpenDatabase(strDbPfad)
+    strSQLVorschau = "SELECT * FROM TestDatum" & Mid$(strSQL, lngPosition)
+    With wksSheet
+        .Range("C12:K" & .Cells(.Rows.Count, 3).End(xlUp).Row).ClearContents
+        Set objRs = objDB.OpenRecordset(strSQLVorschau, 4) ' dbOpenSnapshot
+        If Not (objRs.BOF And objRs.EOF) Then
+            objRs.MoveLast
+            lngBetroffen = objRs.RecordCount
+            objRs.MoveFirst
+        End If
+        For lngTMP1 = 0 To objRs.Fields.Count - 1
+            .Cells(12, lngTMP1 + 3).Value = objRs.Fields(lngTMP1).Name
+        Next lngTMP1
+        If lngBetroffen > 0 Then
+            .Range("C13").CopyFromRecordset objRs
+        End If
+        objRs.Close
+        Set objRs = Nothing
+        .Range("B8").Value = strSQL
+        .Range("B10").Value = lngBetroffen
+        If lngBetroffen = 0 Then
+            MsgBox "Keine passenden Datensätze gefunden.", _
+                   vbInformation
+            GoTo Ende
+        End If
+        If MsgBox(lngBetroffen & " Datensätze werden gelöscht!" & _
+                  vbCrLf & vbCrLf & _
+                  "Löschen wirklich ausführen?", _
+                  vbYesNo + vbQuestion + vbDefaultButton2) <> vbYes Then
+            GoTo Ende
+        End If
+        objWRK.BeginTrans
+        blnAktiv = True
+        objDB.Execute strSQL, 128  ' dbFailOnError
+        lngGeloescht = objDB.RecordsAffected
+        ' Nur zum Testen!
+        'Err.Raise vbObjectError + 1001, , "DAO-Rollback-Test"
+        objWRK.CommitTrans
+        blnAktiv = False
+        .Range("B10").Value = lngGeloescht
+        MsgBox lngGeloescht & " Datensätze gelöscht.", vbInformation
+    End With
+Ende:
+    On Error Resume Next
+    If Not objRs Is Nothing Then objRs.Close
+    If Not objDB Is Nothing Then objDB.Close
+    Set objRs = Nothing
+    Set objDB = Nothing
+    Exit Sub
+Fin:
+    Dim strFehlerText As String
+    Dim lngFehlerNr As Long
+    lngFehlerNr = Err.Number
+    strFehlerText = Err.Description
+    On Error Resume Next
+    If blnAktiv Then
+        objWRK.Rollback
+        blnAktiv = False
+    End If
+    MsgBox "DAO-Fehler " & lngFehlerNr & vbCrLf & _
+           strFehlerText & vbCrLf & vbCrLf & _
+           "Eine laufende Transaktion wurde zurückgesetzt.", _
+           vbCritical
+    Resume Ende
+End Sub
+
+' modSchreiben
+' Excel -VSTO - Toolbox
+' VBA - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Option Explicit
+Public Sub TestdatenSchreiben()
+    Const lngAdVarWChar As Long = 202
+    Const lngAdParamInput As Long = 1
+    Const lngAdInteger As Long = 3
+    Const lngAdCmdText As Long = 1
+    Const lngAdDouble As Long = 5
+    Const lngAdDate As Long = 7
+    Dim blnTransAktiv As Boolean
+    Dim strFehlerText As String
+    Dim strDbPfad As String
+    Dim varDaten As Variant
+    Dim lngFehlerNr As Long
+    Dim objCMD As Object
+    Dim datDatum As Date
+    Dim lngTMP1 As Long
+    Dim objCn As Object
+    On Error GoTo Fin
+    strDbPfad = ThisWorkbook.Path & "\DemoDatum.accdb"
+    If Len(Dir$(strDbPfad)) = 0 Then
+        MsgBox "Datenbank nicht gefunden.", vbExclamation
+        Exit Sub
+    End If
+    varDaten = Array( _
+        Array(2026, 11, 12, 0, 0, 0), _
+        Array(2026, 11, 12, 14, 35, 20), _
+        Array(2026, 11, 12, 23, 59, 59), _
+        Array(2026, 11, 13, 0, 0, 0), _
+        Array(2026, 12, 31, 23, 59, 59), _
+        Array(2027, 1, 1, 0, 0, 0), _
+        Array(2024, 2, 29, 12, 30, 0), _
+        Array(2025, 2, 28, 12, 30, 0), _
+        Array(2026, 3, 4, 8, 15, 0), _
+        Array(2026, 4, 3, 8, 15, 0), _
+        Array(1899, 12, 30, 0, 0, 0), _
+        Array(1900, 1, 1, 12, 0, 0))
+    Set objCn = CreateObject("ADODB.Connection")
+    objCn.Open "Provider=Microsoft.ACE.OLEDB.12.0;" & "Data Source=" & strDbPfad & ";"
+    objCn.Execute "DROP TABLE TestDatum"
+    TabelleErstellen objCn
+    Set objCMD = CreateObject("ADODB.Command")
+    Set objCMD.ActiveConnection = objCn
+    With objCMD
+        .CommandType = lngAdCmdText
+        .Prepared = True
+        .CommandText = _
+            "INSERT INTO TestDatum " & _
+            "(DatumKurz, DatumZeit, DatumTextDE, " & _
+            "DatumTextUS, DatumTextISO, DatumZahl, " & _
+            "DatumNurZahl, Bemerkung) " & _
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        .Parameters.Append .CreateParameter("p1", lngAdDate, lngAdParamInput)
+        .Parameters.Append .CreateParameter("p2", lngAdDate, lngAdParamInput)
+        .Parameters.Append .CreateParameter("p3", lngAdVarWChar, lngAdParamInput, 30)
+        .Parameters.Append .CreateParameter("p4", lngAdVarWChar, lngAdParamInput, 30)
+        .Parameters.Append .CreateParameter("p5", lngAdVarWChar, lngAdParamInput, 30)
+        .Parameters.Append .CreateParameter("p6", lngAdDouble, lngAdParamInput)
+        .Parameters.Append .CreateParameter("p7", lngAdInteger, lngAdParamInput)
+        .Parameters.Append .CreateParameter("p8", lngAdVarWChar, lngAdParamInput, 255)
+        objCn.BeginTrans
+        blnTransAktiv = True
+        For lngTMP1 = LBound(varDaten) To UBound(varDaten)
+            datDatum = DateSerial(varDaten(lngTMP1)(0), varDaten(lngTMP1)(1), varDaten(lngTMP1)(2)) + TimeSerial(varDaten(lngTMP1)(3), varDaten(lngTMP1)(4), varDaten(lngTMP1)(5))
+            .Parameters(0).Value = CDate(Int(CDbl(datDatum)))
+            .Parameters(1).Value = datDatum
+            .Parameters(2).Value = Format$(datDatum, "dd.mm.yyyy")
+            .Parameters(3).Value = Format$(datDatum, "mm/dd/yyyy")
+            .Parameters(4).Value = Format$(datDatum, "yyyy-mm-dd")
+            .Parameters(5).Value = CDbl(datDatum) '.Parameters(5).Value = Val(Replace$(CStr(CDbl(datDatum)), ",", "."))
+            .Parameters(6).Value = CLng(Format$(datDatum, "yyyymmdd"))
+            .Parameters(7).Value = "Testdatensatz " & (lngTMP1 + 1)
+            .Execute
+            ' Nur zum testen
+            'If lngTMP1 = 5 Then
+            '    Err.Raise vbObjectError + 2000, , "Testfehler beim Schreiben"
+            'End If
+        Next lngTMP1
+        objCn.CommitTrans
+        blnTransAktiv = False
+    End With
+    MsgBox UBound(varDaten) + 1 & " Testdatensätze geschrieben.", vbInformation
+    Exit Sub
+Fin:
+    lngFehlerNr = Err.Number
+    strFehlerText = Err.Description
+    On Error Resume Next
+    If blnTransAktiv Then
+        objCn.RollbackTrans
+    End If
+    If Not objCn Is Nothing Then
+        If objCn.State = 1 Then objCn.Close
+    End If
+    Set objCMD = Nothing
+    Set objCn = Nothing
+    MsgBox "Fehler " & lngFehlerNr & vbCrLf & _
+           strFehlerText & vbCrLf & vbCrLf & _
+           "Das Schreiben der Testdaten wurde abgebrochen.", _
+           vbCritical
+End Sub
+        ]]>
+    </code>
+        )
             }
         }
     End Function
