@@ -3409,7 +3409,8 @@ in
                 .Id = "pq_0032",
                 .Category = DemoCategory.PowerQuery,
                 .Title = "Freitext - PNR-Nummern auslesen...",
-                .Tags = {"text", "power query", "let", "sequenz", "regex", "varianten"}, .Description = TextBlock(
+                .Tags = {"text", "power query", "let", "sequenz", "regex", "varianten"},
+                .Description = TextBlock(
     <text>
         <![CDATA[
 Aus Freitext sollen unterschiedlich viele PNR-Nummern in dynamische Spalten PNR1, PNR2, … ausgegeben werden.
@@ -3524,6 +3525,955 @@ let
     Spalten = if Breite = 0 then {} else List.Transform({1..Breite}, each "PNR" & Text.From(_)),
     Zeilen = List.Transform(Listen, each _ & List.Repeat({null}, Breite - List.Count(_))),
     Erg = Table.FromRows(Zeilen, Spalten)
+in
+    Erg
+        ]]>
+    </code>
+        )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0033",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Berechnungen Moderne, Historische und Antike Daten...",
+                .Tags = {"datum", "power query", "let", "historisch", "modern", "antik"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Drei getrennte PQ-Berechnungen für vollendete Lebensjahre. Moderne Daten - Historische Daten - Antike Daten - Hinweise, Fallen und Besonderheiten.
+
+PowerQuery_Alter_Modern_Antik_Historisch_Demo.xlsx
+
+Als "Schmankerl" für das Tabellenblatt "Moderne_Daten" auch mit Formel in z. B. M1:
+=LET(
+    G;C2:C37;
+    T;D2:D37;
+    Heute;HEUTE();
+    Datum400;LAMBDA(d;
+        WENNFEHLER(
+            EDATUM(d;4800);
+            WENNFEHLER(
+                DATWERT(LINKS(d;6)&(RECHTS(d;4)+400));
+                ""
+            )
+        )
+    );
+    Ergebnis;MAP(G;T;LAMBDA(g;t;
+        LET(
+            LeerG;g="";
+            LeerT;t="";
+            Geburt;WENN(LeerG;"";Datum400(g));
+            Tod;WENN(LeerT;"";Datum400(t));
+            Heute400;Datum400(Heute);
+            WENN(UND(LeerG;LeerT);"Beide Datumsfelder fehlen";
+                WENN(LeerG;"Geburtstag fehlt";
+                    WENN(Geburt="";"Ungültiger Geburtstag";
+                        WENN(UND(NICHT(LeerT);Tod="");"Ungültiger Sterbetag";
+                            WENN(Geburt>Heute400;"Geburtstag in der Zukunft";
+                                WENN(UND(NICHT(LeerT);Tod>Heute400);"Sterbetag in der Zukunft";
+                                    WENN(UND(NICHT(LeerT);Tod<Geburt);"Sterbetag vor Geburtstag";
+                                        WENNFEHLER(
+                                            DATEDIF(Geburt;WENN(LeerT;Heute400;Tod);"y");
+                                            "Keine Berechnung"
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    ));
+    VSTAPELN("Alter (Formel)";Ergebnis)
+)
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+// tblModerne_Daten_1
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblModerneDaten"]}[Content],
+    Heute = Date.From(DateTime.FixedLocalNow()),
+    AlterBerechnen = (Geburt as nullable date,
+                      Tod as nullable date) as nullable number =>
+        let
+            Stichtag = if Tod = null then Heute else Tod,
+            Alter =
+                if Geburt = null or Stichtag < Geburt then
+                    null
+                else
+                    Date.Year(Stichtag) - Date.Year(Geburt)
+                    - (
+                        if Date.Month(Stichtag) < Date.Month(Geburt)
+                            or (
+                                Date.Month(Stichtag) = Date.Month(Geburt)
+                                and Date.Day(Stichtag) < Date.Day(Geburt)
+                            )
+                        then 1
+                        else 0
+                    )
+        in
+            Alter,
+    Result = Table.AddColumn(
+        Quelle,
+        "Alter",
+        each AlterBerechnen(
+            try Date.From([Geburtstag]) otherwise null,
+            try Date.From([Sterbetag]) otherwise null
+        ),
+        Int64.Type
+    ),
+Erg = Table.SelectColumns(Result, "Alter")    
+in
+    Erg
+
+// tblModerne_Daten_2 - Nur Verbindung
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblModerneDaten"]}[Content],
+    Heute = Date.From(DateTime.FixedLocalNow()),
+    // Berechnung der vollendeten Lebensjahre
+    AlterBerechnen = (Geburt as date, Stichtag as date) as number =>
+        Date.Year(Stichtag) - Date.Year(Geburt)
+        - (
+            if Date.Month(Stichtag) < Date.Month(Geburt)
+                or (
+                    Date.Month(Stichtag) = Date.Month(Geburt)
+                    and Date.Day(Stichtag) < Date.Day(Geburt)
+                )
+            then 1
+            else 0
+        ),
+    // Datum prüfen, ohne fehlerhafte Werte zu verschlucken
+    DatumPruefen = (Wert as any) as record =>
+        let
+            Leer = Wert = null or (Value.Is(Wert, type text) and Text.Trim(Wert) = ""),
+            Versuch =
+                if Leer then
+                    [HasError = false, Value = null]
+                else
+                    try Date.From(Wert, "de-DE")
+        in
+            [
+                Datum = if Versuch[HasError] then null else Versuch[Value],
+                Ungueltig = Versuch[HasError]
+            ],
+    // Status und Alter gemeinsam ermitteln
+    Berechnung = Table.AddColumn(
+        Quelle,
+        "Pruefung",
+        each
+            let
+                G = DatumPruefen([Geburtstag]),
+                T = DatumPruefen([Sterbetag]),
+                Geburt = G[Datum],
+                Tod = T[Datum],
+                Status =
+                    if G[Ungueltig] then "Ungültiger Geburtstag"
+                    else if T[Ungueltig] then "Ungültiger Sterbetag"
+                    else if Geburt = null and Tod = null then
+                        "Beide Datumsfelder fehlen"
+                    else if Geburt = null then "Geburtstag fehlt"
+                    else if Geburt > Heute then "Geburtstag in der Zukunft"
+                    else if Tod <> null and Tod < Geburt then
+                        "Sterbetag vor Geburtstag"
+                    else if Tod <> null and Tod > Heute then
+                        "Sterbetag in der Zukunft"
+                    else "OK",
+                Alter =
+                    if Status = "OK" then
+                        AlterBerechnen(
+                            Geburt,
+                            if Tod = null then Heute else Tod
+                        )
+                    else
+                        null
+            in
+                [Alter = Alter, Status = Status],
+        type record
+    ),
+    Erweitert = Table.ExpandRecordColumn(
+        Berechnung,
+        "Pruefung",
+        {"Alter", "Status"}
+    ),
+    Typen = Table.TransformColumnTypes(
+        Erweitert,
+        {{"Alter", Int64.Type}, {"Status", type text}}
+    ),
+    Erg = Table.SelectColumns(Typen, {"Alter", "Status"})
+in
+    Erg
+
+// tblModerne_Daten_3
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblModerneDaten"]}[Content],
+    Heute = Date.From(DateTime.FixedLocalNow()),
+    // Berechnung der vollendeten Lebensjahre
+    AlterBerechnen = (Geburt as date, Stichtag as date) as number =>
+        Date.Year(Stichtag) - Date.Year(Geburt)
+        - (
+            if Date.Month(Stichtag) < Date.Month(Geburt)
+                or (
+                    Date.Month(Stichtag) = Date.Month(Geburt)
+                    and Date.Day(Stichtag) < Date.Day(Geburt)
+                )
+            then 1
+            else 0
+        ),
+    // Datum prüfen, ohne fehlerhafte Werte zu verschlucken
+    DatumPruefen = (Wert as any) as record =>
+        let
+            Leer = Wert = null or (Value.Is(Wert, type text) and Text.Trim(Wert) = ""),
+            Excel1900Fehler =
+                if Leer then false
+                else Value.Is(Wert, type number) and Wert >= 60 and Wert < 61,
+            Versuch =
+                if Leer or Excel1900Fehler then
+                    [HasError = false, Value = null]
+                else
+                    try Date.From(Wert, "de-DE")
+        in
+            [
+                Datum = if Versuch[HasError] then null else Versuch[Value],
+                Ungueltig = Versuch[HasError],
+                Excel1900Fehler = Excel1900Fehler
+            ],
+    // Status und Alter gemeinsam ermitteln
+    Berechnung = Table.AddColumn(
+        Quelle,
+        "Pruefung",
+        each
+            let
+                G = DatumPruefen([Geburtstag]),
+                T = DatumPruefen([Sterbetag]),
+                Geburt = G[Datum],
+                Tod = T[Datum],
+                Status =
+                    if G[Excel1900Fehler] then "Ungültig: 29.02.1900 (Excel)"
+                    else if T[Excel1900Fehler] then "Ungültig: 29.02.1900 (Excel)"
+                    else if G[Ungueltig] then "Ungültiger Geburtstag"
+                    else if T[Ungueltig] then "Ungültiger Sterbetag"
+                    else if Geburt = null and Tod = null then "Beide Datumsfelder fehlen"
+                    else if Geburt = null then "Geburtstag fehlt"
+                    else if Geburt > Heute then "Geburtstag in der Zukunft"
+                    else if Tod <> null and Tod < Geburt then "Sterbetag vor Geburtstag"
+                    else if Tod <> null and Tod > Heute then "Sterbetag in der Zukunft"
+                    else "OK",
+                Alter =
+                    if Status = "OK" then
+                        AlterBerechnen(
+                            Geburt,
+                            if Tod = null then Heute else Tod
+                        )
+                    else
+                        null
+            in
+                [Alter = Alter, Status = Status],
+        type record
+    ),
+    Erweitert = Table.ExpandRecordColumn(
+        Berechnung,
+        "Pruefung",
+        {"Alter", "Status"}
+    ),
+    Typen = Table.TransformColumnTypes(
+        Erweitert,
+        {{"Alter", Int64.Type}, {"Status", type text}}
+    ),
+    Erg = Table.SelectColumns(Typen, {"Alter", "Status"})
+in
+    Erg
+
+// Pruefung_29_02_1900 - Nur Verbindung
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblModerneDaten"]}[Content],
+    Wert = Quelle{17}[Geburtstag],
+    Erg = [
+        Wert = Wert,
+        Typ = Value.Type(Wert),
+        IstZahl = Value.Is(Wert, type number),
+        AlsDatum = try Date.From(Wert) otherwise null,
+        AlsZahl = try Number.From(Wert) otherwise null
+    ]
+in
+    Erg
+
+// tblHistorischeDaten_1
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblHistorischeDaten"]}[Content],
+    // Kalender und Schaltjahre
+    IstSchaltjahr = (J as number, K as text) as logical =>
+        if K = "Julianisch" then
+            Number.Mod(J, 4) = 0
+        else
+            Number.Mod(J, 400) = 0 or
+            (Number.Mod(J, 4) = 0 and Number.Mod(J, 100) <> 0),
+    // Textdatum zunächst in Bestandteile zerlegen
+    DatumLesen = (Wert as any) as record =>
+        let
+            S = if Wert = null then "" else Text.Trim(Text.From(Wert)),
+            Teile = Text.Split(S, "."),
+            FormatOK =
+                Text.Length(S) = 10
+                and List.Count(Teile) = 3
+                and Text.Length(Teile{0}) = 2
+                and Text.Length(Teile{1}) = 2
+                and Text.Length(Teile{2}) = 4
+                and Text.Length(Text.Select(S, {"0".."9"})) = 8,
+            Zahlen =
+                if FormatOK then
+                    List.Transform(
+                        Teile,
+                        each try Number.FromText(_, "en-US") otherwise null
+                    )
+                else {null, null, null},
+            T = Zahlen{0},
+            M = Zahlen{1},
+            J = Zahlen{2},
+            StrukturOK =
+                T <> null and M <> null and J <> null
+                and J >= 1 and J <= 9999
+                and M >= 1 and M <= 12
+                and T >= 1
+        in
+            [
+                Leer = S = "",
+                StrukturOK = StrukturOK,
+                Tag = T,
+                Monat = M,
+                Jahr = J
+            ],
+    // Kalendertag auf Gültigkeit prüfen
+    DatumGueltig = (D as record, K as text) as logical =>
+        let
+            M = D[Monat],
+            J = D[Jahr],
+            T = D[Tag],
+            Tage =
+                if not D[StrukturOK] then 0
+                else if M = 2 then
+                    if IstSchaltjahr(J, K) then 29 else 28
+                else if List.Contains({4, 6, 9, 11}, M) then 30
+                else 31
+        in
+            D[StrukturOK] and T <= Tage,
+    // Kalender nach Region und Datum bestimmen
+    KalenderBestimmen = (
+        D as record,
+        Kalender as any,
+        Region as any
+    ) as text =>
+        let
+            K = if Kalender = null then ""
+                else Text.Trim(Text.From(Kalender)),
+            R = if Region = null then ""
+                else Text.Lower(Text.Trim(Text.From(Region))),
+            Zahl =
+                if D[StrukturOK] then
+                    D[Jahr] * 10000 + D[Monat] * 100 + D[Tag]
+                else null,
+            Ergebnis =
+                if K = "Julianisch" or K = "Gregorianisch" then K
+                else if K <> "Historisch regional" then "Unbekannt"
+                else if Zahl = null then "Unbekannt"
+                else if Text.Contains(R, "rom / 1582") then
+                    if Zahl <= 15821004 then "Julianisch"
+                    else if Zahl >= 15821015 then "Gregorianisch"
+                    else "Kalenderlücke"
+                else if Text.Contains(R, "großbritannien / 1752") then
+                    if Zahl <= 17520902 then "Julianisch"
+                    else if Zahl >= 17520914 then "Gregorianisch"
+                    else "Kalenderlücke"
+                else "Unbekannt"
+        in
+            Ergebnis,
+    // Julianische Tageszahl berechnen
+    ZuJDN = (
+        J as number,
+        M as number,
+        T as number,
+        K as text
+    ) as number =>
+        let
+            A = Number.IntegerDivide(14 - M, 12),
+            Y = J + 4800 - A,
+            MM = M + 12 * A - 3,
+            Basis =
+                T
+                + Number.IntegerDivide(153 * MM + 2, 5)
+                + 365 * Y
+                + Number.IntegerDivide(Y, 4),
+            Result =
+                if K = "Julianisch" then
+                    Basis - 32083
+                else
+                    Basis
+                    - Number.IntegerDivide(Y, 100)
+                    + Number.IntegerDivide(Y, 400)
+                    - 32045
+        in
+            Result,
+    // JDN in julianisches oder gregorianisches Datum
+    VonJDN = (N as number, K as text) as record =>
+        let
+            A = N + 32044,
+            B =
+                if K = "Gregorianisch" then
+                    Number.IntegerDivide(4 * A + 3, 146097)
+                else 0,
+            C =
+                if K = "Gregorianisch" then
+                    A - Number.IntegerDivide(146097 * B, 4)
+                else
+                    N + 32082,
+            D = Number.IntegerDivide(4 * C + 3, 1461),
+            E = C - Number.IntegerDivide(1461 * D, 4),
+            M = Number.IntegerDivide(5 * E + 2, 153),
+            Tag = E - Number.IntegerDivide(153 * M + 2, 5) + 1,
+            Monat = M + 3 - 12 * Number.IntegerDivide(M, 10),
+            Jahr = 100 * B + D - 4800
+                + Number.IntegerDivide(M, 10)
+        in
+            [Jahr = Jahr, Monat = Monat, Tag = Tag],
+    // Vollendete Lebensjahre
+    AlterBerechnen = (
+        Geburt as record,
+        Ende as record
+    ) as number =>
+        let
+            Jahre = Ende[Jahr] - Geburt[Jahr],
+            GeburtstagErreicht =
+                Ende[Monat] > Geburt[Monat]
+                or (
+                    Ende[Monat] = Geburt[Monat]
+                    and Ende[Tag] >= Geburt[Tag]
+                ),
+            Alter = Jahre - (if GeburtstagErreicht then 0 else 1)
+        in
+            Alter,
+    // Eine Tabellenzeile auswerten
+    Pruefen = (Zeile as record) as record =>
+        let
+            G = DatumLesen(Zeile[#"Geburt (Text)"]),
+            T = DatumLesen(Zeile[#"Tod (Text)"]),
+            Region = Zeile[#"Region / Regel"],
+            KG = KalenderBestimmen(
+                G, Zeile[Kalender Geburt], Region
+            ),
+            KT = KalenderBestimmen(
+                T, Zeile[Kalender Tod], Region
+            ),
+            Erlaubt = {"Julianisch", "Gregorianisch"},
+            KalenderOK = List.Contains(Erlaubt, KG) and List.Contains(Erlaubt, KT),
+            GeburtOK =
+                if List.Contains(Erlaubt, KG) then
+                    DatumGueltig(G, KG)
+                else false,
+            TodOK =
+                if List.Contains(Erlaubt, KT) then
+                    DatumGueltig(T, KT)
+                else false,
+            Berechenbar = GeburtOK and TodOK and KalenderOK,
+            JG =
+                if Berechenbar then
+                    ZuJDN(G[Jahr], G[Monat], G[Tag], KG)
+                else null,
+            JT =
+                if Berechenbar then
+                    ZuJDN(T[Jahr], T[Monat], T[Tag], KT)
+                else null,
+            // Tod in den Geburtskalender umrechnen
+            Ende =
+                if Berechenbar then VonJDN(JT, KG)
+                else null,
+            Status =
+                if G[Leer] and T[Leer] then
+                    "Beide Datumsfelder fehlen"
+                else if G[Leer] then
+                    "Geburtstag fehlt"
+                else if T[Leer] then
+                    "Sterbetag fehlt"
+                else if not G[StrukturOK] then
+                    "Ungültiger Geburtstag"
+                else if not T[StrukturOK] then
+                    "Ungültiger Sterbetag"
+                else if KG = "Kalenderlücke"
+                    or KT = "Kalenderlücke" then
+                    "Datum liegt in Kalenderlücke"
+                else if not KalenderOK then
+                    "Kalender nicht unterstützt"
+                else if not GeburtOK then
+                    "Ungültiger Geburtstag"
+                else if not TodOK then
+                    "Ungültiger Sterbetag"
+                else if JT < JG then
+                    "Sterbetag vor Geburtstag"
+                else "OK",
+            Alter =
+                if Status = "OK" then
+                    AlterBerechnen(G, Ende)
+                else null
+        in
+            [Alter = Alter, Status = Status],
+    Berechnung = Table.AddColumn(
+        Quelle,
+        "Pruefung",
+        each Pruefen(_),
+        type record
+    ),
+    Erweitert = Table.ExpandRecordColumn(
+        Berechnung,
+        "Pruefung",
+        {"Alter", "Status"}
+    ),
+    Typen = Table.TransformColumnTypes(
+        Erweitert,
+        {
+            {"Alter", Int64.Type},
+            {"Status", type text}
+        }
+    ),
+    Erg = Table.SelectColumns(
+        Typen,
+        {"Alter", "Status"}
+    )
+in
+    Erg
+
+//tblAntikeDaten_1
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblAntikeDaten"]}[Content],
+    // Historische Jahreszählung:
+    // 1 v. Chr. = astronomisches Jahr 0
+    // 2 v. Chr. = astronomisches Jahr -1
+    // 1 n. Chr. = astronomisches Jahr 1
+    DatumLesen = (Wert as any) as record =>
+        let
+            Roh =
+                if Wert = null then ""
+                else Text.Trim(Text.From(Wert)),
+
+            Normal = Text.Lower(
+                Text.Remove(Roh, {" ", Character.FromNumber(160)})
+            ),
+            VorChr = Text.EndsWith(Normal, "v.chr."),
+            NachChr = Text.EndsWith(Normal, "n.chr."),
+            Kern =
+                if VorChr or NachChr then
+                    Text.Start(Normal, Text.Length(Normal) - 6)
+                else
+                    Normal,
+            Teile = Text.Split(Kern, "."),
+            FormatOK =
+                List.Count(Teile) = 3
+                and Text.Length(Teile{0}) = 2
+                and Text.Length(Teile{1}) = 2
+                and Text.Length(Teile{2}) = 4
+                and Text.Length(Text.Select(Kern, {"0".."9"})) = 8,
+            Zahlen =
+                if FormatOK then
+                    List.Transform(
+                        Teile,
+                        each try Number.FromText(_, "en-US") otherwise null
+                    )
+                else
+                    {null, null, null},
+            T = Zahlen{0},
+            M = Zahlen{1},
+            J = Zahlen{2},
+            StrukturOK =
+                FormatOK
+                and T <> null and M <> null and J <> null
+                and T >= 1
+                and M >= 1 and M <= 12
+                and J >= 1,
+            JahrAstronomisch =
+                if not StrukturOK then null
+                else if VorChr then 1 - J
+                else J
+        in
+            [
+                Leer = Roh = "",
+                StrukturOK = StrukturOK,
+                Tag = T,
+                Monat = M,
+                Jahr = JahrAstronomisch
+            ],
+    // Schaltjahrregel für den proleptischen julianischen Kalender
+    IstSchaltjahr = (J as number) as logical => Number.Mod(J, 4) = 0,
+    DatumGueltig = (D as record) as logical =>
+        let
+            M = D[Monat],
+            J = D[Jahr],
+            T = D[Tag],
+            Tage =
+                if not D[StrukturOK] then 0
+                else if M = 2 then
+                    if IstSchaltjahr(J) then 29 else 28
+                else if List.Contains({4, 6, 9, 11}, M) then
+                    30
+                else
+                    31
+        in
+            D[StrukturOK] and T <= Tage,
+    // Nur explizit proleptisch julianische Daten berechnen
+    KalenderOK = (Wert as any) as logical =>
+        Wert <> null
+        and Text.Lower(Text.Trim(Text.From(Wert))) =
+            "proleptisch julianisch",
+    // Datum -> Julianische Tageszahl
+    ZuJDN = (J as number, M as number, T as number) as number =>
+        let
+            A = Number.IntegerDivide(14 - M, 12),
+            Y = J + 4800 - A,
+            MM = M + 12 * A - 3,
+            Result =
+                T
+                + Number.IntegerDivide(153 * MM + 2, 5)
+                + 365 * Y
+                + Number.IntegerDivide(Y, 4)
+                - 32083
+        in
+            Result,
+    // Julianische Tageszahl -> Datum
+    VonJDN = (N as number) as record =>
+        let
+            C = N + 32082,
+            D = Number.IntegerDivide(4 * C + 3, 1461),
+            E = C - Number.IntegerDivide(1461 * D, 4),
+            M = Number.IntegerDivide(5 * E + 2, 153),
+            Tag = E - Number.IntegerDivide(153 * M + 2, 5) + 1,
+            Monat = M + 3 - 12 * Number.IntegerDivide(M, 10),
+            Jahr = D - 4800 + Number.IntegerDivide(M, 10)
+        in
+            [Jahr = Jahr, Monat = Monat, Tag = Tag],
+    // Vollendete Lebensjahre
+    AlterBerechnen = (Geburt as record, Ende as record) as number =>
+        let
+            Jahre = Ende[Jahr] - Geburt[Jahr],
+            GeburtstagErreicht =
+                Ende[Monat] > Geburt[Monat]
+                or (
+                    Ende[Monat] = Geburt[Monat]
+                    and Ende[Tag] >= Geburt[Tag]
+                ),
+            Alter =
+                Jahre - (if GeburtstagErreicht then 0 else 1)
+        in
+            Alter,
+    // Genauigkeit der Datumsangaben prüfen
+    GenauigkeitOK = (Wert as any) as logical =>
+        let
+            G =
+                if Wert = null then ""
+                else Text.Lower(Text.Trim(Text.From(Wert)))
+        in
+            List.Contains({"synthetisch", "exakt"}, G),
+    // Prüfung einer Tabellenzeile
+    Pruefen = (Zeile as record) as record =>
+        let
+            G = DatumLesen(Zeile[#"Geburt (Text)"]),
+            T = DatumLesen(Zeile[#"Tod (Text)"]),
+            KG = KalenderOK(Zeile[#"Kalender Geburt"]),
+            KT = KalenderOK(Zeile[#"Kalender Tod"]),
+            GenauOK = GenauigkeitOK(Record.FieldOrDefault(Zeile, "Genauigkeit", null)),
+            Berechenbar =
+                KG and KT
+                and DatumGueltig(G)
+                and DatumGueltig(T)
+                and GenauOK,
+            JG =
+                if Berechenbar then
+                    ZuJDN(G[Jahr], G[Monat], G[Tag])
+                else
+                    null,
+            JT =
+                if Berechenbar then
+                    ZuJDN(T[Jahr], T[Monat], T[Tag])
+                else
+                    null,
+            Ende =
+                if Berechenbar then VonJDN(JT)
+                else null,
+            Status =
+                if G[Leer] and T[Leer] then
+                    "Beide Datumsfelder fehlen"
+                else if G[Leer] then
+                    "Geburtstag fehlt"
+                else if T[Leer] then
+                    "Sterbetag fehlt"
+                else if not G[StrukturOK] then
+                    "Ungültiger Geburtstag"
+                else if not T[StrukturOK] then
+                    "Ungültiger Sterbetag"
+                else if not KG or not KT then
+                    "Kalender nicht unterstützt"
+                else if not DatumGueltig(G) then
+                    "Ungültiger Geburtstag"
+                else if not DatumGueltig(T) then
+                    "Ungültiger Sterbetag"
+                else if not GenauOK then
+                    "Keine exakte Altersberechnung"
+                else if JT < JG then
+                    "Sterbetag vor Geburtstag"
+                else
+                    "OK",
+            Alter =
+                if Status = "OK" then
+                    AlterBerechnen(G, Ende)
+                else
+                    null
+        in
+            [Alter = Alter, Status = Status],
+    Berechnung = Table.AddColumn(
+        Quelle,
+        "Pruefung",
+        each Pruefen(_),
+        type record
+    ),
+    Erweitert = Table.ExpandRecordColumn(
+        Berechnung,
+        "Pruefung",
+        {"Alter", "Status"}
+    ),
+    Typen = Table.TransformColumnTypes(
+        Erweitert,
+        {
+            {"Alter", Int64.Type},
+            {"Status", type text}
+        }
+    ),
+    Erg = Table.SelectColumns(Typen, {"Alter", "Status"})
+in
+    Erg
+
+// tblTest_1_bis_2100 - Nur Verbindung
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    // Testbereich
+    VonJahr = 1,
+    BisJahr = 2100,
+    // Statt Referenzen Massentest wählen, dann wird komplett ausgewertet
+    Testmodus = "Referenzen",
+    //Testmodus = "Massentest",
+    // Schaltjahrregel
+    IstSchaltjahr = (J as number, K as text) as logical =>
+        if K = "Julianisch" then
+            Number.Mod(J, 4) = 0
+        else
+            Number.Mod(J, 400) = 0
+            or (
+                Number.Mod(J, 4) = 0
+                and Number.Mod(J, 100) <> 0
+            ),
+    // Anzahl der Tage eines Monats
+    Monatstage = (J as number, M as number, K as text) as number =>
+        if M = 2 then
+            if IstSchaltjahr(J, K) then 29 else 28
+        else if List.Contains({4, 6, 9, 11}, M) then
+            30
+        else
+            31,
+    // Kalenderdatum -> JDN
+    ZuJDN = (J as number, M as number, T as number, K as text) as number =>
+        let
+            A = Number.IntegerDivide(14 - M, 12),
+            Y = J + 4800 - A,
+            MM = M + 12 * A - 3,
+            Basis =
+                T
+                + Number.IntegerDivide(153 * MM + 2, 5)
+                + 365 * Y
+                + Number.IntegerDivide(Y, 4),
+            Result =
+                if K = "Julianisch" then
+                    Basis - 32083
+                else
+                    Basis
+                    - Number.IntegerDivide(Y, 100)
+                    + Number.IntegerDivide(Y, 400)
+                    - 32045
+        in
+            Result,
+    // JDN -> Kalenderdatum
+    VonJDN = (N as number, K as text) as record =>
+        let
+            A = N + 32044,
+            B =
+                if K = "Gregorianisch" then
+                    Number.IntegerDivide(4 * A + 3, 146097)
+                else 0,
+            C =
+                if K = "Gregorianisch" then
+                    A - Number.IntegerDivide(146097 * B, 4)
+                else
+                    N + 32082,
+            D = Number.IntegerDivide(4 * C + 3, 1461),
+            E = C - Number.IntegerDivide(1461 * D, 4),
+            M = Number.IntegerDivide(5 * E + 2, 153),
+            Tag = E - Number.IntegerDivide(153 * M + 2, 5) + 1,
+            Monat = M + 3 - 12 * Number.IntegerDivide(M, 10),
+            Jahr =
+                100 * B + D - 4800
+                + Number.IntegerDivide(M, 10)
+        in
+            [Jahr = Jahr, Monat = Monat, Tag = Tag],
+    // Alle gültigen Testdaten erzeugen
+    Testdaten =
+        List.Combine(
+            List.Transform(
+                {"Julianisch", "Gregorianisch"},
+                (K) =>
+                    List.Combine(
+                        List.Transform(
+                            {VonJahr..BisJahr},
+                            (J) =>
+                                List.Combine(
+                                    List.Transform(
+                                        {1..12},
+                                        (M) =>
+                                            List.Transform(
+                                                {1..Monatstage(J, M, K)},
+                                                (T) =>
+                                                    [
+                                                        Kalender = K,
+                                                        Jahr = J,
+                                                        Monat = M,
+                                                        Tag = T
+                                                    ]
+                                            )
+                                    )
+                                )
+                        )
+                    )
+            )
+        ),
+    Tabelle = Table.FromRecords(
+        Testdaten,
+        type table [
+            Kalender = text,
+            Jahr = Int64.Type,
+            Monat = Int64.Type,
+            Tag = Int64.Type
+        ]
+    ),
+    // JDN und Rückrechnung
+    Berechnet = Table.AddColumn(
+        Tabelle,
+        "Pruefung",
+        each
+            let
+                N = ZuJDN([Jahr], [Monat], [Tag], [Kalender]),
+                R = VonJDN(N, [Kalender]),
+                OK =
+                    R[Jahr] = [Jahr]
+                    and R[Monat] = [Monat]
+                    and R[Tag] = [Tag]
+            in
+                [
+                    JDN = N,
+                    RueckJahr = R[Jahr],
+                    RueckMonat = R[Monat],
+                    RueckTag = R[Tag],
+                    Status = if OK then "OK" else "FEHLER"
+                ],
+        type record
+    ),
+    Erweitert = Table.ExpandRecordColumn(
+        Berechnet,
+        "Pruefung",
+        {"JDN", "RueckJahr", "RueckMonat", "RueckTag", "Status"}
+    ),
+    // Bekannte JDN-Referenzwerte
+    Referenzen = #table(
+        type table [
+            Kalender = text,
+            Jahr = Int64.Type,
+            Monat = Int64.Type,
+            Tag = Int64.Type,
+            ErwarteteJDN = Int64.Type
+        ],
+        {
+            {"Gregorianisch", 2000, 1, 1, 2451545},
+            {"Gregorianisch", 1582, 10, 15, 2299161},
+            {"Julianisch", 1582, 10, 4, 2299160},
+            {"Gregorianisch", 1900, 3, 1, 2415080}
+        }
+    ),
+    ReferenzPruefung = Table.AddColumn(
+        Referenzen,
+        "BerechneteJDN",
+        each ZuJDN([Jahr], [Monat], [Tag], [Kalender]),
+        Int64.Type
+    ),
+    ReferenzStatus = Table.AddColumn(
+        ReferenzPruefung,
+        "Status",
+        each if [ErwarteteJDN] = [BerechneteJDN]
+             then "OK"
+             else "FEHLER",
+        type text
+    ),
+    Erg =
+        if Testmodus = "Referenzen" then
+            ReferenzStatus
+        else
+            Table.SelectRows(Erweitert, each [Status] <> "OK")
 in
     Erg
         ]]>

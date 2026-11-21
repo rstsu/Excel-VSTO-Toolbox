@@ -128,6 +128,8 @@ Partial Public Class DemoRunner
                 CreateFormel_VBA_PQ_Demo()
             Case "pq_0032"
                 CreateRegex_Formel_PQ_VBA_Demo()
+            Case "pq_0033"
+                CreatePowerQueryDemo_33()
             Case "formula_001"
                 CreateFormulaDemo_1()
             Case "formula_002"
@@ -582,6 +584,25 @@ Partial Public Class DemoRunner
                 Environment.NewLine &
                 ex.Message,
                 "Demo PQ 029",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+    Private Sub CreatePowerQueryDemo_33()
+        Try
+            Dim workbook As Excel.Workbook =
+                DemoPackageManager.ExtractAndOpen(
+                    App,
+                    "Demo_PQ_33.zip",
+                    "PQ_033")
+            workbook.Activate()
+        Catch ex As Exception
+            MessageBox.Show(
+                "Das Power-Query-Beispiel konnte nicht geöffnet werden." &
+                Environment.NewLine &
+                Environment.NewLine &
+                ex.Message,
+                "Demo PQ 033",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         End Try
