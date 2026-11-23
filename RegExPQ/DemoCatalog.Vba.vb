@@ -3948,6 +3948,303 @@ End Sub
         ]]>
     </code>
         )
+            }, New DemoDefinition With {
+                .Id = "vba_0020",
+                .Category = DemoCategory.Vba,
+                .Title = "Zerlegung, Normalisierung und Plausibilität - Kennzeichen...",
+                .Tags = {"kennzeichen", "vba", "zerlegen", "text", "replace", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Vier Wege zur Zerlegung, Normalisierung und Plausibilitätsprüfung deutscher Kfz-Kennzeichen.
+Gelöst mit Formeln, Regex, VBA und Power Query.
+
+RegEx_PQ_Formel_VBA_Kennzeichen_Demo.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\Demo_PQ_Formel_VBA
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+' Modul modKennzeichen
+' Excel -VSTO - Toolbox
+' Power Query, RegEx,VBA und Formel - Demo
+' Ralf Stolzenburg (Case)
+' https://github.com/rstsu/Excel-VSTO-Toolbox
+Option Explicit
+Public Sub KennzeichenPruefen()
+    Dim varAusgabe() As Variant
+    Dim objListO As ListObject
+    Dim varErgebnis As Variant
+    Dim wksSheet As Worksheet
+    Dim varDaten As Variant
+    Dim varKopf As Variant
+    Dim lngCount As Long
+    Dim lngTMP1 As Long
+    Dim lngTMP2 As Long
+    On Error GoTo Fin
+    Set objListO = ThisWorkbook.Worksheets("Vorgaben").ListObjects("tblKennzeichen")
+    Set wksSheet = ThisWorkbook.Worksheets("VBA")
+    If objListO.DataBodyRange Is Nothing Then
+        MsgBox "Die Tabelle enthält keine Daten.", vbInformation
+        Exit Sub
+    End If
+    varDaten = objListO.ListColumns("Kennzeichen").DataBodyRange.Value2
+    lngCount = objListO.ListRows.Count
+    ReDim varAusgabe(1 To lngCount + 1, 1 To 10)
+    varKopf = Array("Eingabe", "Bezirk", "Buchstaben", _
+                 "Nummer", "Zusatz", "Von", "Bis", _
+                 "Normalisiert", "Status", "Diagnose")
+    For lngTMP2 = 1 To 10
+        varAusgabe(1, lngTMP2) = varKopf(lngTMP2 - 1)
+    Next lngTMP2
+    For lngTMP1 = 1 To lngCount
+        If lngCount = 1 Then
+            varErgebnis = ZerlegeKennzeichen(CStr(varDaten))
+        Else
+            varErgebnis = ZerlegeKennzeichen(CStr(varDaten(lngTMP1, 1)))
+        End If
+        For lngTMP2 = 1 To 10
+            varAusgabe(lngTMP1 + 1, lngTMP2) = varErgebnis(lngTMP2 - 1)
+        Next lngTMP2
+    Next lngTMP1
+    With wksSheet
+        .Range("A:J").ClearContents
+        .Columns("D").NumberFormat = "@"
+        .Columns("F:G").NumberFormat = "@"
+        .Range("A1").Resize(lngCount + 1, 10).Value2 = varAusgabe
+        .Columns("A:J").AutoFit
+    End With
+    MsgBox lngCount & " Kennzeichen verarbeitet.", vbInformation
+    Exit Sub
+Fin:
+    MsgBox "Fehler " & Err.Number & vbCrLf & Err.Description, vbExclamation
+End Sub
+Private Function ZerlegeKennzeichen(ByVal eingabe As String) As Variant
+    Dim strBuchstabenTeil As String
+    Dim blnMehrdeutig As Boolean
+    Dim strOhneZusatz As String
+    Dim strGruppen() As String
+    Dim strDiagnose As String
+    Dim blnSaison As Boolean
+    Dim strTeile() As String
+    Dim strKompakt As String
+    Dim lngGefunden As Long
+    Dim strStatus As String
+    Dim strFehler As String
+    Dim strBasis As String
+    Dim strValue As String
+    Dim lngMonate As Long
+    Dim lngLaenge As Long
+    Dim strNorm As String
+    Dim lngZiffer As Long
+    Dim lngAnzahl As Long
+    Dim strBez As String
+    Dim strBst As String
+    Dim strZus As String
+    Dim strVon As String
+    Dim strBis As String
+    Dim lngSlash As Long
+    Dim strRoh As String
+    Dim lngTMP1 As Long
+    Dim strNr As String
+    Dim lngVN As Long
+    Dim lngBN As Long
+    strRoh = UCase$(Trim$(Replace(eingabe, ChrW$(160), " ")))
+    strRoh = LeerzeichenNormalisieren(strRoh)
+    lngSlash = Len(strRoh) - Len(Replace(strRoh, "/", ""))
+    Select Case lngSlash
+        Case 1
+            strTeile = Split(strRoh, "/")
+            strVon = Right$(Trim$(strTeile(0)), 2)
+            strBis = Trim$(strTeile(1))
+            blnSaison = Len(strVon) = 2 And Len(strBis) = 2
+            If blnSaison Then
+                blnSaison = NurZiffern(strVon) And NurZiffern(strBis)
+            End If
+            If blnSaison Then
+                lngVN = CLng(strVon)
+                lngBN = CLng(strBis)
+                blnSaison = lngVN >= 1 And lngVN <= 12 And lngBN >= 1 And lngBN <= 12
+            End If
+            If Not blnSaison Then
+                ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+                Exit Function
+            End If
+            strBasis = Trim$(Left$(Trim$(strTeile(0)), Len(Trim$(strTeile(0))) - 2))
+        Case 0
+            strBasis = strRoh
+        Case Else
+            ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+            Exit Function
+    End Select
+    If Len(strBasis) = 0 Then
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    strValue = Right$(strBasis, 1)
+    If strValue = "E" Or strValue = "H" Then
+        strZus = strValue
+        strOhneZusatz = Trim$(Left$(strBasis, Len(strBasis) - 1))
+    Else
+        strOhneZusatz = strBasis
+    End If
+    lngZiffer = 0
+    For lngTMP1 = 1 To Len(strOhneZusatz)
+        strValue = Mid$(strOhneZusatz, lngTMP1, 1)
+        If strValue >= "0" And strValue <= "9" Then
+            lngZiffer = lngTMP1
+            Exit For
+        End If
+    Next lngTMP1
+    If lngZiffer = 0 Then
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    strBuchstabenTeil = Left$(strOhneZusatz, lngZiffer - 1)
+    strNr = Trim$(Mid$(strOhneZusatz, lngZiffer))
+    If Len(strNr) < 1 Or Len(strNr) > 4 Then
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    If Not NurZiffern(strNr) Then
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    strKompakt = Replace(Replace(strBuchstabenTeil, " ", ""), "-", "")
+    strGruppen = Split(Trim$(Replace(strBuchstabenTeil, "-", " ")), " ")
+    lngAnzahl = 0
+    For lngTMP1 = LBound(strGruppen) To UBound(strGruppen)
+        If strGruppen(lngTMP1) <> "" Then
+            lngAnzahl = lngAnzahl + 1
+        End If
+    Next lngTMP1
+    Select Case lngAnzahl
+        Case 2
+            lngGefunden = 0
+            For lngTMP1 = LBound(strGruppen) To UBound(strGruppen)
+                If strGruppen(lngTMP1) <> "" Then
+                    lngGefunden = lngGefunden + 1
+                    If lngGefunden = 1 Then strBez = strGruppen(lngTMP1)
+                    If lngGefunden = 2 Then strBst = strGruppen(lngTMP1)
+                End If
+            Next lngTMP1
+        Case 1
+            If Len(strKompakt) < 2 Then
+                ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+                Exit Function
+            End If
+            lngZiffer = Len(strKompakt) - 1
+            If lngZiffer > 3 Then lngZiffer = 3
+            strBez = Left$(strKompakt, lngZiffer)
+            strBst = Mid$(strKompakt, lngZiffer + 1)
+        Case Else
+            ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+            Exit Function
+    End Select
+    If Len(strBez) < 1 Or Len(strBez) > 3 _
+       Or Len(strBst) < 1 Or Len(strBst) > 2 Then
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    If Not NurBuchstaben(strBez) Or Not NurBuchstaben(strBst) Then
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    If InStr(strOhneZusatz, "--") > 0 _
+       Or InStr(strOhneZusatz, "- -") > 0 Or InStr(strNr, "-") > 0 Then
+
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    If Replace(Replace(strOhneZusatz, " ", ""), "-", "") <> strKompakt & strNr Then
+        ZerlegeKennzeichen = KennzeichenKeinTreffer(eingabe)
+        Exit Function
+    End If
+    strNorm = strBez & "-" & strBst & " " & strNr & strZus
+    If blnSaison Then strNorm = strNorm & " " & strVon & "/" & strBis
+    lngLaenge = Len(strBez & strBst & strNr & strZus)
+    blnMehrdeutig = lngAnzahl = 1 And Len(strKompakt) >= 3 And Len(strKompakt) <= 4
+    If CLng(strNr) = 0 Then
+        FehlerAnhaengen strFehler, "Nummer ist 0"
+    End If
+    If lngLaenge > 8 Then
+        FehlerAnhaengen strFehler, "Mehr als 8 Zeichen"
+    End If
+    If blnSaison Then
+        lngMonate = lngBN - lngVN + 1
+        If lngBN < lngVN Then
+            FehlerAnhaengen strFehler, "Saisonende vor Saisonbeginn"
+        ElseIf lngMonate < 2 Then
+            FehlerAnhaengen strFehler, "Saison kürzer als 2 Monate"
+        ElseIf lngMonate > 11 Then
+            FehlerAnhaengen strFehler, "Saison länger als 11 Monate"
+        End If
+    End If
+    If blnMehrdeutig Then
+        FehlerAnhaengen strFehler, "Aufteilung möglicherweise blnMehrdeutig"
+    End If
+    If Len(strFehler) > 0 Then
+        strStatus = "Prüfen"
+        strDiagnose = strFehler
+    ElseIf StrComp(eingabe, strNorm, vbBinaryCompare) <> 0 Then
+        strStatus = "Normalisiert"
+        strDiagnose = "Schreibweise vereinheitlicht"
+    Else
+        strStatus = "OK"
+        strDiagnose = "Keine Auffälligkeiten"
+    End If
+    ZerlegeKennzeichen = Array(eingabe, strBez, strBst, strNr, strZus, strVon, strBis, strNorm, strStatus, strDiagnose)
+End Function
+Private Function NurZiffern(ByVal strTMP As String) As Boolean
+    Dim strValue As String
+    Dim lngTMP1 As Long
+    If Len(strTMP) = 0 Then Exit Function
+    For lngTMP1 = 1 To Len(strTMP)
+        strValue = Mid$(strTMP, lngTMP1, 1)
+        If strValue < "0" Or strValue > "9" Then Exit Function
+    Next lngTMP1
+    NurZiffern = True
+End Function
+Private Function NurBuchstaben(ByVal strTMP As String) As Boolean
+    Dim strValue As String
+    Dim lngTMP1 As Long
+    If Len(strTMP) = 0 Then Exit Function
+    For lngTMP1 = 1 To Len(strTMP)
+        strValue = Mid$(strTMP, lngTMP1, 1)
+        If strValue < "A" Or strValue > "Z" Then Exit Function
+    Next lngTMP1
+    NurBuchstaben = True
+End Function
+Private Function LeerzeichenNormalisieren(ByVal strTMP As String) As String
+    strTMP = Trim$(strTMP)
+    Do While InStr(strTMP, "  ") > 0
+        strTMP = Replace(strTMP, "  ", " ")
+    Loop
+    LeerzeichenNormalisieren = strTMP
+End Function
+Private Sub FehlerAnhaengen(ByRef strListe As String, ByVal strMeldung As String)
+    If Len(strListe) > 0 Then strListe = strListe & " | "
+    strListe = strListe & strMeldung
+End Sub
+Private Function KennzeichenKeinTreffer(ByVal strEingabe As String) As Variant
+    KennzeichenKeinTreffer = Array(strEingabe, "", "", "", "", "", "", "", "Kein Treffer", "Struktur nicht erkannt")
+End Function
+        ]]>
+    </code>
+        )
             }
         }
     End Function

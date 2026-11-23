@@ -4479,6 +4479,416 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0034",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Zerlegung, Normalisierung und Plausibilität - Kennzeichen...",
+                .Tags = {"kennzeichen", "power query", "zerlegen", "text", "replace", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Vier Wege zur Zerlegung, Normalisierung und Plausibilitätsprüfung deutscher Kfz-Kennzeichen.
+Gelöst mit Formeln, Regex, VBA und Power Query.
+
+RegEx_PQ_Formel_VBA_Kennzeichen_Demo.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+// tblKennzeichen_1
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    // Zentrale Datenquelle
+    Quelle = Excel.CurrentWorkbook(){[Name="tblKennzeichen"]}[Content],
+    // Hilfsfunktion: Kennzeichen zerlegen
+    fnZerlegen = (Eingabe as nullable text) as record =>
+    let
+        Roh = if Eingabe = null then "" else Eingabe,
+        Text = Text.Upper(Text.Trim(Text.Clean(Roh))),
+        // Leerzeichen vereinheitlichen
+        Leerzeichen = Text.Replace(Text, Character.FromNumber(160), " "),
+        Teile = List.Select(Text.Split(Leerzeichen, " "), each _ <> ""),
+        Bereinigt = Text.Combine(Teile, " "),
+        // Saisonangabe am Ende abtrennen
+        SaisonTeile = Text.Split(Bereinigt, "/"),
+        HatSaison = List.Count(SaisonTeile) = 2
+            and Text.Length(Text.End(SaisonTeile{0}, 2)) = 2
+            and Text.Length(SaisonTeile{1}) = 2
+            and Text.Select(Text.End(SaisonTeile{0}, 2) & SaisonTeile{1}, {"0".."9"})
+                = Text.End(SaisonTeile{0}, 2) & SaisonTeile{1},
+        Von = if HatSaison then Text.End(SaisonTeile{0}, 2) else "",
+        Bis = if HatSaison then SaisonTeile{1} else "",
+        OhneSaison = if HatSaison then Text.Start(SaisonTeile{0}, Text.Length(SaisonTeile{0}) - 2) else Bereinigt,
+        // E/H-Zusatz abtrennen
+        Stamm = Text.Trim(OhneSaison),
+        LetztesZeichen = Text.End(Stamm, 1),
+        Zusatz = if List.Contains({"E", "H"}, LetztesZeichen) then LetztesZeichen else "",
+        OhneZusatz = if Zusatz <> "" then Text.Trim(Text.Start(Stamm, Text.Length(Stamm) - 1)) else Stamm,
+        // Bindestriche und Leerzeichen als Trenner
+        MitLeerzeichen = Text.Replace(OhneZusatz, "-", " "),
+        Wortliste = List.Select(Text.Split(MitLeerzeichen, " "), each _ <> ""),
+        // Buchstaben und Ziffern bestimmen
+        Kompakt = Text.Combine(Wortliste, ""),
+        Buchstaben = Text.Select(Kompakt, {"A".."Z"}),
+        Ziffern = Text.Select(Kompakt, {"0".."9"}),
+        // Aufteilung der Buchstabengruppen
+        Bezirk = if List.Count(Wortliste) >= 2
+            then Wortliste{0}
+            else if Text.Length(Buchstaben) >= 2
+                then Text.Start(Buchstaben, Text.Length(Buchstaben) - 1)
+                else "",
+        Gruppe = if List.Count(Wortliste) >= 2
+            then Wortliste{1}
+            else if Text.Length(Buchstaben) >= 2
+                then Text.End(Buchstaben, 1)
+                else "",
+        // Nur Buchstaben in den Gruppen
+        BezirkOK = Text.Select(Bezirk, {"A".."Z"}),
+        GruppeOK = Text.Select(Gruppe, {"A".."Z"}),
+        Nummer = Ziffern,
+        // Einfache Strukturprüfung
+        Erkannt =
+            Text.Length(BezirkOK) >= 1
+            and Text.Length(BezirkOK) <= 3
+            and Text.Length(GruppeOK) >= 1
+            and Text.Length(GruppeOK) <= 2
+            and Text.Length(Nummer) >= 1
+            and Text.Length(Nummer) <= 4,
+        Normalisiert = if Erkannt then
+            BezirkOK & "-" & GruppeOK & " " & Nummer & Zusatz &
+            (if HatSaison then " " & Von & "/" & Bis else "")
+            else "",
+        Result = [
+            Bezirk = if Erkannt then BezirkOK else "",
+            Buchstaben = if Erkannt then GruppeOK else "",
+            Nummer = if Erkannt then Nummer else "",
+            Zusatz = if Erkannt then Zusatz else "",
+            Von = if Erkannt then Von else "",
+            Bis = if Erkannt then Bis else "",
+            Normalisiert = Normalisiert
+        ]
+    in
+        Result,
+    // Quelldaten übernehmen
+    Typ = Table.TransformColumnTypes(Quelle, {{"Kennzeichen", type text}}),
+    Umbenannt = Table.RenameColumns(Typ, {{"Kennzeichen", "Eingabe"}}),
+    // Funktion auf alle Zeilen anwenden
+    Zerlegt = Table.AddColumn(
+        Umbenannt,
+        "Ergebnis",
+        each fnZerlegen([Eingabe]),
+        type record
+    ),
+    // Ergebnisfelder aufklappen
+    Erg = Table.ExpandRecordColumn(
+        Zerlegt,
+        "Ergebnis",
+        {"Bezirk", "Buchstaben", "Nummer",
+         "Zusatz", "Von", "Bis", "Normalisiert"}
+    )
+in
+    Erg
+
+// tblKennzeichen_2
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    // ==============================================================
+    // tblKennzeichen_2 - Kontrollierte Kennzeichenprüfung ohne RegEx
+    // Datenquelle: tblKennzeichen
+    // ==============================================================
+    Quelle = Excel.CurrentWorkbook(){[Name="tblKennzeichen"]}[Content],
+    Buchstaben = {"A".."Z"},
+    Ziffern = {"0".."9"},
+    // Prüfen, ob ein Text ausschließlich erlaubte Zeichen hat
+    fnNurZeichen = (t as text, erlaubt as list) as logical =>
+        Text.Length(t) > 0
+        and Text.Length(Text.Remove(t, erlaubt)) = 0,
+    // Leere Ergebnisstruktur
+    Leer = [
+        Bezirk = "",
+        Buchstaben = "",
+        Nummer = "",
+        Zusatz = "",
+        Von = "",
+        Bis = "",
+        Normalisiert = "",
+        Status = "Kein Treffer",
+        Diagnose = "Struktur nicht erkannt"
+    ],
+    fnPruefen = (Eingabe as nullable text) as record =>
+    let
+        Roh = if Eingabe = null then "" else Eingabe,
+        // Großschreibung und äußere Leerzeichen
+        Gross = Text.Upper(Text.Trim(Roh)),
+        // Mehrfache Leerzeichen und Bindestriche
+        // zunächst nicht entfernen, sondern strukturiert behandeln
+        Teile = List.Select(
+            Text.SplitAny(Gross, " -"),
+            each _ <> ""
+        ),
+        // -------------------------------------------------
+        // 1. Saisonangabe abtrennen
+        // -------------------------------------------------
+        // Leerzeichen um den Schrägstrich erlauben
+        SaisonText = Text.Replace(
+            Text.Replace(Gross, " /", "/"),
+            "/ ", "/"
+        ),
+        SlashTeile = Text.Split(SaisonText, "/"),
+        HatSlash = List.Count(SlashTeile) = 2,
+        Rechts = if HatSlash then SlashTeile{1} else "",
+        Links = if HatSlash then SlashTeile{0} else SaisonText,
+        BisText = Text.Trim(Rechts),
+        // Die letzten beiden Zeichen vor "/" sind der Monat
+        VonText = if HatSlash
+            then Text.End(Text.Trim(Links), 2)
+            else "",
+        SaisonFormat =
+            HatSlash
+            and Text.Length(VonText) = 2
+            and Text.Length(BisText) = 2
+            and fnNurZeichen(VonText, Ziffern)
+            and fnNurZeichen(BisText, Ziffern)
+            and List.Contains(
+                {"01","02","03","04","05","06",
+                "07","08","09","10","11","12"},
+                VonText
+            )
+            and List.Contains(
+                {"01","02","03","04","05","06",
+                "07","08","09","10","11","12"},
+                BisText
+            ),
+        OhneSaison =
+            if SaisonFormat then
+                Text.Trim(
+                    Text.Start(
+                        Text.Trim(Links),
+                        Text.Length(Text.Trim(Links)) - 2
+                    )
+                )
+            else if HatSlash then ""
+            else SaisonText,
+        // -------------------------------------------------
+        // 2. E/H-Zusatz abtrennen
+        // -------------------------------------------------
+        Stamm = Text.Trim(OhneSaison),
+        Ende = Text.End(Stamm, 1),
+        Zusatz =
+            if List.Contains({"E", "H"}, Ende)
+            then Ende
+            else "",
+        OhneZusatz =
+            if Zusatz <> "" then
+                Text.Trim(Text.Start(Stamm, Text.Length(Stamm) - 1))
+            else Stamm,
+        // -------------------------------------------------
+        // 3. Buchstaben und Nummer trennen
+        // -------------------------------------------------
+        Zeichen = Text.ToList(OhneZusatz),
+        ErsteZiffer =
+            List.PositionOf(
+                List.Transform(
+                    Zeichen,
+                    each List.Contains(Ziffern, _)
+                ),
+                true
+            ),
+        BuchstabenTeil =
+            if ErsteZiffer >= 0
+            then Text.Start(OhneZusatz, ErsteZiffer)
+            else "",
+        NummerTeil =
+            if ErsteZiffer >= 0
+            then Text.Trim(Text.Range(OhneZusatz, ErsteZiffer))
+            else "",
+        // Bindestriche und Leerzeichen zwischen
+        // Buchstabengruppen auswerten
+        Gruppen = List.Select(
+            Text.SplitAny(Text.Trim(BuchstabenTeil), " -"),
+            each _ <> ""
+        ),
+        AnzahlGruppen = List.Count(Gruppen),
+        AlleBuchstaben = Text.Combine(Gruppen, ""),
+        // Ohne Trenner wie RegEx:
+        // möglichst langer Bezirk, mindestens ein
+        // Buchstabe für die Erkennungsgruppe
+        Bezirk =
+            if AnzahlGruppen = 2 then Gruppen{0}
+            else if AnzahlGruppen = 1
+                and Text.Length(AlleBuchstaben) >= 2
+            then
+                Text.Start(
+                    AlleBuchstaben,
+                    List.Min({3, Text.Length(AlleBuchstaben) - 1})
+                )
+            else "",
+        Gruppe =
+            if AnzahlGruppen = 2 then Gruppen{1}
+            else if AnzahlGruppen = 1
+                and Text.Length(AlleBuchstaben) >= 2
+            then
+                Text.Range(AlleBuchstaben, Text.Length(Bezirk))
+            else "",
+        // -------------------------------------------------
+        // 4. Strukturprüfung
+        // -------------------------------------------------
+        BezirkOK =
+            Text.Length(Bezirk) >= 1
+            and Text.Length(Bezirk) <= 3
+            and fnNurZeichen(Bezirk, Buchstaben),
+        GruppeOK =
+            Text.Length(Gruppe) >= 1
+            and Text.Length(Gruppe) <= 2
+            and fnNurZeichen(Gruppe, Buchstaben),
+        NummerOK =
+            Text.Length(NummerTeil) >= 1
+            and Text.Length(NummerTeil) <= 4
+            and fnNurZeichen(NummerTeil, Ziffern),
+        // Unerlaubte Zeichen im gesamten Stamm verhindern
+        // eine versehentliche "Reparatur"
+        StammZeichenOK =
+            Text.Length(
+                Text.Remove(
+                    OhneZusatz,
+                    List.Combine({Buchstaben, Ziffern, {" ", "-"}})
+                )
+            ) = 0,
+        // Nur erlaubte Trennzeichen, keine mehrfachen
+        // Bindestriche und keine Ziffern in Buchstabengruppen
+        TrennerOK =
+            not Text.Contains(OhneZusatz, "--")
+            and not Text.Contains(OhneZusatz, "- -")
+            and not Text.Contains(NummerTeil, "-")
+            and AnzahlGruppen >= 1
+            and AnzahlGruppen <= 2,
+        StrukturOK =
+            BezirkOK
+            and GruppeOK
+            and NummerOK
+            and StammZeichenOK
+            and TrennerOK
+            and (not HatSlash or SaisonFormat),
+        // -------------------------------------------------
+        // 5. Normalisierung
+        // -------------------------------------------------
+        Normalisiert =
+            if StrukturOK then
+                Bezirk & "-" & Gruppe & " " &
+                NummerTeil & Zusatz &
+                (if HatSlash then
+                    " " & VonText & "/" & BisText
+                 else "")
+            else "",
+        // -------------------------------------------------
+        // 6. Plausibilitätsprüfung
+        // -------------------------------------------------
+        NummerWert = if StrukturOK then Number.FromText(NummerTeil) else 0,
+        Laenge = Text.Length(Bezirk & Gruppe & NummerTeil & Zusatz),
+        VonWert = if SaisonFormat then Number.FromText(VonText) else 0,
+        BisWert = if SaisonFormat then Number.FromText(BisText) else 0,
+        Monate = if SaisonFormat then BisWert - VonWert + 1 else 0,
+        // Ohne Trenner: mögliche Mehrdeutigkeit
+        Kompakt = Text.Remove(BuchstabenTeil, {" ", "-"}),
+        Mehrdeutig =
+            StrukturOK
+            and AnzahlGruppen = 1
+            and Text.Length(Kompakt) >= 3
+            and Text.Length(Kompakt) <= 4,
+        fNummer = StrukturOK and NummerWert = 0,
+        fLaenge = StrukturOK and Laenge > 8,
+        fSaison = StrukturOK and SaisonFormat and BisWert < VonWert,
+        fKurz = StrukturOK and SaisonFormat and BisWert >= VonWert and Monate < 2,
+        fLang = StrukturOK and SaisonFormat and Monate > 11,
+        fMehr = Mehrdeutig,
+        fNorm = StrukturOK and Roh <> Normalisiert,
+        // -------------------------------------------------
+        // 7. Mehrfachdiagnose
+        // -------------------------------------------------
+        Fehler = List.RemoveNulls({
+            if fNummer then "Nummer ist 0" else null,
+            if fLaenge then "Mehr als 8 Zeichen" else null,
+            if fSaison then "Saisonende vor Saisonbeginn" else null,
+            if fKurz then "Saison kürzer als 2 Monate" else null,
+            if fLang then "Saison länger als 11 Monate" else null,
+            if fMehr then "Aufteilung möglicherweise mehrdeutig" else null
+        }),
+        Status =
+            if not StrukturOK then "Kein Treffer"
+            else if List.Count(Fehler) > 0 then "Prüfen"
+            else if fNorm then "Normalisiert"
+            else "OK",
+        Diagnose =
+            if not StrukturOK then "Struktur nicht erkannt"
+            else if List.Count(Fehler) > 0
+                then Text.Combine(Fehler, " | ")
+            else if fNorm then "Schreibweise vereinheitlicht"
+            else "Keine Auffälligkeiten",
+        Result =
+            if not StrukturOK then Leer
+            else [
+                Bezirk = Bezirk,
+                Buchstaben = Gruppe,
+                Nummer = NummerTeil,
+                Zusatz = Zusatz,
+                Von = VonText,
+                Bis = BisText,
+                Normalisiert = Normalisiert,
+                Status = Status,
+                Diagnose = Diagnose
+            ]
+    in
+        Result,
+    // =====================================================
+    // Abfrage auf die gesamte Tabelle anwenden
+    // =====================================================
+    Typ = Table.TransformColumnTypes(Quelle, {{"Kennzeichen", type text}}),
+    Umbenannt = Table.RenameColumns(Typ, {{"Kennzeichen", "Eingabe"}}),
+    Geprueft = Table.AddColumn(
+        Umbenannt,
+        "Ergebnis",
+        each fnPruefen([Eingabe]),
+        type record
+    ),
+    Erg = Table.ExpandRecordColumn(
+        Geprueft,
+        "Ergebnis",
+        {
+            "Bezirk", "Buchstaben", "Nummer",
+            "Zusatz", "Von", "Bis", "Normalisiert",
+            "Status", "Diagnose"
+        }
+    )
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function

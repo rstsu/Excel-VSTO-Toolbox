@@ -24,13 +24,13 @@ Beispieldateien werden von der Version **1.0.2.1** (_10.08.2026_) ab angeboten.
 
 ## Funktionen
 
-✔ **28** RegEx-Beispiele
+✔ **29** RegEx-Beispiele
 
-✔ **33** Power Query-Beispiele
+✔ **34** Power Query-Beispiele
 
-✔ **19** Formel-Beispiele
+✔ **20** Formel-Beispiele
 
-✔ **19** VBA-Beispiele
+✔ **20** VBA-Beispiele
 
 ## Voraussetzungen
 

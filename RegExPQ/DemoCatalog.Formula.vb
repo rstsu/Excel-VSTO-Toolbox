@@ -936,6 +936,105 @@ bereitgestellt werden.
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0020",
+                .Category = DemoCategory.Formula,
+                .Title = "Zerlegung, Normalisierung und Plausibilität - Kennzeichen...",
+                .Tags = {"kennzeichen", "formeln", "let", "sequenz", "lambda", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Vier Wege zur Zerlegung, Normalisierung und Plausibilitätsprüfung deutscher Kfz-Kennzeichen.
+Gelöst mit Formeln, Regex, VBA und Power Query.
+
+RegEx_PQ_Formel_VBA_Kennzeichen_Demo.xlsb
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(
+k;tblKennzeichen[Kennzeichen];
+kopf;HSTAPELN("Eingabe";"Bezirk";"Buchstaben";"Nummer";"Zusatz";"Von";"Bis";"Normalisiert";"Status";"Diagnose");
+abc;"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+ziff;"0123456789";
+nur;LAMBDA(t;zeichen;UND(LÄNGE(t)>0;SUMME(--ISTZAHL(SUCHEN(TEIL(t;SEQUENZ(MAX(1;LÄNGE(t)));1);zeichen)))=LÄNGE(t)));
+leer;HSTAPELN("";"";"";"";"";"";"");
+REDUCE(kopf;k;LAMBDA(a;x;
+LET(
+roh;GROSS(GLÄTTEN(WECHSELN(SÄUBERN(x);ZEICHEN(160);" ")));
+slash;LÄNGE(roh)-LÄNGE(WECHSELN(roh;"/";""));
+st;WENN(slash=1;TEXTVOR(roh;"/");roh);
+en;WENN(slash=1;GLÄTTEN(TEXTNACH(roh;"/"));"");
+von;WENN(slash=1;RECHTS(GLÄTTEN(st);2);"");
+bis;en;
+sf;UND(slash=1;LÄNGE(von)=2;LÄNGE(bis)=2;nur(von;ziff);nur(bis;ziff);WENNFEHLER(WERT(von)>=1;FALSCH);WENNFEHLER(WERT(von)<=12;FALSCH);WENNFEHLER(WERT(bis)>=1;FALSCH);WENNFEHLER(WERT(bis)<=12;FALSCH));
+basis;WENN(slash=0;roh;WENN(sf;GLÄTTEN(LINKS(GLÄTTEN(st);LÄNGE(GLÄTTEN(st))-2));""));
+ende;RECHTS(basis;1);
+zus;WENN(ODER(ende="E";ende="H");ende;"");
+ohne;WENN(zus<>"";GLÄTTEN(LINKS(basis;LÄNGE(basis)-1));basis);
+zz;TEIL(ohne;SEQUENZ(MAX(1;LÄNGE(ohne)));1);
+pos;WENNFEHLER(XVERGLEICH(WAHR;ISTZAHL(SUCHEN(zz;ziff));0);0);
+bt;WENN(pos>0;LINKS(ohne;pos-1);"");
+nr;WENN(pos>0;GLÄTTEN(TEIL(ohne;pos;999));"");
+grp;WENNFEHLER(TEXTTEILEN(GLÄTTEN(WECHSELN(bt;"-";" "));" ";;WAHR);"");
+anz;SPALTEN(grp);
+kompakt;WECHSELN(WECHSELN(bt;" ";"");"-";"");
+bez;WENN(anz=2;INDEX(grp;1;1);WENN(UND(anz=1;LÄNGE(kompakt)>=2);LINKS(kompakt;MIN(3;LÄNGE(kompakt)-1));""));
+bst;WENN(anz=2;INDEX(grp;1;2);WENN(UND(anz=1;LÄNGE(kompakt)>=2);TEIL(kompakt;LÄNGE(bez)+1;99);""));
+bOK;UND(LÄNGE(bez)>=1;LÄNGE(bez)<=3;nur(bez;abc));
+gOK;UND(LÄNGE(bst)>=1;LÄNGE(bst)<=2;nur(bst;abc));
+nOK;UND(LÄNGE(nr)>=1;LÄNGE(nr)<=4;nur(nr;ziff));
+zeichenOK;IDENTISCH(WECHSELN(WECHSELN(ohne;" ";"");"-";"");kompakt&nr);
+trennerOK;UND(
+ISTFEHLER(SUCHEN("--";ohne));
+ISTFEHLER(SUCHEN("- -";ohne));
+ISTFEHLER(SUCHEN("-";nr));
+anz>=1;anz<=2
+);
+struktur;UND(bOK;gOK;nOK;zeichenOK;trennerOK;ODER(slash=0;sf));
+norm;WENN(struktur;bez&"-"&bst&" "&nr&zus&WENN(slash=1;" "&von&"/"&bis;"");"");
+nn;WENN(struktur;WERT(nr);0);
+vn;WENN(sf;WERT(von);0);
+bn;WENN(sf;WERT(bis);0);
+monate;WENN(sf;bn-vn+1;0);
+laenge;LÄNGE(bez&bst&nr&zus);
+mehr;UND(struktur;anz=1;LÄNGE(kompakt)>=3;LÄNGE(kompakt)<=4);
+fNummer;UND(struktur;nn=0);
+fLaenge;UND(struktur;laenge>8);
+fSaison;UND(struktur;sf;bn<vn);
+fKurz;UND(struktur;sf;bn>=vn;monate<2);
+fLang;UND(struktur;sf;monate>11);
+fNorm;UND(struktur;NICHT(IDENTISCH(x;norm)));
+fehler;TEXTVERKETTEN(" | ";WAHR;
+WENN(fNummer;"Nummer ist 0";"");
+WENN(fLaenge;"Mehr als 8 Zeichen";"");
+WENN(fSaison;"Saisonende vor Saisonbeginn";"");
+WENN(fKurz;"Saison kürzer als 2 Monate";"");
+WENN(fLang;"Saison länger als 11 Monate";"");
+WENN(mehr;"Aufteilung möglicherweise mehrdeutig";"")
+);
+status;WENN(NICHT(struktur);"Kein Treffer";WENN(fehler<>"";"Prüfen";WENN(fNorm;"Normalisiert";"OK")));
+diagnose;WENN(NICHT(struktur);"Struktur nicht erkannt";WENN(fehler<>"";fehler;WENN(fNorm;"Schreibweise vereinheitlicht";"Keine Auffälligkeiten")));
+VSTAPELN(a;HSTAPELN(x;WENN(struktur;bez;"");WENN(struktur;bst;"");WENN(struktur;nr;"");WENN(struktur;zus;"");WENN(struktur;von;"");WENN(struktur;bis;"");norm;status;diagnose))
+))))
+        ]]>
+    </code>
+        )
             }
         }
     End Function
