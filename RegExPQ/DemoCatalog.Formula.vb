@@ -1035,6 +1035,160 @@ VSTAPELN(a;HSTAPELN(x;WENN(struktur;bez;"");WENN(struktur;bst;"");WENN(struktur;
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "formula_0021",
+                .Category = DemoCategory.Formula,
+                .Title = "Monatsauswertung - Formeln, Power Query und Power Pivot...",
+                .Tags = {"monatsauswertung", "formeln", "let", "tag", "stunden", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Monatsauswertung von Mitarbeiterbuchungen.
+Gelöst mit Formeln, Pivot und Power Query.
+
+Demo_Power_Query_Formeln_Gruppieren.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+=LET(
+    Pers;tblDaten[Pers.-Nr.];
+    Name;tblDaten[Mitarbeiter];
+    PNr;SORTIEREN(EINDEUTIG(Pers));
+    HSTAPELN(PNr;XVERWEIS(PNr;Pers;Name))
+)
+
+=LET(
+    Pers;tblDaten[Pers.-Nr.];
+    Datum;tblDaten[Datum];
+    Std;tblDaten[Std. Menge];
+    Kombi;EINDEUTIG(HSTAPELN(Pers;Datum));
+    Stunden;SUMMEWENNS(Std;
+        Pers;SPALTENWAHL(Kombi;1);
+        Datum;SPALTENWAHL(Kombi;2));
+    HSTAPELN(Kombi;Stunden)
+)
+
+=LET(
+    Pers;tblDaten[Pers.-Nr.];
+    Name;tblDaten[Mitarbeiter];
+    Datum;tblDaten[Datum];
+    Std;tblDaten[Std. Menge];
+    Lohnart;tblDaten[Lohnart Bezeichnung];
+    PNr;SORTIEREN(EINDEUTIG(Pers));
+    MA;XVERWEIS(PNr;Pers;Name);
+    MonatsStd;SUMMEWENNS(Std;Pers;PNr);
+    Tage8;MAP(PNr;LAMBDA(p;
+        LET(
+            Tage;EINDEUTIG(FILTER(Datum;Pers=p));
+            SUMME(--(SUMMEWENNS(Std;Pers;p;Datum;Tage)>=8))
+        )
+    ));
+    Urlaub;MAP(PNr;LAMBDA(p;
+        LET(
+            Tage;EINDEUTIG(FILTER(Datum;Pers=p));
+            SUMME(--(ZÄHLENWENNS(Pers;p;Datum;Tage;Lohnart;"Urlaub")>0))
+        )
+    ));
+    Krank;MAP(PNr;LAMBDA(p;
+        LET(
+            Tage;EINDEUTIG(FILTER(Datum;Pers=p));
+            SUMME(--(ZÄHLENWENNS(Pers;p;Datum;Tage;Lohnart;"Krankheitstage")>0))
+        )
+    ));
+    VSTAPELN(
+        {"Pers.-Nr."."Mitarbeiter"."Anzahl Monatsstunden"."Anzahl Tage ≥8h"."Anzahl-Url.-Tage"."Anzahl-Kranktage"};
+        HSTAPELN(PNr;MA;MonatsStd;Tage8;Urlaub;Krank)
+    )
+)
+
+=LET(
+    Pers;tblDaten[Pers.-Nr.];
+    Name;tblDaten[Mitarbeiter];
+    Datum;tblDaten[Datum];
+    Std;tblDaten[Std. Menge];
+    Lohnart;tblDaten[Lohnart Bezeichnung];
+    VSTAPELN(
+        {"Pers.-Nr."."Mitarbeiter"."Datum"."Tagesstunden"."Urlaubsbuchungen"."Krankheitsbuchungen"};
+        GRUPPIERENNACH(
+            HSTAPELN(Pers;Name;Datum);
+            HSTAPELN(Std;--(Lohnart="Urlaub");--(Lohnart="Krankheitstage"));
+            SUMME;0;0
+        )
+    )
+)
+
+=LET(
+    Daten;WEGLASSEN(A2#;1);
+    Std;SPALTENWAHL(Daten;4);
+    VSTAPELN(
+        {"Pers.-Nr."."Mitarbeiter"."Datum"."Tagesstunden"."Tag ≥8h"."Urlaubstag"."Krankheitstag"};
+        HSTAPELN(
+            SPALTENWAHL(Daten;1;2;3);
+            Std;
+            --(Std>=8);
+            --(SPALTENWAHL(Daten;5)>0);
+            --(SPALTENWAHL(Daten;6)>0)
+        )
+    )
+)
+
+=LET(
+    Daten;WEGLASSEN(H2#;1);
+    VSTAPELN(
+        {"Pers.-Nr."."Mitarbeiter"."Anzahl Monatsstunden"."Anzahl Tage ≥8h"."Anzahl-Url.-Tage"."Anzahl-Kranktage"};
+        GRUPPIERENNACH(
+            SPALTENWAHL(Daten;1;2);
+            SPALTENWAHL(Daten;4;5;6;7);
+            SUMME;0;0;1
+        )
+    )
+)
+
+=LET(
+    Pers;tblDaten[Pers.-Nr.];
+    Name;tblDaten[Mitarbeiter];
+    Datum;tblDaten[Datum];
+    Std;tblDaten[Std. Menge];
+    Lohnart;tblDaten[Lohnart Bezeichnung];
+    GruppeTag;GRUPPIERENNACH(
+        HSTAPELN(Pers;Name;Datum);
+        HSTAPELN(Std;--(Lohnart="Urlaub");--(Lohnart="Krankheitstage"));
+        SUMME;0;0
+    );
+    GruppeMonat;GRUPPIERENNACH(
+        SPALTENWAHL(GruppeTag;1;2);
+        HSTAPELN(
+            SPALTENWAHL(GruppeTag;4);
+            --(SPALTENWAHL(GruppeTag;4)>=8);
+            --(SPALTENWAHL(GruppeTag;5)>0);
+            --(SPALTENWAHL(GruppeTag;6)>0)
+        );
+        SUMME;0;0;1
+    );
+    VSTAPELN(
+        {"Pers.-Nr."."Mitarbeiter"."Anzahl Monatsstunden"."Anzahl Tage ≥8h"."Anzahl-Url.-Tage"."Anzahl-Kranktage"};
+        GruppeMonat
+    )
+)
+        ]]>
+    </code>
+        )
             }
         }
     End Function

@@ -4889,6 +4889,77 @@ in
         ]]>
     </code>
         )
+            },
+            New DemoDefinition With {
+                .Id = "pq_0035",
+                .Category = DemoCategory.PowerQuery,
+                .Title = "Monatsauswertung - Formeln, Power Query und Power Pivot...",
+                .Tags = {"monatsauswertung", "power query", "gruppieren", "tag", "stunden", "varianten"},
+                .Description = TextBlock(
+    <text>
+        <![CDATA[
+Monatsauswertung von Mitarbeiterbuchungen.
+Gelöst mit Formeln, Pivot und Power Query.
+
+Demo_Power_Query_Formeln_Gruppieren.xlsx
+
+Beim Klick auf "Demo erzeugen" wird das mitgelieferte ZIP-Archiv in folgenden Ordner entpackt:
+%TEMP%\Excel-VSTO-Toolbox\
+
+Ein bereits vorhandener Demo-Ordner wird vorher gelöscht.
+Anschließend wird die enthaltene Excel-Arbeitsmappe geöffnet.
+
+!!!!!!!!WICHTIG!!!!!!!!
+Falls eine Datei aus dem Demo-Ordner noch geöffnet ist, kann der
+vorhandene Ordner nicht gelöscht und das Beispiel nicht erneut
+bereitgestellt werden.
+!!!!!!!!WICHTIG!!!!!!!!
+        ]]>
+    </text>
+        ),
+.CodeText = TextBlock(
+    <code>
+        <![CDATA[
+/*
+Excel-VSTO-Toolbox
+Power Query-Demo
+Ralf Stolzenburg (Case)
+https://github.com/rstsu/Excel-VSTO-Toolbox
+*/
+let
+    Quelle = Excel.CurrentWorkbook(){[Name="tblDaten"]}[Content],
+    Typen = Table.TransformColumnTypes(Quelle, {
+        {"Pers.-Nr.", Int64.Type},
+        {"Mitarbeiter", type text},
+        {"Datum", type date},
+        {"Std. Menge", type number},
+        {"Lohnart Bezeichnung", type text}
+    }),
+    GruppeTag = Table.Group(Typen,
+        {"Pers.-Nr.", "Mitarbeiter", "Datum"}, {
+        {"Tagesstunden", each List.Sum([Std. Menge]), type number},
+        {"Urlaub", each
+            Number.From(List.Contains([Lohnart Bezeichnung], "Urlaub")),
+            Int64.Type},
+        {"Krankheit", each
+            Number.From(List.Contains([Lohnart Bezeichnung], "Krankheitstage")),
+            Int64.Type}
+    }),
+    GruppeMonat = Table.Group(GruppeTag,
+        {"Pers.-Nr.", "Mitarbeiter"}, {
+        {"Anzahl Monatsstunden", each List.Sum([Tagesstunden]), type number},
+        {"Anzahl Tage ≥8h", each
+            List.Count(List.Select([Tagesstunden], each _ >= 8)),
+            Int64.Type},
+        {"Anzahl-Url.-Tage", each List.Sum([Urlaub]), Int64.Type},
+        {"Anzahl-Kranktage", each List.Sum([Krankheit]), Int64.Type}
+    }),
+    Erg = Table.Sort(GruppeMonat, {{"Pers.-Nr.", Order.Ascending}})
+in
+    Erg
+        ]]>
+    </code>
+        )
             }
         }
     End Function
